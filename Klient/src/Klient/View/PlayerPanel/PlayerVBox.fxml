@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.shape.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="400.0" spacing="10.0" style="-fx-background-color: #E6E2AF;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Klient.View.PlayerPanel.PlayerPanelController">
+   <children>
+      <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="400.0" style="-fx-background-color: #E6E2AF;">
+         <children>
+            <ImageView fitHeight="200.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER">
+               <StackPane.margin>
+                  <Insets bottom="40.0" />
+               </StackPane.margin>
+               <image>
+                  <Image url="@Realistic_Go_Stone.svg.png" />
+               </image>
+            </ImageView>
+            <Label prefHeight="42.0" prefWidth="80.0" text="Czarne" textAlignment="CENTER" StackPane.alignment="BOTTOM_CENTER">
+               <StackPane.margin>
+                  <Insets bottom="30.0" />
+               </StackPane.margin>
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Label>
+            <Pane onMouseEntered="#setOpacityOnEntered" onMouseExited="#setNormalOpacity" opacity="0.0" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" StackPane.alignment="CENTER">
+               <children>
+                  <Label alignment="CENTER" layoutX="100.0" layoutY="95.0" text="Punkty" textAlignment="CENTER" textFill="#fffafa">
+                     <font>
+                        <Font name="System Bold" size="50.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="158.0" layoutY="195.0" text="Label" textFill="SNOW">
+                     <font>
+                        <Font size="30.0" />
+                     </font>
+                  </Label>
+               </children>
+            </Pane>
+         </children>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
+      </StackPane>
+      <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="148.0" prefWidth="400.0" spacing="5.0">
+         <children>
+            <Button alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="87.0" prefWidth="137.0" text="Pasuj" />
+            <Button alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="86.0" prefWidth="143.0" text="Opcje" />
+         </children>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
+      </HBox>
+      <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="400.0" style="-fx-background-color: #E6E2AF;">
+         <children>
+            <ImageView fitHeight="200.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true">
+               <StackPane.margin>
+                  <Insets bottom="40.0" />
+               </StackPane.margin>
+               <image>
+                  <Image url="@250px-Realistic_White_Go_Stone.svg.png" />
+               </image>
+            </ImageView>
+            <Label text="Białe" StackPane.alignment="BOTTOM_CENTER">
+               <StackPane.margin>
+                  <Insets bottom="30.0" />
+               </StackPane.margin>
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Label>
+            <Pane onMouseEntered="#setOpacityOnEntered" onMouseExited="#setNormalOpacity" opacity="0.0" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: white;">
+               <children>
+                  <Label alignment="CENTER" layoutX="100.0" layoutY="95.0" text="Punkty" textAlignment="CENTER" textFill="#252222">
+                     <font>
+                        <Font name="System Bold" size="50.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="157.0" layoutY="196.0" text="Label" textFill="#252222">
+                     <font>
+                        <Font size="30.0" />
+                     </font>
+                  </Label>
+               </children>
+            </Pane>
+         </children>
+      </StackPane>
+   </children>
+</VBox>
