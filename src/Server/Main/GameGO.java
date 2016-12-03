@@ -11,9 +11,7 @@ import java.net.Socket;
 /**
  * Created by jakub on 12/2/16.
  */
-public class GameGO {
-
-	private stoneColor[] board;
+public class GameGO extends GameLogicGO {
 
 	private Player currentPlayer;
 	public GameGO(){
@@ -26,19 +24,14 @@ public class GameGO {
 			e=stoneColor.UNDEFINED;
 	}
 
-	public void setSize(int size){
-		board=new stoneColor[size];
-		for(stoneColor e : board)
-			e=stoneColor.UNDEFINED;
-	}
 	public Player getCurrentPlayer() {
 		return currentPlayer;
 	}
 
 	public void setCurrentPlayer(Player currentPlayer) {
 		this.currentPlayer = currentPlayer;
-	}
 
+	}
 
 	class Player extends Thread {
 		private Socket socket;
@@ -47,7 +40,7 @@ public class GameGO {
 
 		private Player opponent;
 		private stoneColor color;
-
+		public Player() { }
 		public Player(Socket socket){
 			try{
 				this.socket=socket;
@@ -66,9 +59,8 @@ public class GameGO {
 				throw new WrongPlayerInitiation();
 			}
 		}
-		public void cannotJoin(){
-			output.println("FULL");
-		}
+		public PrintWriter getOutput() { return output; }
+
 		public Player getOpponent() {
 			return opponent;
 		}

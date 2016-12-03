@@ -1,8 +1,13 @@
 package Server.Main;
 
+import Server.BoardSize;
+
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.AbstractMap;
 import java.util.HashMap;
+
+import static java.lang.System.exit;
 
 /**
  * Created by jakub on 12/2/16.
@@ -12,13 +17,26 @@ import java.util.HashMap;
  * Games are only for 2 people, we're preventing scenario where 3rd person tries to join to full lobby
  */
 public class ServerGO {
+	/**
+	 *
+	 */
 	private static final int PORT = 8901;
 	private static AbstractMap<String, GameGO> gameSet;
 	private static int gameID = 0;
+	private static ServerSocket serverListener;
 
+	private static ServerSocket createSocket(int PORT){
+		try{
+			return new ServerSocket(PORT);
+		} catch (IOException e){
+			System.out.println("Cannot create Server!");
+			exit(1);
+		}
+		return null;
+	}
 	public static void main(String[] agrs) throws Exception {
 		gameSet = new HashMap<>();
-		ServerSocket serverListener = new ServerSocket(PORT);
+		serverListener = createSocket(PORT);
 		System.out.println("Server has been launched.");
 		try {
 			while (true) {
@@ -28,7 +46,7 @@ public class ServerGO {
 				try {
 					String line = player.setBoard();
 					String[] commands = line.split("-");
-					System.out.println("Initial words:" + commands);
+					System.out.println("Initial words:" + commands[0]+"/"+commands[1]);
 					if (commands.length == 2) {
 						if (commands[0] == "JOIN") {
 							GameGO.Player ToBeJoined=gameSet.get(commands[1]).getCurrentPlayer();
@@ -37,15 +55,15 @@ public class ServerGO {
 								ToBeJoined.start();
 								ToBeJoined.getOpponent().start();
 							}else{
-								ToBeJoined.cannotJoin();
+								ToBeJoined.getOutput().println("FULL");
 							}
 						} else {
 							if (commands[1] == "13") {
-								newGame.setSize(13);
+								newGame.setSize(BoardSize.MEDIUM);
 							} else if (commands[1] == "19") {
-								newGame.setSize(19);
+								newGame.setSize(BoardSize.LARGE);
 							} else {
-								newGame.setSize(9);
+								newGame.setSize(BoardSize.SMALL);
 							}
 							gameSet.put(new Integer(gameID).toString(),newGame);
 							gameID++;
