@@ -56,7 +56,8 @@ public class ServerGO {
 						if (commands[0].equals("JOIN")) {
 							GameGO ToBeJoined=gameSet.get(commands[1]);
 							if(ToBeJoined.getCurrentPlayer().getOpponent()==null){
-								GameGO.Player JoiningPlayer=ToBeJoined.new Player(newConnection,player.getInput(),player.getOutput());
+								GameGO.Player JoiningPlayer=ToBeJoined.new Player(player);
+								//GameGO.Player JoiningPlayer=ToBeJoined.new Player(newConnection,player.getInput(),player.getOutput());
 								JoiningPlayer.setColor(stoneColor.WHITE);
 								JoiningPlayer.setOpponent(ToBeJoined.getCurrentPlayer());
 								JoiningPlayer.getOpponent().setOpponent(JoiningPlayer);

@@ -38,7 +38,7 @@ public class GameLogicGO {
 		return true;
 	}
 
-	public BoardPoint[] nextMove(BoardPoint move,stoneColor turn){
+	public synchronized BoardPoint[] nextMove(BoardPoint move,stoneColor turn){
 		if(board[move.getIntegerHorizontal()-1][move.getVertical()-1]!=stoneColor.UNDEFINED)
 			return null;
 		System.arraycopy(boardHistory[1],0,boardHistory[0],0,board.length);

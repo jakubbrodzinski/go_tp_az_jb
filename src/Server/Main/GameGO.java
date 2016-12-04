@@ -19,9 +19,7 @@ public class GameGO extends GameLogicGO {
 	private Player currentPlayer;
 	private int gameID;
 
-
-	public GameGO(){
-	}
+	public GameGO(){ }
 	public GameGO(BoardSize size){
 		this.setSize(size);
 	}
@@ -49,21 +47,26 @@ public class GameGO extends GameLogicGO {
 
 		private Player opponent;
 		private stoneColor color;
-		public Player() { }
-		public Player(Socket socket){
-			try{
-				this.socket=socket;
-				input=new BufferedReader(new InputStreamReader(socket.getInputStream()));
-				output=new PrintWriter(socket.getOutputStream(),true);
-			} catch (IOException e){
+
+		public Player() {}
+
+		public Player(Socket socket) {
+			try {
+				this.socket = socket;
+				input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				output = new PrintWriter(socket.getOutputStream(), true);
+			} catch (IOException e) {
 				System.out.println(e.getStackTrace());
 			}
 		}
-		public Player(Socket sock,BufferedReader bufferedReader,PrintWriter printWriter){
-			socket=sock;
-			input=bufferedReader;
-			output=printWriter;
+
+		public Player(GameGO.Player playa){
+			this.socket=playa.socket;
+			this.input=playa.input;
+			this.output=playa.output;
 		}
+
+		public PrintWriter getOutput(){	return output;	}
 
 		public String setBoard() throws WrongPlayerInitiation{
 			try {
@@ -73,23 +76,13 @@ public class GameGO extends GameLogicGO {
 				throw new WrongPlayerInitiation();
 			}
 		}
-		//do i need it ?
-		public PrintWriter getOutput() { return output; }
-		public BufferedReader getInput() { return input; }
 		//during setting up match two players have to be connected with eachother
-		public Player getOpponent() {
-			return opponent;
-		}
+		public Player getOpponent() { return opponent; }
 		public void setOpponent(Player opponent) {
 			this.opponent = opponent;
 		}
 
-		public stoneColor getColor() {
-			return color;
-		}
-		public void setColor(stoneColor color) {
-			this.color = color;
-		}
+		public void setColor(stoneColor color) { this.color = color; }
 
 		public void otherPlayerMoved(String command){
 			output.println(command);
@@ -109,6 +102,7 @@ public class GameGO extends GameLogicGO {
 					String command = input.readLine();
 					System.out.println(command);
 					String[] command_splited = command.split("-");
+					//switch case ??
 					if (command_splited[0].equals("MOVE")){
 						BoardPoint moveToTest=new BoardPoint(command_splited[1].charAt(0),command_splited[2].charAt(0));
 						BoardPoint[] changesArr=nextMove(moveToTest,this.color);
@@ -138,7 +132,9 @@ public class GameGO extends GameLogicGO {
 			}finally {
 				try{
 					socket.close();
-				}catch (IOException e){	}
+				}catch (IOException e){
+					e.printStackTrace();
+				}
 			}
 		}
 	}
