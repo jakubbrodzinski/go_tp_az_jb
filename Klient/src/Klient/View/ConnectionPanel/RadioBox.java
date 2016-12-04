@@ -18,7 +18,7 @@ import javafx.scene.text.Font;
 public class RadioBox extends GridPane {
     public RadioBox() {
         this.setAlignment(Pos.CENTER_LEFT);
-        this.setPrefSize(500,280);
+        this.setPrefSize(400,280);
         this.setPadding(new Insets(10,10,10,10));
         this.setVgap(10);
         this.setHgap(50);

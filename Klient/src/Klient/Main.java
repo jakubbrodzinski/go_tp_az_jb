@@ -25,7 +25,7 @@ public class Main extends Application {
         GridPane initialRoot = new GridPane();
         initialRoot.setAlignment(Pos.CENTER);
         initialStage.setTitle("Połączenie z serwerem");
-        initialStage.setScene(new ConnectionBoxScene(initialRoot, 600, 400));
+        initialStage.setScene(new ConnectionBoxScene(initialRoot, 600, 350));
         initialStage.initOwner(primaryStage);
         initialStage.initModality(Modality.APPLICATION_MODAL);
         initialStage.show();

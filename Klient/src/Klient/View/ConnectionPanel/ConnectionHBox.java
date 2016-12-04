@@ -15,7 +15,7 @@ public class ConnectionHBox extends GridPane {
     public ConnectionHBox() {
         this.setAlignment(Pos.TOP_CENTER);
         this.setStyle("-fx-background-color: #e1debc");
-        this.setPadding(new Insets(10,10,30,10));
+        this.setPadding(new Insets(50,10,80,10));
         this.setVgap(10);
         prepareConnectionHBox();
     }
