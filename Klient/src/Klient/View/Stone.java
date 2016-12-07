@@ -10,7 +10,6 @@ import javafx.scene.shape.Circle;
 public class Stone extends Circle {
     public Stone(double x, double y) {
         super(x, y, 15);
-        //this.setFill(Color.RED);
-        //this.setVisible(false);
+        this.setOpacity(0);
     }
 }

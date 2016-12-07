@@ -8,7 +8,16 @@ import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+
 public class Main extends Application {
+
+    private BufferedReader in;
+    private PrintWriter out;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -30,8 +39,22 @@ public class Main extends Application {
         initialStage.initModality(Modality.APPLICATION_MODAL);
         initialStage.show();
         //initialStage.close();
-        System.out.println(root.getChildren());
+        //System.out.println(root.getChildren());
+        connectToServer();
+        play();
 
+    }
+    public void connectToServer() throws IOException {
+        Socket socket = new Socket("localhost", 8901);
+        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        out = new PrintWriter(socket.getOutputStream(), true);
+    }
+    public void play() throws IOException{
+        String response;
+        while(true) {
+            response = in.readLine();
+            System.out.println(response);
+        }
     }
 
 

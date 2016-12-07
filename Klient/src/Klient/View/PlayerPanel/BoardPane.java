@@ -15,7 +15,8 @@ public class BoardPane extends GridPane {
         prepareBoardPane();
     }
     private void prepareBoardPane() {
-        MainBoard board = new MainBoard(9, 9);
+        //TODO Refactor MainBoard to a factory method
+        MainBoard board = new MainBoard(19, 19);
         this.getChildren().add(board);
     }
 
