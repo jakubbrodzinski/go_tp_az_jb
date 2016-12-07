@@ -6,7 +6,7 @@ package Klient;
 public class ClientState {
 
     private String playerColor;
-    private String currentTurn;
+    private String currentTurnColor;
     private static ClientState instance = new ClientState();
 
     private ClientState() {};
@@ -14,14 +14,14 @@ public class ClientState {
     public void setPlayerColor(String playerColor) {
         this.playerColor = playerColor;
     }
-    public void setCurrentTurn(String currentTurn) {
-        this.currentTurn = currentTurn;
+    public void setCurrentTurnColor(String currentTurn) {
+        this.currentTurnColor = currentTurn;
     }
     public String getPlayerColor() {
         return playerColor;
     }
-    public String getCurrentTurn() {
-        return currentTurn;
+    public String getCurrentTurnColor() {
+        return currentTurnColor;
     }
     public static ClientState getInstance() {
         return instance;

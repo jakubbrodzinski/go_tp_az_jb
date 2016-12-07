@@ -7,9 +7,9 @@ public class StoneLocationParser {
     public static StoneLocation parseStoneLocation(int x, int y) {
         StoneLocation location;
         String helperX;
-        int helperY = y;
+        int helperY = y/35;
 
-        switch(x) {
+        switch(x/35) {
             case 0:
                 helperX = "A";
                 break;
@@ -71,7 +71,7 @@ public class StoneLocationParser {
                 helperX = "ZLE";
                 break;
         }
-        location = new StoneLocation(helperX, helperY);
+        location = new StoneLocation(helperX, helperY+1);
         return location;
     }
 }

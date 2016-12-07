@@ -28,7 +28,7 @@ public class Main extends Application {
         FlowPane root = new FlowPane();
         root.setAlignment(Pos.TOP_RIGHT);
         primaryStage.setTitle("GoGAME");
-        primaryStage.setScene(new ClientScene(root, 1266, 768));
+        primaryStage.setScene(new ClientScene(root, 1266, 768, out));
         primaryStage.setResizable(false);
         primaryStage.show();
 
@@ -41,12 +41,12 @@ public class Main extends Application {
         initialStage.setScene(new ConnectionBoxScene(initialRoot, 600, 350, out));
         initialStage.initOwner(primaryStage);
         initialStage.initModality(Modality.APPLICATION_MODAL);
-        //initialStage.setOnCloseRequest(new ConnectionBoxClosingController());
+        initialStage.setOnCloseRequest(new ConnectionBoxClosingController());
         initialStage.showAndWait();
         //initialStage.close();
         //System.out.println(root.getChildren());
 
-        //play();
+        play();
 
     }
     public void connectToServer() throws IOException {
@@ -55,14 +55,14 @@ public class Main extends Application {
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new PrintWriter(socket.getOutputStream(), true);
     }
-    public void play() throws IOException{
+    public void play() throws IOException {
         String response;
         ClientState state = ClientState.getInstance();
-        while(true) {
-            System.out.println("TU");
-            response = in.readLine();
-            System.out.println(response);
-        }
+        response = in.readLine();
+        state.setPlayerColor(response.substring(0,5));
+        state.setCurrentTurnColor("BLACK");
+        System.out.println(state.getPlayerColor());
+
     }
     public PrintWriter getOutput() {
         return out;

@@ -13,20 +13,28 @@ import java.io.PrintWriter;
 public class StoneController implements EventHandler<MouseEvent> {
 
     private PrintWriter out;
-    private String clientState;
+    private ClientState clientState = ClientState.getInstance();
 
-    public StoneController(String clientState, PrintWriter out) {
+    public StoneController(PrintWriter out) {
         this.out = out;
-        this.clientState = clientState;
     }
     @Override
     public void handle(MouseEvent event) {
         Object object = event.getSource();
         if(object instanceof Stone) {
-            ((Stone) object).setOpacity(1);
-            ((Stone) object).setVisible(true);
-            ((Stone) object).setFill(Color.WHITE);
-            System.out.println(object);
+            if(clientState.getCurrentTurnColor() == clientState.getPlayerColor()) {
+                ((Stone) object).setOpacity(1);
+                ((Stone) object).setVisible(true);
+                if(clientState.getPlayerColor() == "WHITE") {
+                    ((Stone) object).setFill(Color.WHITE);
+                }
+                else {
+                    ((Stone) object).setFill(Color.BLACK);
+                }
+                StoneLocation location = StoneLocationParser.parseStoneLocation((int)((Stone) object).getCenterX(), (int)((Stone) object).getCenterY());
+                System.out.println(location.getX() + location.getY());
+                out.println(location.getX() + location.getY());
+            }
         }
     }
 }
