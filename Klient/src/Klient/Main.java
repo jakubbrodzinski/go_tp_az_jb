@@ -2,11 +2,14 @@ package Klient;
 
 import Klient.View.ClientScene;
 import Klient.View.ConnectionBoxScene;
+import Klient.View.ConnectionPanel.ConnectionBoxClosingController;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,32 +32,40 @@ public class Main extends Application {
         primaryStage.setResizable(false);
         primaryStage.show();
 
+        connectToServer();
 
         Stage initialStage = new Stage();
         GridPane initialRoot = new GridPane();
         initialRoot.setAlignment(Pos.CENTER);
         initialStage.setTitle("Połączenie z serwerem");
-        initialStage.setScene(new ConnectionBoxScene(initialRoot, 600, 350));
+        initialStage.setScene(new ConnectionBoxScene(initialRoot, 600, 350, out));
         initialStage.initOwner(primaryStage);
         initialStage.initModality(Modality.APPLICATION_MODAL);
-        initialStage.show();
+        //initialStage.setOnCloseRequest(new ConnectionBoxClosingController());
+        initialStage.showAndWait();
         //initialStage.close();
         //System.out.println(root.getChildren());
-        connectToServer();
-        play();
+
+        //play();
 
     }
     public void connectToServer() throws IOException {
         Socket socket = new Socket("localhost", 8901);
+        System.out.println("TU");
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new PrintWriter(socket.getOutputStream(), true);
     }
     public void play() throws IOException{
         String response;
+        ClientState state = ClientState.getInstance();
         while(true) {
+            System.out.println("TU");
             response = in.readLine();
             System.out.println(response);
         }
+    }
+    public PrintWriter getOutput() {
+        return out;
     }
 
 

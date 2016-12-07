@@ -16,6 +16,10 @@ import javafx.scene.text.Font;
  * Created by arek on 12/3/16.
  */
 public class RadioBox extends GridPane {
+
+    private TextField tableInput = new TextField();
+    private final ToggleGroup group = new ToggleGroup();
+
     public RadioBox() {
         this.setAlignment(Pos.CENTER_LEFT);
         this.setPrefSize(400,280);
@@ -29,7 +33,6 @@ public class RadioBox extends GridPane {
         VBox components = new VBox();
         components.setAlignment(Pos.CENTER_LEFT);
         components.setSpacing(20);
-        final ToggleGroup group = new ToggleGroup();
 
         RadioButton newTableButton = new RadioButton("Nowa gra");
         newTableButton.setUserData("NewGame");
@@ -49,7 +52,6 @@ public class RadioBox extends GridPane {
         GridPane.setConstraints(components, 0, 0);
         this.getChildren().add(components);
 
-        TextField tableInput = new TextField();
         tableInput.setPromptText("Podaj numer stołu, do którego chcesz dołączyć");
         tableInput.setVisible(false);
 
@@ -84,7 +86,11 @@ public class RadioBox extends GridPane {
                 }
             }
         });
-
-
+    }
+    public String getTextFieldContent() {
+        return tableInput.getText();
+    }
+    public String getToggledButton() {
+        return (String) group.getSelectedToggle().getUserData();
     }
  }
