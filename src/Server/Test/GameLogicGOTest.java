@@ -1,14 +1,14 @@
 package Server.Test;
 
-import Server.BoardSize;
+import Server.Enums.BoardSize;
+import Server.Enums.stoneColor;
 import Server.Main.BoardPoint;
 import Server.Main.GameLogicGO;
-import Server.stoneColor;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * Created by jakub on 12/4/16.
@@ -30,7 +30,6 @@ public class GameLogicGOTest {
 
 	@Test
 	public void nextMove() throws Exception {
-		GameToTest.nextMove(new BoardPoint('K',10), stoneColor.WHITE);
 		GameToTest.nextMove(new BoardPoint('K',11),stoneColor.BLACK);
 		GameToTest.nextMove(new BoardPoint('J',11),stoneColor.BLACK);
 		GameToTest.nextMove(new BoardPoint('L',11),stoneColor.BLACK);
@@ -51,9 +50,30 @@ public class GameLogicGOTest {
 		GameToTest.nextMove(new BoardPoint('M',9), stoneColor.WHITE);
 		GameToTest.nextMove(new BoardPoint('M',10), stoneColor.WHITE);
 		GameToTest.nextMove(new BoardPoint('M',11), stoneColor.WHITE);
-		assertEquals(true,GameToTest.NoIdeaHowToNameThisMethod(new BoardPoint('K',10),stoneColor.WHITE));
+		GameToTest.DrawBoard();
+		assertNotEquals(null,GameToTest.nextMove(new BoardPoint('K',10), stoneColor.WHITE));
+		GameToTest.DrawBoard();
 
+		GameToTest.nextMove(new BoardPoint('A',13), stoneColor.BLACK);
+		GameToTest.nextMove(new BoardPoint('A',12), stoneColor.WHITE);
+		GameToTest.DrawBoard();
+		assertNotEquals(null,GameToTest.nextMove(new BoardPoint('B',13), stoneColor.WHITE));
+		GameToTest.DrawBoard();
+		assertNull(GameToTest.nextMove(new BoardPoint('A', 13), stoneColor.BLACK));
+
+		GameToTest.nextMove(new BoardPoint('C',10), stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('B',9), stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('D',9), stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('C',6), stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('B',7), stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('D',7), stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('C',7),stoneColor.BLACK);
+		GameToTest.nextMove(new BoardPoint('C',9),stoneColor.BLACK);
+		GameToTest.DrawBoard();
+		assertNotEquals(null,GameToTest.nextMove(new BoardPoint('C',8), stoneColor.WHITE));
+		GameToTest.DrawBoard();
+
+		assertNull(GameToTest.nextMove(new BoardPoint('E', 4), stoneColor.WHITE));
+		assertNull(GameToTest.nextMove(new BoardPoint('E', 5), stoneColor.BLACK));
 	}
-
-
 }

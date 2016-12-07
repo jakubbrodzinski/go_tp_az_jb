@@ -1,7 +1,7 @@
 package Server.Main;
 
-import Server.BoardSize;
-import Server.stoneColor;
+import Server.Enums.BoardSize;
+import Server.Enums.stoneColor;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.net.Socket;
 
 /**
  * Created by jakub on 12/2/16.
- * This class is a adapter between our class logic and server, this class is a interpreter of Client's commands.
+ * This class is a 'adapter' between our class logic and server, this class is a interpreter of Client's commands.
  * Class decides what server should do. Usually send particular move to check if its correct. If it is correct move
  * after passing info 'bout it to the client it sends which points in the board changed.
  */
@@ -100,26 +100,34 @@ public class GameGO extends GameLogicGO {
 				//examples of sent lines : PASS,CONCEDE,QUIT,MOVE-X-Y,CHANGE-A-B-C-D-(...)
 				while (true) {
 					String command = input.readLine();
+					//Test
+					System.out.println(this.color+" "+command);
 					System.out.println(command);
 					String[] command_splited = command.split("-");
 					//switch case ??
 					if (command_splited[0].equals("MOVE")){
-						BoardPoint moveToTest=new BoardPoint(command_splited[1].charAt(0),command_splited[2].charAt(0));
-						BoardPoint[] changesArr=nextMove(moveToTest,this.color);
-						if(changesArr!=null){
-							StringBuilder Builder=new StringBuilder("");
-							for(int i=0;i<changesArr.length;i++){
-								Builder.append("-"+changesArr[i].toString());
-							}
-							String BuilderString=Builder.toString();
-							output.println("CORRECT"+BuilderString);
-							changeTurn("CHANGE-"+moveToTest.toString()+BuilderString);
-						}else{
+						int row=0;
+						try{ row=Integer.parseInt(command_splited[2]); }
+						catch(NumberFormatException e){
+							System.out.println("Something wrong with parsing to Integer");
+						}
+						BoardPoint moveToTest=new BoardPoint(command_splited[1].charAt(0),row);
+						try {
+							BoardPoint[] changesArr = nextMove(moveToTest, this.color);
+								StringBuilder Builder = new StringBuilder("");
+								for (int i = 0; i < changesArr.length; i++) {
+									Builder.append("-" + changesArr[i].toString());
+								}
+								String BuilderString = Builder.toString();
+								output.println("CORRECT" + BuilderString);
+								changeTurn("CHANGE-" + moveToTest.toString() + BuilderString);
+						}catch(WrongMoveException ex){
 							output.println("WRONG");
 						}
 					}else if(command_splited[0].equals("CONCEDE")){
 						changeTurn(command_splited[0]);
 					}else if(command_splited[0].equals("PASS")){
+						//jakas zmienna, która powie nam, że oba gracze spassowali->terytorium
 						changeTurn(command_splited[0]);
 					}else if(command_splited[0].equals("QUIT")){
 						changeTurn(command_splited[0]);

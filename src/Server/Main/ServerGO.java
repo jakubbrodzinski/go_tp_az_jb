@@ -1,7 +1,7 @@
 package Server.Main;
 
-import Server.BoardSize;
-import Server.stoneColor;
+import Server.Enums.BoardSize;
+import Server.Enums.stoneColor;
 
 import java.io.IOException;
 import java.net.ServerSocket;
