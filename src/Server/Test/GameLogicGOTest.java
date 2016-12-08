@@ -78,6 +78,14 @@ public class GameLogicGOTest {
 		assertEquals(new BoardPoint('E',5),GameToTest.nextMove(new BoardPoint('E', 5), stoneColor.BLACK)[0]);
 		GameToTest.DrawBoard();
 
+		GameToTest.nextMove(new BoardPoint('K',2),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('J',3),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('L',3),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('K',3),stoneColor.BLACK);
+		GameToTest.DrawBoard();
+		assertNotEquals(null,GameToTest.nextMove(new BoardPoint('K',4), stoneColor.WHITE));
+		GameToTest.DrawBoard();
+
 		GameToTest.nextMove(new BoardPoint('B', 13), stoneColor.BLACK);
 	}
 }
