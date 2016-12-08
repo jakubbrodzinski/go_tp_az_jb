@@ -15,6 +15,10 @@ import java.net.Socket;
  * Class decides what server should do. Usually send particular move to check if its correct. If it is correct move
  * after passing info 'bout it to the client it sends which points in the board changed.
  */
+/*
+TO DO LIST:
+1.Zmiana stron!
+ */
 public class GameGO extends GameLogicGO {
 	private Player currentPlayer;
 	private int gameID;
@@ -115,7 +119,7 @@ public class GameGO extends GameLogicGO {
 						try {
 							BoardPoint[] changesArr = nextMove(moveToTest, this.color);
 								StringBuilder Builder = new StringBuilder("");
-								for (int i = 0; i < changesArr.length; i++) {
+								for (int i = 1; i < changesArr.length; i++) {
 									Builder.append("-" + changesArr[i].toString());
 								}
 								String BuilderString = Builder.toString();
@@ -132,6 +136,9 @@ public class GameGO extends GameLogicGO {
 					}else if(command_splited[0].equals("QUIT")){
 						changeTurn(command_splited[0]);
 						return ;
+					}else{
+						changeTurn(command_splited[0]);
+						System.out.println("Unknown command");
 					}
 
 				}

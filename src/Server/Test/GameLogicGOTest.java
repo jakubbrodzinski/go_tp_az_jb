@@ -4,11 +4,13 @@ import Server.Enums.BoardSize;
 import Server.Enums.stoneColor;
 import Server.Main.BoardPoint;
 import Server.Main.GameLogicGO;
+import Server.Main.WrongMoveException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 /**
  * Created by jakub on 12/4/16.
@@ -28,7 +30,7 @@ public class GameLogicGOTest {
 
 
 
-	@Test
+	@Test(expected = WrongMoveException.class)
 	public void nextMove() throws Exception {
 		GameToTest.nextMove(new BoardPoint('K',11),stoneColor.BLACK);
 		GameToTest.nextMove(new BoardPoint('J',11),stoneColor.BLACK);
@@ -59,7 +61,6 @@ public class GameLogicGOTest {
 		GameToTest.DrawBoard();
 		assertNotEquals(null,GameToTest.nextMove(new BoardPoint('B',13), stoneColor.WHITE));
 		GameToTest.DrawBoard();
-		assertNull(GameToTest.nextMove(new BoardPoint('A', 13), stoneColor.BLACK));
 
 		GameToTest.nextMove(new BoardPoint('C',10), stoneColor.WHITE);
 		GameToTest.nextMove(new BoardPoint('B',9), stoneColor.WHITE);
@@ -73,7 +74,10 @@ public class GameLogicGOTest {
 		assertNotEquals(null,GameToTest.nextMove(new BoardPoint('C',8), stoneColor.WHITE));
 		GameToTest.DrawBoard();
 
-		assertNull(GameToTest.nextMove(new BoardPoint('E', 4), stoneColor.WHITE));
-		assertNull(GameToTest.nextMove(new BoardPoint('E', 5), stoneColor.BLACK));
+		assertEquals(new BoardPoint('E',4),GameToTest.nextMove(new BoardPoint('E', 4), stoneColor.WHITE)[0]);
+		assertEquals(new BoardPoint('E',5),GameToTest.nextMove(new BoardPoint('E', 5), stoneColor.BLACK)[0]);
+		GameToTest.DrawBoard();
+
+		GameToTest.nextMove(new BoardPoint('B', 13), stoneColor.BLACK);
 	}
 }

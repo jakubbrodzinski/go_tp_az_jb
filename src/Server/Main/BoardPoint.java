@@ -11,7 +11,7 @@ public class BoardPoint {
 		vertical=v;
 	}
 	public BoardPoint(int h,int v){
-		vertical=v;
+		vertical=v+1;
 		switch (h){
 			case 0:
 				horizontal='A';
@@ -127,5 +127,19 @@ public class BoardPoint {
 	}
 	public String toString(){
 		return horizontal+"-"+new Integer(vertical).toString();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		BoardPoint obj1;
+		if (obj.getClass() == BoardPoint.class) {
+			obj1=(BoardPoint) obj;
+		}else{
+			return false;
+		}
+		if(this.horizontal==obj1.horizontal && this.vertical==obj1.vertical){
+			return true;
+		}
+		return false;
 	}
 }
