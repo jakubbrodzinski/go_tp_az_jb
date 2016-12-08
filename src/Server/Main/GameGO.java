@@ -91,6 +91,7 @@ public class GameGO extends GameLogicGO {
 		public void otherPlayerMoved(String command){
 			output.println(command);
 		}
+
 		public void run(){
 			try {
 				System.out.println(color+" connected "+gameID);
@@ -105,37 +106,40 @@ public class GameGO extends GameLogicGO {
 				while (true) {
 					String command = input.readLine();
 					//Test
-					System.out.println(this.color+" "+command);
-					System.out.println(command);
+					System.out.println(this.color + " " + command);
 					String[] command_splited = command.split("-");
 					//switch case ??
-					if (command_splited[0].equals("MOVE")){
-						int row=0;
-						try{ row=Integer.parseInt(command_splited[2]); }
-						catch(NumberFormatException e){
+					if (command_splited[0].equals("MOVE")) {
+						int row = 0;
+						try {
+							row = Integer.parseInt(command_splited[2]);
+						} catch (NumberFormatException e) {
 							System.out.println("Something wrong with parsing to Integer");
 						}
-						BoardPoint moveToTest=new BoardPoint(command_splited[1].charAt(0),row);
+						BoardPoint moveToTest = new BoardPoint(command_splited[1].charAt(0), row);
 						try {
 							BoardPoint[] changesArr = nextMove(moveToTest, this.color);
-								StringBuilder Builder = new StringBuilder("");
-								for (int i = 1; i < changesArr.length; i++) {
-									Builder.append("-" + changesArr[i].toString());
-								}
-								String BuilderString = Builder.toString();
-								output.println("CORRECT" + BuilderString);
-								changeTurn("CHANGE-" + moveToTest.toString() + BuilderString);
-						}catch(WrongMoveException ex){
+							StringBuilder Builder = new StringBuilder("");
+							for (int i = 0; i < changesArr.length; i++) {
+								Builder.append("-" + changesArr[i].toString());
+							}
+							String BuilderString = Builder.toString();
+							output.println("CORRECT" + BuilderString);
+							System.out.println("CORRECT" + BuilderString);
+							changeTurn("CHANGE-"+ BuilderString);
+						} catch (WrongMoveException ex) {
 							output.println("WRONG");
 						}
-					}else if(command_splited[0].equals("CONCEDE")){
+					} else if (command_splited[0].equals("CONCEDE")) {
 						changeTurn(command_splited[0]);
-					}else if(command_splited[0].equals("PASS")){
+					} else if (command_splited[0].equals("PASS")) {
 						//jakas zmienna, która powie nam, że oba gracze spassowali->terytorium
 						changeTurn(command_splited[0]);
-					}else if(command_splited[0].equals("QUIT")){
+					} else if (command_splited[0].equals("QUIT")) {
 						changeTurn(command_splited[0]);
-						return ;
+						break;
+					} else if (command_splited[0].equals("CHANGESITES")){
+
 					}else{
 						changeTurn(command_splited[0]);
 						System.out.println("Unknown command");
