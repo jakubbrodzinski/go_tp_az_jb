@@ -75,17 +75,19 @@ public class Main extends Application {
             @Override
             public void run() {
                 try {
-                    final String responseInner = in.readLine();
-                    System.out.println(responseInner);
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            ((MainBoard) mylist.get(0)).redraw(responseInner);
-                            ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
-                            //System.out.println("Currentkolor to: " + ClientState.getInstance().getCurrentTurnColor());
-                            //System.out.println("getPLayercolor to: " + ClientState.getInstance().getPlayerColor());
-                        }
-                    });
+                    while(true) {
+                        final String responseInner = in.readLine();
+                        System.out.println(responseInner);
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                ((MainBoard) mylist.get(0)).redraw(responseInner);
+                                ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
+                                //System.out.println("Currentkolor to: " + ClientState.getInstance().getCurrentTurnColor());
+                                //System.out.println("getPLayercolor to: " + ClientState.getInstance().getPlayerColor());
+                            }
+                        });
+                    }
                 }
                 catch(IOException exception) {
                     System.out.println("ZLASALXASD");

@@ -11,5 +11,6 @@ public class Stone extends Circle {
     public Stone(double x, double y) {
         super(x, y, 15);
         this.setOpacity(0);
+        this.setFill(Color.AZURE);
     }
 }

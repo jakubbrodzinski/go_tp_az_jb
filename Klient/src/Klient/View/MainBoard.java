@@ -53,25 +53,24 @@ public class MainBoard extends Pane {
     public void redraw(String command) {
         String[] commands = command.split("-");
         if(commands[0].equals("CHANGE")) {
-            for(int i = 1; i < commands.length; i+=2) {
-                StoneLocation location = StoneLocationParser.parsetoStoneLocation(commands[i], commands[i+1]);
-                //System.out.println("TEST lockaji:" + location.getxInt() + location.getY());
-                if(ClientState.getInstance().getCurrentTurnColor().equals("WHITE")) {
-                    //System.out.println("redraw whiet");
-                    stones[location.getxInt()][location.getY()].setOpacity(1);
-                    stones[location.getxInt()][location.getY()].setFill(Color.WHITE);
-                }
-                else {
-                    //System.out.println("redraw black");
-                    stones[location.getxInt()][location.getY()].setOpacity(1);
-                    stones[location.getxInt()][location.getY()].setFill(Color.BLACK);
-                }
+            StoneLocation location = StoneLocationParser.parsetoStoneLocation(commands[1], commands[2]);
+            stones[location.getxInt()][location.getY()].setOpacity(1);
+            stones[location.getxInt()][location.getY()].setFill(ClientState.getInstance().getCurrentColorPlaying());
+            for(int i = 3; i < commands.length; i+=2) {
+                location = StoneLocationParser.parsetoStoneLocation(commands[i], commands[i+1]);
+                stones[location.getxInt()][location.getY()].setOpacity(0);
+                stones[location.getxInt()][location.getY()].setFill(Color.AZURE);
             }
         }
         if(commands[0].equals("CORRECT")) {
             StoneLocation location = StoneLocationParser.parsetoStoneLocation(commands[1], commands[2]);
             stones[location.getxInt()][location.getY()].setOpacity(1);
             stones[location.getxInt()][location.getY()].setFill(ClientState.getInstance().getCurrentColorPlaying());
+            for(int i = 3; i < commands.length; i+=2) {
+                location = StoneLocationParser.parsetoStoneLocation(commands[i], commands[i+1]);
+                stones[location.getxInt()][location.getY()].setOpacity(0);
+                stones[location.getxInt()][location.getY()].setFill(Color.AZURE);
+            }
         }
     }
 }
