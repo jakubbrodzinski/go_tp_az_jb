@@ -17,7 +17,7 @@ public class PlayerVBox extends VBox {
     private void preparePlayerVBox() {
         //FXMLLoader loader = new FXMLLoader(getClass().getResource("PlayerVBox.fxml"));
         FXMLLoader loader = new FXMLLoader(getClass().getResource("PlayerVBox.fxml"));
-        System.out.println(getClass().getResource("PlayerVBox.fxml"));
+        //System.out.println(getClass().getResource("PlayerVBox.fxml"));
         try {
             this.getChildren().setAll((Node)loader.load());
         }

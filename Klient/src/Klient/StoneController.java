@@ -22,18 +22,25 @@ public class StoneController implements EventHandler<MouseEvent> {
     public void handle(MouseEvent event) {
         Object object = event.getSource();
         if(object instanceof Stone) {
-            if(clientState.getCurrentTurnColor() == clientState.getPlayerColor()) {
-                ((Stone) object).setOpacity(1);
-                ((Stone) object).setVisible(true);
-                if(clientState.getPlayerColor() == "WHITE") {
+
+            if(clientState.getCurrentTurnColor().equals(clientState.getPlayerColor())) {
+
+
+                /*if(clientState.getPlayerColor() == "WHITE") {
+                    System.out.println("Bylem tu white");
+                    ((Stone) object).setOpacity(1);
+                    ((Stone) object).setVisible(true);
                     ((Stone) object).setFill(Color.WHITE);
                 }
                 else {
+                    System.out.println("Bylem tu black");
+                    ((Stone) object).setOpacity(1);
+                    ((Stone) object).setVisible(true);
                     ((Stone) object).setFill(Color.BLACK);
-                }
+                }*/
                 StoneLocation location = StoneLocationParser.parseStoneLocation((int)((Stone) object).getCenterX(), (int)((Stone) object).getCenterY());
-                System.out.println(location.getX() + location.getY());
-                out.println(location.getX() + location.getY());
+                //System.out.println(location.getX() + location.getY());
+                out.println("MOVE-"+location.getX() + location.getY());
             }
         }
     }

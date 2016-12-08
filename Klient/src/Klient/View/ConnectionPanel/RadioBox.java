@@ -67,7 +67,7 @@ public class RadioBox extends GridPane {
         GridPane.setConstraints(image, 1, 0);
         image.setImage(new Image(getClass().getResourceAsStream("NewGame.png")));
         this.getChildren().add(image);
-        System.out.println(group.getSelectedToggle());
+        //System.out.println(group.getSelectedToggle());
         group.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
             @Override
             public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {

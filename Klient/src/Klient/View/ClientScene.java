@@ -20,6 +20,7 @@ public class ClientScene extends Scene {
         super(root, width, height);
         this.root = (Pane)root;
         this.out = out;
+        //System.out.println("Out w ClientScene: " + this.out);
         prepareGUI();
     }
 

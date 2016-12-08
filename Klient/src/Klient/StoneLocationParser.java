@@ -74,4 +74,76 @@ public class StoneLocationParser {
         location = new StoneLocation(helperX, helperY+1);
         return location;
     }
+    public static StoneLocation parsetoStoneLocation(String x, String y) {
+        StoneLocation location;
+        int helperX;
+        int helperY;
+
+        switch(x) {
+            case "A":
+                helperX = 0;
+                break;
+            case "B":
+                helperX = 1;
+                break;
+            case "C":
+                helperX = 2;
+                break;
+            case "D":
+                helperX = 3;
+                break;
+            case "E":
+                helperX = 4;
+                break;
+            case "F":
+                helperX = 5;
+                break;
+            case "G":
+                helperX = 6;
+                break;
+            case "H":
+                helperX = 7;
+                break;
+            case "J":
+                helperX = 8;
+                break;
+            case "K":
+                helperX = 9;
+                break;
+            case "L":
+                helperX = 10;
+                break;
+            case "M":
+                helperX = 11;
+                break;
+            case "N":
+                helperX = 12;
+                break;
+            case "O":
+                helperX = 13;
+                break;
+            case "U":
+                helperX = 14;
+                break;
+            case "P":
+                helperX = 15;
+                break;
+            case "R":
+                helperX = 16;
+                break;
+            case "S":
+                helperX = 17;
+                break;
+            case "T":
+                helperX = 18;
+                break;
+            default:
+                helperX = -1;
+                break;
+        }
+        helperY = Integer.parseInt(y)-1;
+        location = new StoneLocation(helperX, helperY);
+
+        return location;
+    }
 }

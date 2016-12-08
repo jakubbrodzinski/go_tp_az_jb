@@ -1,6 +1,9 @@
 package Klient.View;
 
+import Klient.ClientState;
 import Klient.StoneController;
+import Klient.StoneLocation;
+import Klient.StoneLocationParser;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -45,6 +48,30 @@ public class MainBoard extends Pane {
                 stones[i][j] = tempStone;
                 this.getChildren().add(tempStone);
             }
+        }
+    }
+    public void redraw(String command) {
+        String[] commands = command.split("-");
+        if(commands[0].equals("CHANGE")) {
+            for(int i = 1; i < commands.length; i+=2) {
+                StoneLocation location = StoneLocationParser.parsetoStoneLocation(commands[i], commands[i+1]);
+                //System.out.println("TEST lockaji:" + location.getxInt() + location.getY());
+                if(ClientState.getInstance().getCurrentTurnColor().equals("WHITE")) {
+                    //System.out.println("redraw whiet");
+                    stones[location.getxInt()][location.getY()].setOpacity(1);
+                    stones[location.getxInt()][location.getY()].setFill(Color.WHITE);
+                }
+                else {
+                    //System.out.println("redraw black");
+                    stones[location.getxInt()][location.getY()].setOpacity(1);
+                    stones[location.getxInt()][location.getY()].setFill(Color.BLACK);
+                }
+            }
+        }
+        if(commands[0].equals("CORRECT")) {
+            StoneLocation location = StoneLocationParser.parsetoStoneLocation(commands[1], commands[2]);
+            stones[location.getxInt()][location.getY()].setOpacity(1);
+            stones[location.getxInt()][location.getY()].setFill(ClientState.getInstance().getCurrentColorPlaying());
         }
     }
 }
