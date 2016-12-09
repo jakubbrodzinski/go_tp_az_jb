@@ -156,10 +156,14 @@ public class Main extends Application {
                                         ((MainBoard) mylist.get(0)).changePlayerEffectOff();
                                     }
                                     else if (result.get() == buttonTypeDeny) {
+                                        ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
+                                        ((MainBoard) mylist.get(0)).changePlayerEffectOff();
                                         out.println("PASSCANCELLED");
                                     }
                                 }
                                 else if(responseInner.equals("PASSCANCELLED")) {
+                                    ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
+                                    ((MainBoard) mylist.get(0)).changePlayerEffectOn();
                                     System.out.println("Odrzucl");
                                 }
                                 else if(responseInner.startsWith("CONCEDE")) {

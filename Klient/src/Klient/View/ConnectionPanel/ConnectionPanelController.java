@@ -26,6 +26,11 @@ public class ConnectionPanelController implements EventHandler<MouseEvent> {
                         ClientState.getInstance().setSize(((ConnectionHBox) ((Button) object).getParent()).getRadioBox().getSizeInputContent());
                         ((Button) object).getScene().getWindow().hide();
                     }
+                    else if(((ConnectionHBox) ((Button) object).getParent()).getRadioBox().getSizeInputContent().startsWith("CREATE")) {
+                        out.println(((ConnectionHBox) ((Button) object).getParent()).getRadioBox().getSizeInputContent());
+                        ClientState.getInstance().setSize(((ConnectionHBox) ((Button) object).getParent()).getRadioBox().getSizeInputContent().substring(7,9));
+                        ((Button) object).getScene().getWindow().hide();
+                    }
                 }
                 else {
                     if(!((ConnectionHBox) ((Button) object).getParent()).getRadioBox().getTableInputContent().equals("")) {
