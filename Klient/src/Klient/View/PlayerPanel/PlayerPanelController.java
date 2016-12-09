@@ -1,5 +1,7 @@
 package Klient.View.PlayerPanel;
 
+import Klient.ClientPrintWriter;
+import Klient.ClientState;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
@@ -17,5 +19,13 @@ public class PlayerPanelController {
     private void setNormalOpacity(MouseEvent event) {
         Node myNode = (Node)event.getSource();
         myNode.setOpacity(0);
+    }
+    @FXML
+    private void invokePass(MouseEvent event) {
+        System.out.println("Tura : mojakolej " + ClientState.getInstance().getCurrentTurnColor() + ClientState.getInstance().getPlayerColor());
+        if(ClientState.getInstance().getCurrentTurnColor().equals(ClientState.getInstance().getPlayerColor())) {
+            ClientPrintWriter.getInstance().getPrintWriter().println("PASS");
+            ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
+        }
     }
 }

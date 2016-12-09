@@ -4,6 +4,8 @@ import Klient.View.ClientScene;
 import Klient.View.ConnectionBoxScene;
 import Klient.View.ConnectionPanel.ConnectionBoxClosingController;
 import Klient.View.MainBoard;
+import Klient.View.PlayerPanel.BoardPane;
+import Klient.View.PrimaryStageClosingController;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -11,6 +13,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
 import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -20,6 +23,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.lang.reflect.Array;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -38,6 +42,7 @@ public class Main extends Application {
         primaryStage.setTitle("GoGAME");
         primaryStage.setScene(new ClientScene(root, 1266, 768, out));
         primaryStage.setResizable(false);
+        primaryStage.setOnCloseRequest(new PrimaryStageClosingController(out));
         primaryStage.show();
 
 
@@ -52,7 +57,7 @@ public class Main extends Application {
         initialStage.setOnCloseRequest(new ConnectionBoxClosingController());
         initialStage.showAndWait();
 
-        mylist = getAllNodes(root);
+        mylist = getAllBoards(root);
 
         play();
 
@@ -60,9 +65,10 @@ public class Main extends Application {
     public void connectToServer() throws IOException {
         Socket socket = new Socket("localhost", 8901);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        out = new PrintWriter(socket.getOutputStream(), true);
-        //ClientPrintWriter mywriter = ClientPrintWriter.getInstance();
-        //out = mywriter.getPrintWriter();
+        //out = new PrintWriter(socket.getOutputStream(), true);
+        ClientPrintWriter.getInstance().setInstance(socket.getOutputStream(), true);
+        //TODO Refactor code -> Decouple the code by removing "out" passing
+        out = ClientPrintWriter.getInstance().getPrintWriter();
     }
     public void play() throws IOException {
         String response;
@@ -70,6 +76,8 @@ public class Main extends Application {
         response = in.readLine();
         state.setPlayerColor(response.substring(0,5));
         state.setCurrentTurnColor("BLACK");
+        if(!state.getPlayerColor().equals(state.getCurrentTurnColor()))
+            ((MainBoard) mylist.get(0)).changePlayerEffectOff();
         new Thread(new Runnable() {
 
             @Override
@@ -81,42 +89,52 @@ public class Main extends Application {
                         Platform.runLater(new Runnable() {
                             @Override
                             public void run() {
-                                ((MainBoard) mylist.get(0)).redraw(responseInner);
-                                ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
-                                //System.out.println("Currentkolor to: " + ClientState.getInstance().getCurrentTurnColor());
-                                //System.out.println("getPLayercolor to: " + ClientState.getInstance().getPlayerColor());
+                                if(responseInner.startsWith("CHANGE") || responseInner.startsWith("CORRECT")) {
+                                    ((MainBoard) mylist.get(0)).redraw(responseInner);
+                                    ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
+                                    if(responseInner.startsWith("CHANGE"))
+                                        ((MainBoard) mylist.get(0)).changePlayerEffectOn();
+                                    else
+                                        ((MainBoard) mylist.get(0)).changePlayerEffectOff();
+                                }
+                                else if(responseInner.startsWith("WRONG")) {
+                                    //Do nothing
+                                }
+                                else if(responseInner.startsWith("QUIT")) {
+                                    Platform.exit();
+                                    System.exit(1);
+                                }
+                                else if(responseInner.startsWith("PASS")) {
+                                    ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
+                                    ((MainBoard) mylist.get(0)).changePlayerEffectOn();
+                                }
                             }
                         });
                     }
                 }
                 catch(IOException exception) {
-                    System.out.println("ZLASALXASD");
+                    System.out.println("UNEXPECTED SERVER REPONSE");
                 }
             }
 
         }).start();
 
     }
-    public static ArrayList<Node> getAllNodes(Parent root) {
+    public static ArrayList<Node> getAllBoards(Parent root) {
         ArrayList<Node> nodes = new ArrayList<Node>();
-        addAllDescendents(root, nodes);
+        addAllBoards(root, nodes);
         return nodes;
     }
 
-    private static void addAllDescendents(Parent parent, ArrayList<Node> nodes) {
+    private static void addAllBoards(Parent parent, ArrayList<Node> nodes) {
         for (Node node : parent.getChildrenUnmodifiable()) {
             if(node instanceof MainBoard)
-            nodes.add(node);
-            if (node instanceof Parent)
-                addAllDescendents((Parent)node, nodes);
+                nodes.add(node);
+            if (node instanceof Parent) {
+                System.out.println("NODE1: " + node);
+                addAllBoards((Parent) node, nodes);
+            }
         }
-    }
-    private static MainBoard search(Parent parent) {
-        for (Node node : parent.getChildrenUnmodifiable()) {
-            if(node instanceof MainBoard)
-                return (MainBoard) node;
-        }
-        return null;
     }
 
 

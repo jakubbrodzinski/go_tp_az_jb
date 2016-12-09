@@ -4,9 +4,12 @@ import Klient.ClientState;
 import Klient.StoneController;
 import Klient.StoneLocation;
 import Klient.StoneLocationParser;
+import javafx.animation.FadeTransition;
+import javafx.scene.effect.InnerShadow;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.util.Duration;
 
 import java.io.PrintWriter;
 
@@ -72,5 +75,19 @@ public class MainBoard extends Pane {
                 stones[location.getxInt()][location.getY()].setFill(Color.AZURE);
             }
         }
+    }
+    public void changePlayerEffectOn() {
+        FadeTransition ft = new FadeTransition(Duration.millis(500), this);
+        ft.setFromValue(0.5);
+        ft.setToValue(1);
+        ft.setCycleCount(1);
+        ft.play();
+    }
+    public void changePlayerEffectOff() {
+        FadeTransition ft = new FadeTransition(Duration.millis(500), this);
+        ft.setFromValue(1);
+        ft.setToValue(0.5);
+        ft.setCycleCount(1);
+        ft.play();
     }
 }

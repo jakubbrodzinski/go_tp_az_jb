@@ -4,6 +4,7 @@ import Klient.View.PlayerPanel.BoardPane;
 import Klient.View.PlayerPanel.PlayerVBox;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.effect.InnerShadow;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 
@@ -20,7 +21,7 @@ public class ClientScene extends Scene {
         super(root, width, height);
         this.root = (Pane)root;
         this.out = out;
-        //System.out.println("Out w ClientScene: " + this.out);
+
         prepareGUI();
     }
 
@@ -28,7 +29,6 @@ public class ClientScene extends Scene {
         PlayerVBox playerVBox = new PlayerVBox();
         BoardPane testPane = new BoardPane(out);
         root.setStyle("-fx-background-color: #EFECCA");
-
         root.getChildren().add(testPane);
         root.getChildren().add(playerVBox);
     }
