@@ -64,10 +64,10 @@ public class ServerGO {
 								JoiningPlayer.getOpponent().setOpponent(JoiningPlayer);
 								Thread player1=new Thread(JoiningPlayer);
 								player1.start();
-								Thread player2=new Thread(JoiningPlayer);
+								Thread player2=new Thread(JoiningPlayer.getOpponent());
 								player2.start();
 							}else{
-								player.signalFULL();
+								player.signalServer("FULL");
 							}
 						} else if(commands[0].equals("CREATE")){
 							newGame.getCurrentPlayer().setColor(stoneColor.BLACK);
@@ -79,7 +79,6 @@ public class ServerGO {
 								newGame.setSize(BoardSize.SMALL);
 							}
 							newGame.setGameID(gameID);
-							gameID++;
 							if(commands.length>2 && commands[2].equals("BOT")){
 								GameGO.BotGO botGO=newGame.new BotGO(stoneColor.WHITE);
 								Thread player1=new Thread(newGame.getCurrentPlayer());
@@ -88,8 +87,10 @@ public class ServerGO {
 								System.out.println("Start");
 								player1.start();
 							}else {
+								//player.signalServer(new Integer(gameID).toString());
 								gameSet.put(new Integer(gameID).toString(), newGame);
 							}
+							gameID++;
 						}
 					} else {
 						System.out.println("Problem with arguments during adding new Player");

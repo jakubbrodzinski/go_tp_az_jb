@@ -127,8 +127,8 @@ public class GameGO extends GameLogicGO {
 			this.output = playa.output;
 		}
 
-		public void signalFULL(){
-			output.println("FULL");
+		public void signalServer(String message){
+			output.println(message);
 		}
 
 		public String setBoard() throws WrongPlayerInitiation {
@@ -145,6 +145,7 @@ public class GameGO extends GameLogicGO {
 		}
 
 		public void run() {
+			System.out.println(color);
 			try {
 				System.out.println(color + " connected " + gameID);
 				//if BLACK you make first move
