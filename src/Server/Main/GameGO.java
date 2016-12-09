@@ -1,5 +1,6 @@
 package Server.Main;
 
+import Server.BotGO.PlayerAbstract;
 import Server.Enums.BoardSize;
 import Server.Enums.stoneColor;
 
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by jakub on 12/2/16.
@@ -20,7 +22,7 @@ TO DO LIST:
 1.Zmiana stron!
  */
 public class GameGO extends GameLogicGO {
-	private Player currentPlayer;
+	private PlayerAbstract currentPlayer;
 	private int gameID;
 
 	public GameGO() {
@@ -34,7 +36,7 @@ public class GameGO extends GameLogicGO {
 		gameID = ID;
 	}
 
-	public Player getCurrentPlayer() {
+	public PlayerAbstract getCurrentPlayer() {
 		return currentPlayer;
 	}
 
@@ -43,7 +45,7 @@ public class GameGO extends GameLogicGO {
 	}
 
 	private void changeTurn(String statement) {
-		currentPlayer = currentPlayer.opponent;
+		currentPlayer = currentPlayer.getOpponent();
 		currentPlayer.otherPlayerMoved(statement);
 	}
 
@@ -51,24 +53,59 @@ public class GameGO extends GameLogicGO {
 	private boolean pass = false;
 
 	private void changeSites() {
-		if (currentPlayer.color == stoneColor.BLACK) {
-			currentPlayer.color = stoneColor.WHITE;
-			currentPlayer.opponent.color = stoneColor.BLACK;
-			currentPlayer = currentPlayer.opponent;
+		if (currentPlayer.getColor() == stoneColor.BLACK) {
+			currentPlayer.setColor(stoneColor.WHITE);
+			currentPlayer.getOpponent().setColor(stoneColor.BLACK);
+			currentPlayer = currentPlayer.getOpponent();
 		} else {
-			currentPlayer.color = stoneColor.BLACK;
-			currentPlayer.opponent.color = stoneColor.WHITE;
+			currentPlayer.setColor(stoneColor.BLACK);
+			currentPlayer.getOpponent().setColor(stoneColor.WHITE);
 		}
 		FreshStart();
 	}
 
-	class Player extends Thread {
+	class BotGO extends PlayerAbstract{
+		private stoneColor[][] boardBOT;
+		public BotGO() {
+			boardBOT=new stoneColor[boardSize.getSize()][boardSize.getSize()];
+		}
+		public BotGO(stoneColor color){
+			System.out.println("Bot has been created succesfully!");
+			this.color=color;
+			boardBOT=new stoneColor[boardSize.getSize()][boardSize.getSize()];
+		}
+
+		public void run() {}
+
+
+		public void otherPlayerMoved(String command) {
+			int p1,p2;
+			boolean status=false;
+			BoardPoint[] changes=null;
+			System.out.println("otherPlayerMovedBOT:"+command);
+			do {
+				p1=ThreadLocalRandom.current().nextInt(0,boardSize.getSize());
+				p2=ThreadLocalRandom.current().nextInt(0,boardSize.getSize());
+				try{
+					changes=nextMove(new BoardPoint(p1,p2),color);
+					status=true;
+				}catch(WrongMoveException e){
+				}
+			}while(!status);
+			StringBuilder Builder = new StringBuilder("");
+			for (int i = 0; i < changes.length; i++) {
+				Builder.append("-" + changes[i].toString());
+			}
+			String BuilderString = Builder.toString();
+			System.out.println("CORRECT_bot_builder_string" + BuilderString);
+			changeTurn("CHANGE" + BuilderString);
+		}
+	}
+
+	class Player extends PlayerAbstract{
 		private Socket socket;
 		private BufferedReader input;
 		private PrintWriter output;
-
-		private Player opponent;
-		private stoneColor color;
 
 
 		public Player() {
@@ -90,8 +127,8 @@ public class GameGO extends GameLogicGO {
 			this.output = playa.output;
 		}
 
-		public PrintWriter getOutput() {
-			return output;
+		public void signalFULL(){
+			output.println("FULL");
 		}
 
 		public String setBoard() throws WrongPlayerInitiation {
@@ -103,19 +140,6 @@ public class GameGO extends GameLogicGO {
 			}
 		}
 
-		//during setting up match two players have to be connected with eachother
-		public Player getOpponent() {
-			return opponent;
-		}
-
-		public void setOpponent(Player opponent) {
-			this.opponent = opponent;
-		}
-
-		public void setColor(stoneColor color) {
-			this.color = color;
-		}
-
 		public void otherPlayerMoved(String command) {
 			output.println(command);
 		}
@@ -125,16 +149,16 @@ public class GameGO extends GameLogicGO {
 				System.out.println(color + " connected " + gameID);
 				//if BLACK you make first move
 				if (color == stoneColor.BLACK) {
-					output.println("BLACK-" + gameID);
+					output.println("BLACK-"+boardSize.getSize()+"-"+gameID);
 				} else {
-					output.println("WHITE-" + gameID);
+					output.println("WHITE-" +boardSize.getSize()+"-"+gameID);
 				}
 				//examples of given lines : MOVE-X-Y,PASS,CONCEDE,QUIT
 				//examples of sent lines : PASS,CONCEDE,QUIT,MOVE-X-Y,CHANGE-A-B-C-D-(...)
 				while (true) {
 					String command = input.readLine();
 					//Test
-					System.out.println(this.color + " " + command);
+					System.out.println(this.color + "command: " + command);
 					String[] command_splited = command.split("-");
 					//switch case ??
 					if (command_splited[0].equals("MOVE")) {
@@ -189,6 +213,7 @@ public class GameGO extends GameLogicGO {
 						changeTurn(command_splited[0]);
 					} else {
 						System.out.println("Unknown command(change turn works)!");
+						changeTurn(command_splited[0]);
 					}
 
 					if(pass==true){

@@ -86,6 +86,11 @@ public class GameLogicGOTest {
 		assertNotEquals(null,GameToTest.nextMove(new BoardPoint('K',4), stoneColor.WHITE));
 		GameToTest.DrawBoard();
 
-		GameToTest.nextMove(new BoardPoint('B', 13), stoneColor.BLACK);
+		GameToTest.nextMove(new BoardPoint('A',2),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('B',1),stoneColor.WHITE);
+		GameToTest.DrawBoard();
+		GameToTest.nextMove(new BoardPoint('A',1),stoneColor.BLACK);
+
+		//GameToTest.nextMove(new BoardPoint('B', 13), stoneColor.BLACK);
 	}
 }

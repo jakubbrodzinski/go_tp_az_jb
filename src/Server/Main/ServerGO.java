@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.AbstractMap;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import static java.lang.System.exit;
@@ -51,8 +52,8 @@ public class ServerGO {
 					String line = player.setBoard();
 					String[] commands = line.split("-");
 					//small test
-					System.out.println("Initial words:" + commands[0]+"/"+commands[1]);
-					if (commands.length == 2) {
+					System.out.println("Initial words:" + Arrays.toString(commands));
+					if (commands.length >= 2) {
 						if (commands[0].equals("JOIN")) {
 							GameGO ToBeJoined=gameSet.get(commands[1]);
 							if(ToBeJoined.getCurrentPlayer().getOpponent()==null){
@@ -61,12 +62,14 @@ public class ServerGO {
 								JoiningPlayer.setColor(stoneColor.WHITE);
 								JoiningPlayer.setOpponent(ToBeJoined.getCurrentPlayer());
 								JoiningPlayer.getOpponent().setOpponent(JoiningPlayer);
-								JoiningPlayer.start();
-								JoiningPlayer.getOpponent().start();
+								Thread player1=new Thread(JoiningPlayer);
+								player1.start();
+								Thread player2=new Thread(JoiningPlayer);
+								player2.start();
 							}else{
-								player.getOutput().println("FULL");
+								player.signalFULL();
 							}
-						} else {
+						} else if(commands[0].equals("CREATE")){
 							newGame.getCurrentPlayer().setColor(stoneColor.BLACK);
 							if (commands[1].equals("13")) {
 								newGame.setSize(BoardSize.MEDIUM);
@@ -76,8 +79,17 @@ public class ServerGO {
 								newGame.setSize(BoardSize.SMALL);
 							}
 							newGame.setGameID(gameID);
-							gameSet.put(new Integer(gameID).toString(),newGame);
 							gameID++;
+							if(commands.length>2 && commands[2].equals("BOT")){
+								GameGO.BotGO botGO=newGame.new BotGO(stoneColor.WHITE);
+								Thread player1=new Thread(newGame.getCurrentPlayer());
+								newGame.getCurrentPlayer().setOpponent(botGO);
+								botGO.setOpponent(newGame.getCurrentPlayer());
+								System.out.println("Start");
+								player1.start();
+							}else {
+								gameSet.put(new Integer(gameID).toString(), newGame);
+							}
 						}
 					} else {
 						System.out.println("Problem with arguments during adding new Player");

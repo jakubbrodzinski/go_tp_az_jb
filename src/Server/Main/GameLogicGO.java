@@ -25,10 +25,12 @@ public class GameLogicGO {
 	protected  stoneColor[][] board;
 	protected  stoneColor[][][] boardHistory;
 	private stoneColor[][][] boardDup;
+	protected BoardSize boardSize;
 	public GameLogicGO(){
 	}
 
 	public void setSize(BoardSize i){
+		boardSize=i;
 		board=new stoneColor[i.getSize()][i.getSize()];
 		boardHistory=new stoneColor[2][i.getSize()][i.getSize()];
 		boardDup=new stoneColor[4][i.getSize()][i.getSize()];
@@ -55,6 +57,9 @@ public class GameLogicGO {
 	private boolean lookFor(boolean AlreadyFound,stoneColor[][] boardDup,int row,int column,stoneColor color){
 		//DrawBoard(boardDup);
 		if(column<0 || row < 0 || column>=board.length || row>=board.length){
+			//has to be added because of suicide
+			if(!AlreadyFound)
+				return false;
 			return true;
 		}else if(boardDup[row][column]==stoneColor.UNDEFINED) {
 			return false;
@@ -108,10 +113,8 @@ public class GameLogicGO {
 		}else if(board[pointY][pointX]!=stoneColor.UNDEFINED) {
 			throw new WrongMoveException("Point Already Taken!");
 		}
-		for(int i=0;i<board.length;i++) {
-			System.arraycopy(boardHistory[1][i], 0, boardHistory[0][i], 0, board[i].length);
-			System.arraycopy(board[i], 0, boardHistory[1][i], 0, board[i].length);
-		}
+
+
 		board[pointY][pointX] = turn;
 
 		for(int i=0;i<board.length;i++){
@@ -139,6 +142,7 @@ public class GameLogicGO {
 		//moveResults[0]=lookFor(false,boardDup,pointY,pointX,lookForColor);
 		//even if move looks like good we have to check for KO
 		if(moveResults[0] || moveResults[1] || moveResults[2] || moveResults[3]){
+
 			if(moveResults[0]){
 				for (int y = 0; y < board.length; y++) {
 					for (int z = 0; z < board[y].length; z++) {
@@ -176,7 +180,7 @@ public class GameLogicGO {
 				}
 			}
 			//Checkin for KO (infinity)
-			boolean ifnity=false;
+			boolean ifnity=true;
 			for (int y = 0; y < board.length; y++) {
 				for (int z = 0; z < board[y].length; z++) {
 					if (boardHistory[0][y][z] != board[y][z]) {
@@ -189,7 +193,7 @@ public class GameLogicGO {
 				for(int i=0;i<board.length;i++) {
 					System.arraycopy(boardHistory[1][i], 0, board[i], 0, board[i].length);
 				}
-				throw new WrongMoveException("Infitity");
+				throw new WrongMoveException("KO");
 			}
 		}else {
 			//Checkin for suicide
@@ -199,10 +203,14 @@ public class GameLogicGO {
 			if(lookFor(false,boardDup[0],pointY,pointX,turn)){
 				board[pointY][pointX] = stoneColor.UNDEFINED;
 				System.out.println("samobojstwo");
-				throw new WrongMoveException("KO");
+				throw new WrongMoveException("SUICIDE");
 			}
 		}
-		//DrawBoard(board);
+		//updating our boardHistory array, that stores situatuion that was on board 1 and 2 turned before
+		for(int i=0;i<board.length;i++) {
+			System.arraycopy(boardHistory[1][i], 0, boardHistory[0][i], 0, board[i].length);
+			System.arraycopy(board[i], 0, boardHistory[1][i], 0, board[i].length);
+		}
 		return getBoardChanges(move);
 	}
 
@@ -212,7 +220,7 @@ public class GameLogicGO {
 		temporaryArray.add(move);
 		for(int row=0;row<board.length;row++){
 			for(int column=0;column<board[row].length;column++){
-				if(board[row][column]!=boardHistory[1][row][column]) {
+				if(board[row][column]!=boardHistory[0][row][column]) {
 					BoardPoint hasChanged=new BoardPoint(new Integer(column),board.length-row-1);
 					if(!move.equals(hasChanged)){
 						temporaryArray.add(hasChanged);
