@@ -1,9 +1,11 @@
 package Server.Main;
 
-import Server.BoardSize;
+import Server.Enums.BoardSize;
+import Server.Enums.stoneColor;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.AbstractMap;
 import java.util.HashMap;
 
@@ -34,6 +36,7 @@ public class ServerGO {
 		}
 		return null;
 	}
+	//mozna sprobowac uzyc klonowania jezeli to nie zabangla
 	public static void main(String[] agrs) throws Exception {
 		gameSet = new HashMap<>();
 		serverListener = createSocket(PORT);
@@ -41,30 +44,38 @@ public class ServerGO {
 		try {
 			while (true) {
 				GameGO newGame=new GameGO();
-				GameGO.Player player=newGame.new Player(serverListener.accept());
+				Socket newConnection=serverListener.accept();
+				GameGO.Player player=newGame.new Player(newConnection);
 				newGame.setCurrentPlayer(player);
 				try {
 					String line = player.setBoard();
 					String[] commands = line.split("-");
+					//small test
 					System.out.println("Initial words:" + commands[0]+"/"+commands[1]);
 					if (commands.length == 2) {
-						if (commands[0] == "JOIN") {
-							GameGO.Player ToBeJoined=gameSet.get(commands[1]).getCurrentPlayer();
-							if(ToBeJoined.getOpponent()==null){
-								ToBeJoined.setOpponent(player);
-								ToBeJoined.start();
-								ToBeJoined.getOpponent().start();
+						if (commands[0].equals("JOIN")) {
+							GameGO ToBeJoined=gameSet.get(commands[1]);
+							if(ToBeJoined.getCurrentPlayer().getOpponent()==null){
+								GameGO.Player JoiningPlayer=ToBeJoined.new Player(player);
+								//GameGO.Player JoiningPlayer=ToBeJoined.new Player(newConnection,player.getInput(),player.getOutput());
+								JoiningPlayer.setColor(stoneColor.WHITE);
+								JoiningPlayer.setOpponent(ToBeJoined.getCurrentPlayer());
+								JoiningPlayer.getOpponent().setOpponent(JoiningPlayer);
+								JoiningPlayer.start();
+								JoiningPlayer.getOpponent().start();
 							}else{
-								ToBeJoined.getOutput().println("FULL");
+								player.getOutput().println("FULL");
 							}
 						} else {
-							if (commands[1] == "13") {
+							newGame.getCurrentPlayer().setColor(stoneColor.BLACK);
+							if (commands[1].equals("13")) {
 								newGame.setSize(BoardSize.MEDIUM);
-							} else if (commands[1] == "19") {
+							} else if (commands[1].equals("19")) {
 								newGame.setSize(BoardSize.LARGE);
 							} else {
 								newGame.setSize(BoardSize.SMALL);
 							}
+							newGame.setGameID(gameID);
 							gameSet.put(new Integer(gameID).toString(),newGame);
 							gameID++;
 						}
