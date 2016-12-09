@@ -4,6 +4,8 @@ import Klient.ClientPrintWriter;
 import Klient.ClientState;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 
 /**
@@ -26,6 +28,19 @@ public class PlayerPanelController {
         if(ClientState.getInstance().getCurrentTurnColor().equals(ClientState.getInstance().getPlayerColor())) {
             ClientPrintWriter.getInstance().getPrintWriter().println("PASS");
             ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
+        }
+    }
+    @FXML
+    private void invokeConcede(MouseEvent event){
+        if(ClientState.getInstance().getCurrentTurnColor().equals(ClientState.getInstance().getPlayerColor())) {
+            ClientPrintWriter.getInstance().getPrintWriter().println("CONCEDE");
+            ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setHeaderText("KONIEC GRY");
+            alert.setContentText("Poddałeś się!");
+            alert.showAndWait();
+            (((Node)event.getSource())).getScene().getWindow().hide();
+            System.exit(1);
         }
     }
 }

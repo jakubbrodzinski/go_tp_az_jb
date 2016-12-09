@@ -31,6 +31,7 @@ public class Main extends Application {
 
     private BufferedReader in;
     private PrintWriter out;
+    private Socket socket;
     private ArrayList<Node> mylist;
 
     @Override
@@ -63,7 +64,7 @@ public class Main extends Application {
 
     }
     public void connectToServer() throws IOException {
-        Socket socket = new Socket("localhost", 8901);
+        socket = new Socket("localhost", 8901);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         //out = new PrintWriter(socket.getOutputStream(), true);
         ClientPrintWriter.getInstance().setInstance(socket.getOutputStream(), true);
@@ -101,12 +102,33 @@ public class Main extends Application {
                                     //Do nothing
                                 }
                                 else if(responseInner.startsWith("QUIT")) {
+                                    try {
+                                        socket.close();
+                                    }
+                                    catch(IOException exception) {
+                                        System.out.println("Cannot close the socket");
+                                    }
                                     Platform.exit();
                                     System.exit(1);
                                 }
                                 else if(responseInner.startsWith("PASS")) {
                                     ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
                                     ((MainBoard) mylist.get(0)).changePlayerEffectOn();
+                                }
+                                else if(responseInner.startsWith("CONCEDE")) {
+                                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                    alert.setTitle("KONIEC GRY");
+                                    alert.setHeaderText("Przeciwnik się poddał!");
+                                    alert.setContentText("Wygrana!");
+                                    alert.showAndWait();
+                                    try {
+                                        socket.close();
+                                    }
+                                    catch(IOException exception) {
+                                        System.out.println("Cannot close the socket");
+                                    }
+                                    Platform.exit();
+                                    System.exit(1);
                                 }
                             }
                         });
@@ -131,7 +153,6 @@ public class Main extends Application {
             if(node instanceof MainBoard)
                 nodes.add(node);
             if (node instanceof Parent) {
-                System.out.println("NODE1: " + node);
                 addAllBoards((Parent) node, nodes);
             }
         }
