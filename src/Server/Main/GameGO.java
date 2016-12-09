@@ -25,6 +25,8 @@ public class GameGO extends GameLogicGO {
 	private PlayerAbstract currentPlayer;
 	private int gameID;
 
+	private boolean statusQUIT=false;
+
 	public GameGO() {
 	}
 
@@ -66,9 +68,6 @@ public class GameGO extends GameLogicGO {
 
 	class BotGO extends PlayerAbstract{
 		private stoneColor[][] boardBOT;
-		public BotGO() {
-			boardBOT=new stoneColor[boardSize.getSize()][boardSize.getSize()];
-		}
 		public BotGO(stoneColor color){
 			System.out.println("Bot has been created succesfully!");
 			this.color=color;
@@ -158,9 +157,11 @@ public class GameGO extends GameLogicGO {
 				}
 				//examples of given lines : MOVE-X-Y,PASS,CONCEDE,QUIT
 				//examples of sent lines : PASS,CONCEDE,QUIT,MOVE-X-Y,CHANGE-A-B-C-D-(...)
-				while (true) {
+				while (!statusQUIT) {
 					String command = input.readLine();
 					//Test
+					if(command==null)
+						continue;
 					System.out.println(this.color + "command: " + command);
 					String[] command_splited = command.split("-");
 					//switch case ??
@@ -188,16 +189,29 @@ public class GameGO extends GameLogicGO {
 					} else if (command_splited[0].equals("CONCEDE")) {
 						changeTurn(command_splited[0]);
 					} else if (command_splited[0].equals("PASS")) {
-						//do zrobienia
-						//jakas zmienna, która powie nam, że oba gracze spassowali->terytorium
-						if(pass==true){
-							//terytorium-koniec gry.
+						output.println("PASS");
+						changeTurn("PASSPROPOSED");
+					}else if(command_splited[0].equals("PASSPROPOSED")){
+						output.println(command_splited[0]);
+						continue;
+					}else if(command_splited[0].equals("PASSACCEPTED")){
+						BoardPoint[][] territories=countTerritories();
+						StringBuilder Builder=new StringBuilder("BLACK");
+						for(int i=0;i<territories[0].length;i++){
+							Builder.append("-"+territories[0][i].toString());
 						}
-						pass=true;
+						Builder.append("-WHITE");
+						for(int i=0;i<territories[1].length;i++){
+							Builder.append("-"+territories[1][i].toString());
+						}
+						String BuilderString=Builder.toString();
+						output.println(BuilderString);
+						changeTurn(BuilderString);
+					}else if(command_splited[0].equals("PASSCANCELED")){
 						changeTurn(command_splited[0]);
-					} else if (command_splited[0].equals("QUIT")) {
+					}else if (command_splited[0].equals("QUIT")) {
 						changeTurn(command_splited[0]);
-						break;
+						statusQUIT=true;
 					} else if (command_splited[0].equals("CHANGESITES")) {
 						changeColors = true;
 						changeTurn(command_splited[0]);
@@ -219,7 +233,7 @@ public class GameGO extends GameLogicGO {
 						changeTurn(command_splited[0]);
 					}
 
-					if(pass==true){
+					if(pass){
 						pass=false;
 					}
 
@@ -228,7 +242,6 @@ public class GameGO extends GameLogicGO {
 				e.printStackTrace();
 			} finally {
 				try {
-					
 					output.println("QUIT");
 					socket.close();
 				} catch (IOException e) {

@@ -53,6 +53,32 @@ public class GameLogicGO {
 		}
 	}
 
+	public BoardPoint[][] countTerritories(){
+		ArrayList<BoardPoint> blackTerritory=new ArrayList<>();
+		ArrayList<BoardPoint> whiteTerritory=new ArrayList<>();
+		int black=0;
+		int white=0;
+		for(int i=0;i<board.length;i++){
+			for(int j=0;j<board.length;j++){
+				if(black<2){
+					if(board[i][j]==stoneColor.BLACK){
+						blackTerritory.add(new BoardPoint(i,j));
+						black++;
+					}
+				}
+				if(white<2){
+					if(board[i][j]==stoneColor.WHITE){
+						whiteTerritory.add(new BoardPoint(i,j));
+						white++;
+					}
+				}
+			}
+		}
+		BoardPoint[][] toReturn=new BoardPoint[2][];
+		toReturn[1]=whiteTerritory.toArray(new BoardPoint[whiteTerritory.size()]);
+		toReturn[0]=blackTerritory.toArray(new BoardPoint[blackTerritory.size()]);
+		return toReturn;
+	}
 	//Nie powinna byc wywolywana bezposrednio!
 	private boolean lookFor(boolean AlreadyFound,stoneColor[][] boardDup,int row,int column,stoneColor color){
 		//DrawBoard(boardDup);
