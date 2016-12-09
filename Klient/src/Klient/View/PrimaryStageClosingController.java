@@ -18,7 +18,8 @@ public class PrimaryStageClosingController implements EventHandler<WindowEvent> 
     }
     @Override
     public void handle(WindowEvent event) {
+        //Platform.exit();
         out.println("QUIT");
-
+        System.exit(1);
     }
 }

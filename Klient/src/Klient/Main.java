@@ -14,6 +14,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -26,6 +27,7 @@ import java.io.PrintWriter;
 import java.lang.reflect.Array;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class Main extends Application {
 
@@ -75,12 +77,12 @@ public class Main extends Application {
     }
     @Override
     public void stop() {
-        /*try {
-           // socket.close();
+        try {
+            socket.close();
         }
         catch(IOException ex) {
             System.out.println("Cannot close socket");
-        }*/
+        }
     }
     public void connectToServer() throws IOException {
         socket = new Socket("localhost", 8901);
@@ -91,10 +93,7 @@ public class Main extends Application {
     }
     public void play() throws IOException {
 
-        //ClientState state = ClientState.getInstance();
 
-        //state.setPlayerColor(response.substring(0,5));
-       // state.setCurrentTurnColor("BLACK");
         if(!ClientState.getInstance().getPlayerColor().equals(ClientState.getInstance().getCurrentTurnColor()))
             ((MainBoard) mylist.get(0)).changePlayerEffectOff();
         new Thread(new Runnable() {
@@ -105,6 +104,12 @@ public class Main extends Application {
                     while(true) {
                         final String responseInner = in.readLine();
                         System.out.println(responseInner);
+                        if(responseInner.startsWith("QUIT")) {
+                            System.out.println("BYLEM TU");
+                            Platform.exit();
+                            System.exit(1);
+                            break;
+                        }
                         Platform.runLater(new Runnable() {
                             @Override
                             public void run() {
@@ -120,13 +125,42 @@ public class Main extends Application {
                                     //Do nothing
                                 }
                                 else if(responseInner.startsWith("QUIT")) {
-                                    System.out.println("BYLEM TU");
                                     Platform.exit();
                                     System.exit(1);
                                 }
-                                else if(responseInner.startsWith("PASS")) {
+                                else if(responseInner.equals("PASS")) {
+                                    //ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
+                                    ((MainBoard) mylist.get(0)).changePlayerEffectOff();
+                                }
+                                /*else if(responseInner.startsWith("PASSPROPOSED")){
+                                    ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
+                                    ((MainBoard) mylist.get(0)).changePlayerEffectOff();
+                                }*/
+                                else if(responseInner.equals("PASSPROPOSED")) {
                                     ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
                                     ((MainBoard) mylist.get(0)).changePlayerEffectOn();
+                                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                                    alert.setTitle("Propozycja pasowania");
+                                    alert.setHeaderText("Przeciwnik zaproponował pasowanie");
+                                    alert.setContentText("Wybierz, czy zgadzasz się na propozycję przeciwnika;");
+
+                                    ButtonType buttonTypeAccept = new ButtonType("Akceptuj");
+                                    ButtonType buttonTypeDeny = new ButtonType("Odrzuć");
+
+                                    alert.getButtonTypes().setAll(buttonTypeAccept, buttonTypeDeny);
+                                    Optional<ButtonType> result = alert.showAndWait();
+
+                                    if(result.get() == buttonTypeAccept) {
+                                        out.println("PASSACCEPTED");
+                                        ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
+                                        ((MainBoard) mylist.get(0)).changePlayerEffectOff();
+                                    }
+                                    else if (result.get() == buttonTypeDeny) {
+                                        out.println("PASSCANCELLED");
+                                    }
+                                }
+                                else if(responseInner.equals("PASSCANCELLED")) {
+                                    System.out.println("Odrzucl");
                                 }
                                 else if(responseInner.startsWith("CONCEDE")) {
                                     Alert alert = new Alert(Alert.AlertType.INFORMATION);

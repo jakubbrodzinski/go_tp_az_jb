@@ -25,6 +25,7 @@ public class StoneController implements EventHandler<MouseEvent> {
             if (((Stone) object).getFill().equals(Color.AZURE)) {
                 if (clientState.getCurrentTurnColor().equals(clientState.getPlayerColor())) {
                     StoneLocation location = StoneLocationParser.parseStoneLocation((int) ((Stone) object).getCenterX(), (int) ((Stone) object).getCenterY());
+                    System.out.println("PORUSZONO: " + location.getX() + location.getY());
                     out.println("MOVE-" + location.getX() + location.getY());
                 }
             }
