@@ -31,7 +31,6 @@ public class ConnectionHBox extends GridPane {
         Button confirmationButton = new Button("Zatwierdź");
         confirmationButton.setPrefSize(150,90);
         confirmationButton.setStyle("-fx-font-size: 20");
-        //System.out.println("Rodzic to:" + this.getParent());
         confirmationButton.setOnMouseClicked(new ConnectionPanelController(out));
 
         GridPane.setConstraints(radioBox, 0, 0);
@@ -45,8 +44,5 @@ public class ConnectionHBox extends GridPane {
     }
     public RadioBox getRadioBox() {
         return this.radioBox;
-    }
-    public PrintWriter getOutput() {
-        return out;
     }
 }

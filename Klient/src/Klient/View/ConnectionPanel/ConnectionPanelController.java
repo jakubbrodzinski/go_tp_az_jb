@@ -1,5 +1,6 @@
 package Klient.View.ConnectionPanel;
 
+import Klient.ClientState;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
@@ -20,12 +21,17 @@ public class ConnectionPanelController implements EventHandler<MouseEvent> {
         if(object instanceof Button) {
             if(((Button) object).getParent() instanceof ConnectionHBox)
                 if(((ConnectionHBox) ((Button) object).getParent()).getRadioBox().getToggledButton() == "NewGame") {
-                    out.println("CREATE-"+"13");
-                    ((Button) object).getScene().getWindow().hide();
+                    if(((ConnectionHBox) ((Button) object).getParent()).getRadioBox().getSizeInputContent().equals("9") || ((ConnectionHBox) ((Button) object).getParent()).getRadioBox().getSizeInputContent().equals("13") || ((ConnectionHBox) ((Button) object).getParent()).getRadioBox().getSizeInputContent().equals("19")) {
+                        out.println("CREATE-" + ((ConnectionHBox) ((Button) object).getParent()).getRadioBox().getSizeInputContent());
+                        ClientState.getInstance().setSize(((ConnectionHBox) ((Button) object).getParent()).getRadioBox().getSizeInputContent());
+                        ((Button) object).getScene().getWindow().hide();
+                    }
                 }
                 else {
-                    out.println("JOIN-"+((ConnectionHBox) ((Button) object).getParent()).getRadioBox().getTextFieldContent());
-                    ((Button) object).getScene().getWindow().hide();
+                    if(!((ConnectionHBox) ((Button) object).getParent()).getRadioBox().getTableInputContent().equals("")) {
+                        out.println("JOIN-" + ((ConnectionHBox) ((Button) object).getParent()).getRadioBox().getTableInputContent());
+                        ((Button) object).getScene().getWindow().hide();
+                    }
                 }
         }
     }

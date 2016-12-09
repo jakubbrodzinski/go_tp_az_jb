@@ -18,6 +18,7 @@ import javafx.scene.text.Font;
 public class RadioBox extends GridPane {
 
     private TextField tableInput = new TextField();
+    private TextField sizeInput = new TextField();
     private final ToggleGroup group = new ToggleGroup();
 
     public RadioBox() {
@@ -55,19 +56,29 @@ public class RadioBox extends GridPane {
         tableInput.setPromptText("Podaj numer stołu, do którego chcesz dołączyć");
         tableInput.setVisible(false);
 
+        sizeInput.setPromptText("Podaj wielkość stołu, który chcesz utworzyć (9 lub 13 lub 19)");
+        sizeInput.setPrefSize(400,100);
+        sizeInput.setFont(Font.font(11));
+        sizeInput.setVisible(true);
+
         GridPane.setConstraints(tableInput, 0, 3);
         GridPane.setHalignment(tableInput, HPos.RIGHT);
         GridPane.setValignment(tableInput, VPos.BOTTOM);
         GridPane.setColumnSpan(tableInput, 2);
 
+        GridPane.setConstraints(sizeInput, 0, 3);
+        GridPane.setHalignment(sizeInput, HPos.RIGHT);
+        GridPane.setValignment(sizeInput, VPos.BOTTOM);
+        GridPane.setColumnSpan(sizeInput, 2);
+
         this.getChildren().add(tableInput);
+        this.getChildren().add(sizeInput);
 
 
         ImageView image = new ImageView();
         GridPane.setConstraints(image, 1, 0);
         image.setImage(new Image(getClass().getResourceAsStream("NewGame.png")));
         this.getChildren().add(image);
-        //System.out.println(group.getSelectedToggle());
         group.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
             @Override
             public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
@@ -80,15 +91,20 @@ public class RadioBox extends GridPane {
                 }
                 if(group.getSelectedToggle() == joinTableButton) {
                     tableInput.setVisible(true);
+                    sizeInput.setVisible(false);
                 }
                 else {
                     tableInput.setVisible(false);
+                    sizeInput.setVisible(true);
                 }
             }
         });
     }
-    public String getTextFieldContent() {
+    public String getTableInputContent() {
         return tableInput.getText();
+    }
+    public String getSizeInputContent() {
+        return sizeInput.getText();
     }
     public String getToggledButton() {
         return (String) group.getSelectedToggle().getUserData();

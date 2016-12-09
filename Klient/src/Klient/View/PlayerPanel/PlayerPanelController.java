@@ -2,6 +2,7 @@ package Klient.View.PlayerPanel;
 
 import Klient.ClientPrintWriter;
 import Klient.ClientState;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -39,7 +40,8 @@ public class PlayerPanelController {
             alert.setHeaderText("KONIEC GRY");
             alert.setContentText("Poddałeś się!");
             alert.showAndWait();
-            (((Node)event.getSource())).getScene().getWindow().hide();
+            //(((Node)event.getSource())).getScene().getWindow().hide();
+            Platform.exit();
             System.exit(1);
         }
     }

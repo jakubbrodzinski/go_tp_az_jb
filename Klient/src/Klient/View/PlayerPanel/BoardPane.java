@@ -1,5 +1,7 @@
 package Klient.View.PlayerPanel;
 
+import Klient.ClientState;
+import Klient.View.ClientScene;
 import Klient.View.MainBoard;
 
 import javafx.animation.FadeTransition;
@@ -26,7 +28,7 @@ public class BoardPane extends GridPane {
     }
     private void prepareBoardPane() {
         //TODO Refactor MainBoard to a factory method
-        MainBoard board = new MainBoard(13, 13, out);
+        MainBoard board = new MainBoard(ClientState.getInstance().getSize(), ClientState.getInstance().getSize(), out);
 
         this.getChildren().add(board);
     }

@@ -14,6 +14,7 @@ public class ClientState {
 
     private String playerColor;
     private String currentTurnColor;
+    private int size;
     private static ClientState instance = new ClientState();
 
     private ClientState() {};
@@ -45,6 +46,20 @@ public class ClientState {
         else {
             return "WHITE";
         }
+    }
+    public void setSize(String command) {
+        if(command.startsWith("9")) {
+            size = 9;
+        }
+        else if(command.startsWith("13")) {
+            size = 13;
+        }
+        else if(command.startsWith("19")) {
+            size = 19;
+        }
+    }
+    public int getSize() {
+        return size;
     }
     public static ClientState getInstance() {
         return instance;

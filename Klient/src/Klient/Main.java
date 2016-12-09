@@ -38,15 +38,6 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
 
         connectToServer();
-        FlowPane root = new FlowPane();
-        root.setAlignment(Pos.TOP_RIGHT);
-        primaryStage.setTitle("GoGAME");
-        primaryStage.setScene(new ClientScene(root, 1266, 768, out));
-        primaryStage.setResizable(false);
-        primaryStage.setOnCloseRequest(new PrimaryStageClosingController(out));
-        primaryStage.show();
-
-
 
         Stage initialStage = new Stage();
         GridPane initialRoot = new GridPane();
@@ -58,26 +49,53 @@ public class Main extends Application {
         initialStage.setOnCloseRequest(new ConnectionBoxClosingController());
         initialStage.showAndWait();
 
+        String response;
+        response = in.readLine();
+        ClientState.getInstance().setPlayerColor(response.substring(0,5));
+        ClientState.getInstance().setCurrentTurnColor("BLACK");
+        ClientState.getInstance().setSize(response.substring(6,8));
+
+
+        FlowPane root = new FlowPane();
+        root.setAlignment(Pos.TOP_RIGHT);
+        primaryStage.setTitle("GoGAME");
+        primaryStage.setScene(new ClientScene(root, 1266, 768, out));
+        primaryStage.setResizable(false);
+        primaryStage.setOnCloseRequest(new PrimaryStageClosingController(out));
+        primaryStage.show();
+
+
+
+
+
         mylist = getAllBoards(root);
 
         play();
 
     }
+    @Override
+    public void stop() {
+        try {
+            socket.close();
+        }
+        catch(IOException ex) {
+            System.out.println("Cannot close socket");
+        }
+    }
     public void connectToServer() throws IOException {
         socket = new Socket("localhost", 8901);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        //out = new PrintWriter(socket.getOutputStream(), true);
         ClientPrintWriter.getInstance().setInstance(socket.getOutputStream(), true);
         //TODO Refactor code -> Decouple the code by removing "out" passing
         out = ClientPrintWriter.getInstance().getPrintWriter();
     }
     public void play() throws IOException {
-        String response;
-        ClientState state = ClientState.getInstance();
-        response = in.readLine();
-        state.setPlayerColor(response.substring(0,5));
-        state.setCurrentTurnColor("BLACK");
-        if(!state.getPlayerColor().equals(state.getCurrentTurnColor()))
+
+        //ClientState state = ClientState.getInstance();
+
+        //state.setPlayerColor(response.substring(0,5));
+       // state.setCurrentTurnColor("BLACK");
+        if(!ClientState.getInstance().getPlayerColor().equals(ClientState.getInstance().getCurrentTurnColor()))
             ((MainBoard) mylist.get(0)).changePlayerEffectOff();
         new Thread(new Runnable() {
 
@@ -102,12 +120,6 @@ public class Main extends Application {
                                     //Do nothing
                                 }
                                 else if(responseInner.startsWith("QUIT")) {
-                                    try {
-                                        socket.close();
-                                    }
-                                    catch(IOException exception) {
-                                        System.out.println("Cannot close the socket");
-                                    }
                                     Platform.exit();
                                     System.exit(1);
                                 }
@@ -121,12 +133,6 @@ public class Main extends Application {
                                     alert.setHeaderText("Przeciwnik się poddał!");
                                     alert.setContentText("Wygrana!");
                                     alert.showAndWait();
-                                    try {
-                                        socket.close();
-                                    }
-                                    catch(IOException exception) {
-                                        System.out.println("Cannot close the socket");
-                                    }
                                     Platform.exit();
                                     System.exit(1);
                                 }
