@@ -83,22 +83,24 @@ public class GameGO extends GameLogicGO {
 			boolean status=false;
 			BoardPoint[] changes=null;
 			System.out.println("otherPlayerMovedBOT:"+command);
-			do {
-				p1=ThreadLocalRandom.current().nextInt(0,boardSize.getSize());
-				p2=ThreadLocalRandom.current().nextInt(0,boardSize.getSize());
-				try{
-					changes=nextMove(new BoardPoint(p1,p2),color);
-					status=true;
-				}catch(WrongMoveException e){
+			if(!command.startsWith("QUIT")) {
+				do {
+					p1 = ThreadLocalRandom.current().nextInt(0, boardSize.getSize());
+					p2 = ThreadLocalRandom.current().nextInt(0, boardSize.getSize());
+					try {
+						changes = nextMove(new BoardPoint(p1, p2), color);
+						status = true;
+					} catch (WrongMoveException e) {
+					}
+				} while (!status);
+				StringBuilder Builder = new StringBuilder("");
+				for (int i = 0; i < changes.length; i++) {
+					Builder.append("-" + changes[i].toString());
 				}
-			}while(!status);
-			StringBuilder Builder = new StringBuilder("");
-			for (int i = 0; i < changes.length; i++) {
-				Builder.append("-" + changes[i].toString());
+				String BuilderString = Builder.toString();
+				System.out.println("CORRECT_bot_builder_string" + BuilderString);
+				changeTurn("CHANGE" + BuilderString);
 			}
-			String BuilderString = Builder.toString();
-			System.out.println("CORRECT_bot_builder_string" + BuilderString);
-			changeTurn("CHANGE" + BuilderString);
 		}
 	}
 
@@ -226,6 +228,8 @@ public class GameGO extends GameLogicGO {
 				e.printStackTrace();
 			} finally {
 				try {
+					
+					output.println("QUIT");
 					socket.close();
 				} catch (IOException e) {
 					e.printStackTrace();
