@@ -53,10 +53,10 @@ public class StoneLocationParser {
                 helperX = "O";
                 break;
             case 14:
-                helperX = "U";
+                helperX = "P";
                 break;
             case 15:
-                helperX = "P";
+                helperX = "Q";
                 break;
             case 16:
                 helperX = "R";
@@ -122,10 +122,10 @@ public class StoneLocationParser {
             case "O":
                 helperX = 13;
                 break;
-            case "U":
+            case "P":
                 helperX = 14;
                 break;
-            case "P":
+            case "Q":
                 helperX = 15;
                 break;
             case "R":

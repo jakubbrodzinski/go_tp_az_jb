@@ -28,24 +28,9 @@ public class BoardPane extends GridPane {
     }
     private void prepareBoardPane() {
         //TODO Refactor MainBoard to a factory method
+        System.out.println("WIELKOSC: " + ClientState.getInstance().getSize());
         MainBoard board = new MainBoard(ClientState.getInstance().getSize(), ClientState.getInstance().getSize(), out);
 
         this.getChildren().add(board);
-    }
-
-    public void changePlayerEffectOn() {
-
-        FadeTransition ft = new FadeTransition(Duration.millis(1000), this);
-        ft.setFromValue(0.5);
-        ft.setToValue(1);
-        ft.setCycleCount(1);
-        ft.play();
-    }
-    public void changePlayerEffectOff() {
-        FadeTransition ft = new FadeTransition(Duration.millis(1000), this);
-        ft.setFromValue(1);
-        ft.setToValue(0.5);
-        ft.setCycleCount(1);
-        ft.play();
     }
 }

@@ -75,12 +75,12 @@ public class Main extends Application {
     }
     @Override
     public void stop() {
-        try {
-            socket.close();
+        /*try {
+           // socket.close();
         }
         catch(IOException ex) {
             System.out.println("Cannot close socket");
-        }
+        }*/
     }
     public void connectToServer() throws IOException {
         socket = new Socket("localhost", 8901);
@@ -120,6 +120,7 @@ public class Main extends Application {
                                     //Do nothing
                                 }
                                 else if(responseInner.startsWith("QUIT")) {
+                                    System.out.println("BYLEM TU");
                                     Platform.exit();
                                     System.exit(1);
                                 }
