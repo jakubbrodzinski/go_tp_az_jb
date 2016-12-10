@@ -1,4 +1,4 @@
-package Server.Test;
+package Server.Test.MainTests;
 
 import Server.Enums.BoardSize;
 import Server.Enums.stoneColor;
@@ -9,11 +9,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 /**
- * Created by jakub on 12/4/16.
+ * Created by jakub on 12/10/16.
  */
 public class GameLogicGOTest {
 	private GameLogicGO GameToTest;
@@ -28,7 +28,11 @@ public class GameLogicGOTest {
 		GameToTest=null;
 	}
 
+	//Do zrobienia!
+	@Test
+	public void countTerritories() throws Exception {
 
+	}
 
 	@Test(expected = WrongMoveException.class)
 	public void nextMove() throws Exception {
@@ -93,4 +97,5 @@ public class GameLogicGOTest {
 
 		//GameToTest.nextMove(new BoardPoint('B', 13), stoneColor.BLACK);
 	}
+
 }

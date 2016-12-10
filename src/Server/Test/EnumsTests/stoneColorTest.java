@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by jakub on 12/7/16.
@@ -28,8 +29,13 @@ public class stoneColorTest {
 		assertEquals(false,temp1==stoneColor.WHITE);
 		assertEquals(false,temp4==temp3);
 		assertEquals(false,temp3==temp2);
+	}
 
-
+	@Test
+	public void opposite() throws Exception {
+		assertTrue(temp4.opposite()==stoneColor.WHITE);
+		assertTrue(temp2.opposite()==stoneColor.BLACK);
+		assertTrue(temp3.opposite()==stoneColor.UNDEFINED);
 	}
 
 	@After

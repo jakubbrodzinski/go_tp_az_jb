@@ -6,15 +6,7 @@ import Server.Enums.stoneColor;
 import java.util.ArrayList;
 /*
 TO DO LIST:
-1.Opakowanie do polaczenie lookfor i next move
-2.Sprawdzenie KO (NIESKONCOZSC)
-3.Sprawdzenie samobójstwa :<
- 1-3 Probably done.
-4. Metode wywołać dla góry,doły,prawo,lewo ze spojnikiem || później wsyzstko scalic.
-1-4 Probably done.
-BOT!
-5. equalChances() ! - dla osoby nie zaczynajacej dodac pare punktow.
-6.Terytorium
+6.Terytorium!!!!!
  */
 /**
  * Created by jakub on 12/3/16.
@@ -22,7 +14,7 @@ BOT!
  * Returns BoardPoints that has changed.
  */
 public class GameLogicGO {
-	protected   stoneColor[][] board;
+	protected stoneColor[][] board;
 	private  stoneColor[][][] boardHistory;
 	private stoneColor[][][] boardDup;
 	protected BoardSize boardSize;
@@ -40,16 +32,6 @@ public class GameLogicGO {
 				board[j][y]=stoneColor.UNDEFINED;
 				boardHistory[0][j][y] = stoneColor.UNDEFINED;
 				boardHistory[1][j][y] = stoneColor.UNDEFINED;
-			}
-		}
-	}
-
-	protected void FreshStart(){
-		for(int i=0;i<board.length;i++){
-			for(int j=0;j<board[i].length;j++){
-				board[i][j]=stoneColor.UNDEFINED;
-				boardHistory[0][i][j]=stoneColor.UNDEFINED;
-				boardHistory[1][i][j]=stoneColor.UNDEFINED;
 			}
 		}
 	}
@@ -82,7 +64,6 @@ public class GameLogicGO {
 	}
 	//Nie powinna byc wywolywana bezposrednio!
 	private boolean lookFor(boolean AlreadyFound,stoneColor[][] boardDup,int row,int column,stoneColor color){
-		//DrawBoard(boardDup);
 		if(column<0 || row < 0 || column>=board.length || row>=board.length){
 			//has to be added because of suicide
 			if(!AlreadyFound)
@@ -237,6 +218,7 @@ public class GameLogicGO {
 				for(int i=0;i<board.length;i++) {
 					System.arraycopy(boardHistory[1][i], 0, board[i], 0, board[i].length);
 				}
+				System.out.println("KO");
 				throw new WrongMoveException("KO");
 			}
 		}else {
@@ -246,7 +228,7 @@ public class GameLogicGO {
 			}
 			if(lookFor(false,boardDup[0],pointY,pointX,turn)){
 				board[pointY][pointX] = stoneColor.UNDEFINED;
-				System.out.println("samobojstwo");
+				System.out.println("SUICIDE");
 				throw new WrongMoveException("SUICIDE");
 			}
 		}

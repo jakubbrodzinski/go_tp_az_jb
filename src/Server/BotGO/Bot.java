@@ -100,6 +100,7 @@ public class Bot extends GameLogicGO {
 	}
 
 	private BoardPoint getRandomPoint(){
+		int i=0;
 		do {
 			int p1 = ThreadLocalRandom.current().nextInt(0, boardSize.getSize());
 			int p2 = ThreadLocalRandom.current().nextInt(0, boardSize.getSize());
@@ -110,13 +111,21 @@ public class Bot extends GameLogicGO {
 				return temp;
 			} catch (WrongMoveException e) {
 			}
-		} while (true);
+		} while (i++<30);
+		for(int x=0;x<board.length;x++){
+			for(int y=0;y<board[x].length;y++){
+				if(board[x][y]==stoneColor.UNDEFINED){
+					System.out.println("Not that random");
+					return new BoardPoint(y,boardSize.getSize()-1-x);
+				}
+			}
+		}
+		return null;
 	}
 
 	@SuppressWarnings("Duplicates")
 	private BoardPoint moveNextToPoint(int m1, int m2){
 		BoardPoint results;
-		System.out.println("m1="+m1+" m2="+m2);
 		try {
 			if(m1+1<boardSize.getSize()) {
 				results = new BoardPoint(m2, boardSize.getSize()-1-(m1+1));

@@ -24,6 +24,8 @@ TO DO LIST:
 public class GameGO extends GameLogicGO {
 	private PlayerAbstract currentPlayer;
 	private int gameID;
+	private double BLACKscore=0;
+	private double WHITEscore=6.5;
 
 	private boolean statusQUIT=false;
 
@@ -51,20 +53,7 @@ public class GameGO extends GameLogicGO {
 		currentPlayer.otherPlayerMoved(statement);
 	}
 
-	private boolean changeColors = false;
 	private boolean pass = false;
-
-	private void changeSites() {
-		if (currentPlayer.getColor() == stoneColor.BLACK) {
-			currentPlayer.setColor(stoneColor.WHITE);
-			currentPlayer.getOpponent().setColor(stoneColor.BLACK);
-			currentPlayer = currentPlayer.getOpponent();
-		} else {
-			currentPlayer.setColor(stoneColor.BLACK);
-			currentPlayer.getOpponent().setColor(stoneColor.WHITE);
-		}
-		FreshStart();
-	}
 
 	class BotGO extends PlayerAbstract{
 		private Bot ourBot;
@@ -167,6 +156,7 @@ public class GameGO extends GameLogicGO {
 				//examples of given lines : MOVE-X-Y,PASS,CONCEDE,QUIT
 				//examples of sent lines : PASS,CONCEDE,QUIT,MOVE-X-Y,CHANGE-A-B-C-D-(...)
 				while (!statusQUIT) {
+					System.out.println("BLACK SCORE:"+BLACKscore+"\nWHITE SCORE:"+WHITEscore);
 					String command = input.readLine();
 					//Test
 					if (command == null)
@@ -185,6 +175,11 @@ public class GameGO extends GameLogicGO {
 						try {
 							BoardPoint[] changesArr = nextMove(moveToTest, this.color);
 							StringBuilder Builder = new StringBuilder("");
+							if(currentPlayer.getColor()==stoneColor.BLACK){
+								BLACKscore+=(changesArr.length-1);
+							}else if(currentPlayer.getColor()==stoneColor.WHITE){
+								WHITEscore+=(changesArr.length-1);
+							}
 							for (int i = 0; i < changesArr.length; i++) {
 								Builder.append("-" + changesArr[i].toString());
 							}
