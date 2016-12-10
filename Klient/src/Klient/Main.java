@@ -6,6 +6,7 @@ import Klient.View.ConnectionPanel.ConnectionBoxClosingController;
 import Klient.View.MainBoard;
 import Klient.View.PlayerPanel.BoardPane;
 import Klient.View.PrimaryStageClosingController;
+import com.sun.deploy.util.SessionState;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -13,6 +14,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.*;
@@ -36,10 +38,20 @@ public class Main extends Application {
     private Socket socket;
     private ArrayList<Node> mylist;
 
+    //TODO gameid w nazwie klienta
     @Override
     public void start(Stage primaryStage) throws Exception{
 
         connectToServer();
+
+        Stage otherStage;
+
+        FlowPane rooto = new FlowPane();
+        rooto.setStyle("-fx-background-color: #EFECCA");
+        otherStage = new Stage();
+        otherStage.setTitle("GoGAME");
+        otherStage.setScene(new Scene(rooto, 1266, 768));
+        otherStage.show();
 
         Stage initialStage = new Stage();
         GridPane initialRoot = new GridPane();
@@ -51,20 +63,23 @@ public class Main extends Application {
         initialStage.setOnCloseRequest(new ConnectionBoxClosingController());
         initialStage.showAndWait();
 
+
         String response;
         response = in.readLine();
-        ClientState.getInstance().setPlayerColor(response.substring(0,5));
+        System.out.println(response);
+        ClientState.getInstance().setPlayerColor(response.substring(15,20));
         ClientState.getInstance().setCurrentTurnColor("BLACK");
-        ClientState.getInstance().setSize(response.substring(6,8));
-
+        ClientState.getInstance().setSize(response.substring(21,23));
 
         FlowPane root = new FlowPane();
         root.setAlignment(Pos.TOP_RIGHT);
         primaryStage.setTitle("GoGAME");
+        primaryStage.show();
         primaryStage.setScene(new ClientScene(root, 1266, 768, out));
         primaryStage.setResizable(false);
         primaryStage.setOnCloseRequest(new PrimaryStageClosingController(out));
-        primaryStage.show();
+        otherStage.hide();
+
 
 
 
@@ -114,32 +129,33 @@ public class Main extends Application {
                         Platform.runLater(new Runnable() {
                             @Override
                             public void run() {
-                                if(responseInner.startsWith("CHANGE") || responseInner.startsWith("CORRECT")) {
+                                if(responseInner.contains("CHANGE") || responseInner.contains("CORRECT")) {
                                     ((MainBoard) mylist.get(0)).redraw(responseInner);
                                     ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
                                     if(responseInner.startsWith("CHANGE"))
                                         ((MainBoard) mylist.get(0)).changePlayerEffectOn();
                                     else
                                         ((MainBoard) mylist.get(0)).changePlayerEffectOff();
-                                    //System.out.println(((MainBoard) mylist.get(0)).getStonesGroup(1, 1));
                                 }
-                                else if(responseInner.startsWith("WRONG")) {
+                                else if(responseInner.contains("WRONG")) {
                                     //Do nothing
                                 }
-                                else if(responseInner.startsWith("QUIT")) {
+                                else if(responseInner.contains("QUIT")) {
                                     Platform.exit();
                                     System.exit(1);
                                 }
                                 else if(responseInner.equals("PASS")) {
-                                    //ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
-                                    ((MainBoard) mylist.get(0)).changePlayerEffectOff();
-                                    //((MainBoard) mylist.get(0)).removeStonesGroup(((MainBoard) mylist.get(0)).getStonesGroup(1, 1));
-                                    ((MainBoard) mylist.get(0)).findTerritory();
+                                    if(ClientState.getInstance().getPlayerColor().equals(ClientState.getInstance().getCurrentTurnColor())) {
+                                        ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
+                                        ((MainBoard) mylist.get(0)).changePlayerEffectOff();
+                                        ((MainBoard) mylist.get(0)).findTerritory();
+                                    }
+                                    else {
+                                        ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
+                                        ((MainBoard) mylist.get(0)).changePlayerEffectOn();
+                                        ((MainBoard) mylist.get(0)).findTerritory();
+                                    }
                                 }
-                                /*else if(responseInner.startsWith("PASSPROPOSED")){
-                                    ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
-                                    ((MainBoard) mylist.get(0)).changePlayerEffectOff();
-                                }*/
                                 else if(responseInner.equals("PASSPROPOSED")) {
                                     ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
                                     ((MainBoard) mylist.get(0)).changePlayerEffectOn();
@@ -168,7 +184,6 @@ public class Main extends Application {
                                 else if(responseInner.equals("PASSCANCELLED")) {
                                     ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
                                     ((MainBoard) mylist.get(0)).changePlayerEffectOn();
-                                    System.out.println("Odrzucl");
                                 }
                                 else if(responseInner.startsWith("CONCEDE")) {
                                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -178,6 +193,11 @@ public class Main extends Application {
                                     alert.showAndWait();
                                     Platform.exit();
                                     System.exit(1);
+                                }
+                                else if(responseInner.startsWith("POINTS")) {
+                                    String[] helper = responseInner.split("-");
+                                    ClientState.getInstance().setWhitePoints(helper[1]);
+                                    ClientState.getInstance().setBlackPoints(helper[2]);
                                 }
                             }
                         });

@@ -16,6 +16,8 @@ public class ClientState {
     private String currentTurnColor;
     private int size;
     private static ClientState instance = new ClientState();
+    private String whitePoints;
+    private String blackPoints;
 
     private ClientState() {};
 
@@ -68,6 +70,19 @@ public class ClientState {
     }
     public int getSize() {
         return size;
+    }
+    //POINTS-punktybialych-punktyczarnych
+    public void setWhitePoints(String points) {
+        whitePoints = points;
+    }
+    public void setBlackPoints(String points) {
+        blackPoints = points;
+    }
+    public String getWhitePoints() {
+        return whitePoints;
+    }
+    public String getBlackPoints() {
+        return blackPoints;
     }
     public static ClientState getInstance() {
         return instance;

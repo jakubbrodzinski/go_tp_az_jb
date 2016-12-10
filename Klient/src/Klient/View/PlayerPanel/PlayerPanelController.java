@@ -5,8 +5,10 @@ import Klient.ClientState;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 
 /**
@@ -14,9 +16,18 @@ import javafx.scene.input.MouseEvent;
  */
 public class PlayerPanelController {
     @FXML
-    private void setOpacityOnEntered(MouseEvent event) {
+    private void setOpacityOnEnteredWhite(MouseEvent event) {
         Node myNode = (Node)event.getSource();
         myNode.setOpacity(0.8);
+        //getLabel((Parent)myNode).setText(ClientState.getInstance().getWhitePoints());
+        getLabel((Parent)myNode).setText("10");
+    }
+    @FXML
+    private void setOpacityOnEnteredBlack(MouseEvent event) {
+        Node myNode = (Node)event.getSource();
+        myNode.setOpacity(0.8);
+        //getLabel((Parent)myNode).setText(ClientState.getInstance().getWhitePoints());
+        getLabel((Parent)myNode).setText("15");
     }
     @FXML
     private void setNormalOpacity(MouseEvent event) {
@@ -28,7 +39,6 @@ public class PlayerPanelController {
         System.out.println("Tura : mojakolej " + ClientState.getInstance().getCurrentTurnColor() + ClientState.getInstance().getPlayerColor());
         if(ClientState.getInstance().getCurrentTurnColor().equals(ClientState.getInstance().getPlayerColor())) {
             ClientPrintWriter.getInstance().getPrintWriter().println("PASS");
-            ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
         }
     }
     @FXML
@@ -40,9 +50,16 @@ public class PlayerPanelController {
             alert.setHeaderText("KONIEC GRY");
             alert.setContentText("Poddałeś się!");
             alert.showAndWait();
-            //(((Node)event.getSource())).getScene().getWindow().hide();
             Platform.exit();
             System.exit(1);
         }
+    }
+    private Label getLabel(Parent myNode) {
+        for(Node n : myNode.getChildrenUnmodifiable()) {
+            if(n instanceof Label) {
+                return (Label)n;
+            }
+        }
+        return null;
     }
 }

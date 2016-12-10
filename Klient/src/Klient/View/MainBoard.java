@@ -56,18 +56,18 @@ public class MainBoard extends Pane {
     }
     public void redraw(String command) {
         String[] commands = command.split("-");
-        if(commands[0].equals("CHANGE")) {
-            StoneLocation location = StoneLocationParser.parsetoStoneLocation(commands[1], commands[2]);
+        if(commands[3].equals("CHANGE")) {
+            StoneLocation location = StoneLocationParser.parsetoStoneLocation(commands[4], commands[5]);
             stones[location.getxInt()][location.getY()].setOpacity(1);
             stones[location.getxInt()][location.getY()].setFill(ClientState.getInstance().getCurrentColorPlaying());
-            for(int i = 3; i < commands.length; i+=2) {
+            for(int i = 6; i < commands.length; i+=2) {
                 location = StoneLocationParser.parsetoStoneLocation(commands[i], commands[i+1]);
                 stones[location.getxInt()][location.getY()].setOpacity(0);
                 stones[location.getxInt()][location.getY()].setFill(Color.AZURE);
             }
         }
-        if(commands[0].equals("CORRECT")) {
-            StoneLocation location = StoneLocationParser.parsetoStoneLocation(commands[1], commands[2]);
+        if(commands[3].equals("CORRECT")) {
+            StoneLocation location = StoneLocationParser.parsetoStoneLocation(commands[4], commands[5]);
             stones[location.getxInt()][location.getY()].setOpacity(1);
             stones[location.getxInt()][location.getY()].setFill(ClientState.getInstance().getCurrentColorPlaying());
             for(int i = 3; i < commands.length; i+=2) {
@@ -77,6 +77,7 @@ public class MainBoard extends Pane {
             }
         }
     }
+    //Grupowanie kamieni
     public ArrayList<Stone> getStonesGroup(int x, int y) {
         ArrayList<Stone> result = new ArrayList<>();
         ArrayList<Stone> alreadyTraversed = new ArrayList<>();
@@ -95,6 +96,7 @@ public class MainBoard extends Pane {
             stone.setFill(Color.AZURE);
         }
     }
+    //znajdowanie terytoriów i usuwanie tego co jst w środku terytorium
     public void findTerritory() {
         ArrayList<Stone> alreadyTraversed = new ArrayList<>();
         ArrayList<ArrayList<Stone>> territory = new ArrayList<>();
@@ -107,15 +109,17 @@ public class MainBoard extends Pane {
             }
         }
 
-       System.out.println("Teyrotiurm to:" + territory);
+        System.out.println("Teyrotiurm to:" + territory);
         removeInnerParts(territory);
     }
+    //usuwanie tego co jest w srodku terytorium
     private void removeInnerParts(ArrayList<ArrayList<Stone>> territory) {
         for(ArrayList<Stone> group : territory) {
             Stone[] helper = findBounds(group);
             System.out.println(helper);
             if(helper[0] != null && helper[1] != null) {
                 if(helper[0].getCenterX()/35 < helper[1].getCenterX()/35 && helper[0].getCenterY()/35 > helper[1].getCenterY()/35) {
+                    System.out.println("1");
                     for(int i = 0; i < helper[1].getCenterX()/35; i++) {
                         for(int j = 0; j < helper[0].getCenterY()/35; j++) {
                             if(!group.contains(stones[i][j])) {
@@ -128,9 +132,10 @@ public class MainBoard extends Pane {
                     }
 
                 }
-                if(helper[0].getCenterX()/35 < helper[1].getCenterX()/35 && helper[0].getCenterY()/35 < helper[1].getCenterY()/35) {
+               else if(helper[0].getCenterX()/35 < helper[1].getCenterX()/35 && helper[0].getCenterY()/35 < helper[1].getCenterY()/35) {
+                    System.out.println("2");
                     for(int i = 0; i < helper[1].getCenterX()/35; i++) {
-                        for(int j = height; j < helper[0].getCenterY()/35; j++) {
+                        for(int j = height-1; j > 0; j--) {
                             if(!group.contains(stones[i][j])) {
                                 stones[i][j].setOpacity(0);
                                 stones[i][j].setFill(Color.AZURE);
@@ -140,29 +145,55 @@ public class MainBoard extends Pane {
                         }
                     }
                 }
-                if(helper[0].getCenterX()/35 > helper[1].getCenterX()/35 && helper[0].getCenterY()/35 > helper[1].getCenterY()/35) {
+                else if(helper[0].getCenterX()/35 > helper[1].getCenterX()/35 && helper[0].getCenterY()/35 > helper[1].getCenterY()/35) {
                     System.out.println("3");
+                    for(int i = width - 1; i > 0; i--) {
+                        for(int j = 0; j < helper[0].getCenterY()/35; j++) {
+                            if(!group.contains(stones[i][j])) {
+                                stones[i][j].setOpacity(0);
+                                stones[i][j].setFill(Color.AZURE);
+                            }
+                            else
+                                break;
+                        }
+                    }
                 }
-                if(helper[0].getCenterX()/35 > helper[1].getCenterX()/35 && helper[0].getCenterY()/35 < helper[1].getCenterY()/35) {
+                else if(helper[0].getCenterX()/35 > helper[1].getCenterX()/35 && helper[0].getCenterY()/35 < helper[1].getCenterY()/35) {
                     System.out.println("4");
+                    for(int i = width - 1; i > 0; i--) {
+                        if(group.contains(stones[i][height-1]))
+                            break;
+                        for(int j = height-1; j > 0; j--) {
+                            if(!group.contains(stones[i][j])) {
+                                stones[i][j].setOpacity(0);
+                                stones[i][j].setFill(Color.AZURE);
+                            }
+                            else
+                                break;
+                        }
+                    }
                 }
+
             }
         }
 
     }
+    //znajdowanie końców grup
     private Stone[] findBounds(ArrayList<Stone> group) {
         Stone[] answer = new Stone[2];
 
         for(Stone stone : group) {
-            if(stone.getCenterX()/35 == 0 || stone.getCenterX()/35 == width) {
+            if(stone.getCenterX()/35 == 0 || stone.getCenterX()/35 == width-1) {
                 answer[0] = stone;
             }
-            if(stone.getCenterY()/35 == 0 || stone.getCenterY()/35 == height) {
+            if(stone.getCenterY()/35 == 0 || stone.getCenterY()/35 == height-1) {
                 answer[1] = stone;
             }
         }
+
         return answer;
     }
+    //szukanie grupek
     private void lookForGroup(int x, int y, ArrayList<Stone> result, ArrayList<Stone> alreadyTraversed) {
         if(stones[x][y].getFill().equals(result.get(0).getFill())) {
             if (!alreadyTraversed.contains(stones[x][y])) {
@@ -181,6 +212,18 @@ public class MainBoard extends Pane {
                 }
                 if(!(y - 1 < 0)) {
                     lookForGroup(x, y - 1, result, alreadyTraversed);
+                }
+                if(!(x + 1 >= width) && !(y + 1 >= height)) {
+                    lookForGroup(x + 1, y + 1, result, alreadyTraversed);
+                }
+                if(!(x + 1 >= width) && !(y - 1 < 0)) {
+                    lookForGroup(x + 1, y - 1, result, alreadyTraversed);
+                }
+                if(!(x - 1 < 0) && !(y + 1 >= height)) {
+                    lookForGroup(x - 1, y + 1, result, alreadyTraversed);
+                }
+                if(!(x - 1 < 0) && !(y - 1 < 0)) {
+                    lookForGroup(x - 1, y - 1, result, alreadyTraversed);
                 }
             }
         }
