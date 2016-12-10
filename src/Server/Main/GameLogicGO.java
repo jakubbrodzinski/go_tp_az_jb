@@ -36,7 +36,56 @@ public class GameLogicGO {
 		}
 	}
 
+	private ArrayList<ArrayList<BoardPoint>> chains;
+	private boolean lookForChainsUp(int index,int row,int column,stoneColor color,stoneColor[][] boardDup){
+		if(board[row][column]!=color){
+			return false;
+		}else if(row>=boardDup.length){
+			return false;
+		}else if(row<0 || column>boardDup.length || column<0){
+			chains.get(index).add(new BoardPoint(row,column)); //ZLE!!!!
+			return true;
+		}else if(board[row][column]==null){
+			return false;
+		}
+		boardDup[row][column]=stoneColor.UNDEFINED;
+		boolean[] results=new boolean[4];
+		results[0]=results[1]=results[2]=results[3]=false;
+		//gora
+		results[0]=lookForChainsUp(index,row-1,column,color,boardDup);
+		//prawo
+		if(results[0]) {
+			results[1] = lookForChainsUp(index++, row, column+1, color, boardDup);
+		}else{
+			results[1] = lookForChainsUp(index, row, column+1, color, boardDup);
+		}
+		//lewo
+		if(results[1]) {
+			results[2] = lookForChainsUp(index++, row , column-1, color, boardDup);
+		}else{
+			results[2] = lookForChainsUp(index, row , column-1, color, boardDup);
+		}
+		//dol
+		if(results[2]) {
+			results[3] = lookForChainsUp(index, row +1, column, color, boardDup);
+		}else{
+			results[3] = lookForChainsUp(index, row +1, column, color, boardDup);
+		}
+
+		if(!(results[0] || results[1] || results[2] || results[3]))
+			return false;
+		return true;
+	}
+
 	public BoardPoint[][] countTerritories(){
+		chains=new ArrayList<>();
+		chains.add(new ArrayList<>());
+		stoneColor[][] teritories=new stoneColor[board.length][board.length];
+		for(int i=0;i<teritories.length;i++)
+			for(int j=0;j<teritories[i].length;j++)
+				teritories[i][j]=board[i][j];
+		lookForChainsUp(0,0,0,stoneColor.WHITE,teritories);
+		//
 		ArrayList<BoardPoint> blackTerritory=new ArrayList<>();
 		ArrayList<BoardPoint> whiteTerritory=new ArrayList<>();
 		int black=0;

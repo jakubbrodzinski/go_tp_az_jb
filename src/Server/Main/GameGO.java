@@ -72,15 +72,17 @@ public class GameGO extends GameLogicGO {
 			BoardPoint[] changes=null;
 			System.out.println("otherPlayerMovedBOT:"+command);
 			if(!command.startsWith("QUIT")) {
-				if(command.startsWith("CHANGE")){
-					int i=1;
+				if(command.startsWith("POINTS")){
 					String[] commands=command.split("-");
-					try{
-						i=Integer.parseInt(commands[2]);
-						BoardPoint opponentMove=new BoardPoint(commands[1].charAt(0),i);
-						ourBot.insertChanges(opponentMove);
-					}catch(NumberFormatException e){
-						System.out.println("issue with parsing in bot");
+					if(commands.length>3 && commands[3].equals("CHANGE")) {
+						int i = 1;
+						try {
+							i = Integer.parseInt(commands[5]);
+							BoardPoint opponentMove = new BoardPoint(commands[4].charAt(0), i);
+							ourBot.insertChanges(opponentMove);
+						} catch (NumberFormatException e) {
+							System.out.println("issue with parsing in bot");
+						}
 					}
 				}
 				try{
