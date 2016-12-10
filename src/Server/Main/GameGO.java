@@ -90,13 +90,18 @@ public class GameGO extends GameLogicGO {
 				}catch(WrongMoveException e){
 					System.out.println("Wrong move from BOT!");
 				}
+				if(this.color==stoneColor.BLACK){
+					BLACKscore+=(changes.length-1);
+				}else if(this.color==stoneColor.WHITE){
+					WHITEscore+=(changes.length-1);
+				}
 				StringBuilder Builder = new StringBuilder("");
 				for (int i = 0; i < changes.length; i++) {
 					Builder.append("-" + changes[i].toString());
 				}
 				String BuilderString = Builder.toString();
 				System.out.println("CORRECT_bot_builder_string" + BuilderString);
-				changeTurn("CHANGE" + BuilderString);
+				changeTurn("POINTS-"+WHITEscore+"-"+BLACKscore+"-"+"CHANGE" + BuilderString);
 			}
 		}
 	}
@@ -149,14 +154,13 @@ public class GameGO extends GameLogicGO {
 				System.out.println(color + " connected " + gameID);
 				//if BLACK you make first move
 				if (color == stoneColor.BLACK) {
-					output.println("BLACK-"+boardSize.getSize()+"-"+gameID);
+					output.println("POINTS-"+WHITEscore+"-"+BLACKscore+"-"+"BLACK-"+boardSize.getSize()+"-"+gameID);
 				} else {
-					output.println("WHITE-" +boardSize.getSize()+"-"+gameID);
+					output.println("POINTS-"+WHITEscore+"-"+BLACKscore+"-"+"WHITE-" +boardSize.getSize()+"-"+gameID);
 				}
 				//examples of given lines : MOVE-X-Y,PASS,CONCEDE,QUIT
 				//examples of sent lines : PASS,CONCEDE,QUIT,MOVE-X-Y,CHANGE-A-B-C-D-(...)
 				while (!statusQUIT) {
-					System.out.println("BLACK SCORE:"+BLACKscore+"\nWHITE SCORE:"+WHITEscore);
 					String command = input.readLine();
 					//Test
 					if (command == null)
@@ -175,6 +179,7 @@ public class GameGO extends GameLogicGO {
 						try {
 							BoardPoint[] changesArr = nextMove(moveToTest, this.color);
 							StringBuilder Builder = new StringBuilder("");
+							//Points counting
 							if(currentPlayer.getColor()==stoneColor.BLACK){
 								BLACKscore+=(changesArr.length-1);
 							}else if(currentPlayer.getColor()==stoneColor.WHITE){
@@ -184,9 +189,9 @@ public class GameGO extends GameLogicGO {
 								Builder.append("-" + changesArr[i].toString());
 							}
 							String BuilderString = Builder.toString();
-							output.println("CORRECT" + BuilderString);
+							output.println("POINTS-"+WHITEscore+"-"+BLACKscore+"-"+"CORRECT" + BuilderString);
 							System.out.println("CORRECT" + BuilderString);
-							changeTurn("CHANGE" + BuilderString);
+							changeTurn("POINTS-"+WHITEscore+"-"+BLACKscore+"-"+"CHANGE" + BuilderString);
 						} catch (WrongMoveException ex) {
 							output.println("WRONG");
 						}
