@@ -19,15 +19,13 @@ public class PlayerPanelController {
     private void setOpacityOnEnteredWhite(MouseEvent event) {
         Node myNode = (Node)event.getSource();
         myNode.setOpacity(0.8);
-        //getLabel((Parent)myNode).setText(ClientState.getInstance().getWhitePoints());
-        getLabel((Parent)myNode).setText("10");
+        getLabel((Parent)myNode).setText(ClientState.getInstance().getWhitePoints());
     }
     @FXML
     private void setOpacityOnEnteredBlack(MouseEvent event) {
         Node myNode = (Node)event.getSource();
         myNode.setOpacity(0.8);
-        //getLabel((Parent)myNode).setText(ClientState.getInstance().getWhitePoints());
-        getLabel((Parent)myNode).setText("15");
+        getLabel((Parent)myNode).setText(ClientState.getInstance().getBlackPoints());
     }
     @FXML
     private void setNormalOpacity(MouseEvent event) {

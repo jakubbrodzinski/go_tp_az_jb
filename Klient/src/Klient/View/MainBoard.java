@@ -56,6 +56,8 @@ public class MainBoard extends Pane {
     }
     public void redraw(String command) {
         String[] commands = command.split("-");
+        ClientState.getInstance().setBlackPoints(commands[2]);
+        ClientState.getInstance().setWhitePoints(commands[1]);
         if(commands[3].equals("CHANGE")) {
             StoneLocation location = StoneLocationParser.parsetoStoneLocation(commands[4], commands[5]);
             stones[location.getxInt()][location.getY()].setOpacity(1);
@@ -70,7 +72,7 @@ public class MainBoard extends Pane {
             StoneLocation location = StoneLocationParser.parsetoStoneLocation(commands[4], commands[5]);
             stones[location.getxInt()][location.getY()].setOpacity(1);
             stones[location.getxInt()][location.getY()].setFill(ClientState.getInstance().getCurrentColorPlaying());
-            for(int i = 3; i < commands.length; i+=2) {
+            for(int i = 6; i < commands.length; i+=2) {
                 location = StoneLocationParser.parsetoStoneLocation(commands[i], commands[i+1]);
                 stones[location.getxInt()][location.getY()].setOpacity(0);
                 stones[location.getxInt()][location.getY()].setFill(Color.AZURE);

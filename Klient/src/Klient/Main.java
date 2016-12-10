@@ -66,10 +66,11 @@ public class Main extends Application {
 
         String response;
         response = in.readLine();
-        System.out.println(response);
         ClientState.getInstance().setPlayerColor(response.substring(15,20));
         ClientState.getInstance().setCurrentTurnColor("BLACK");
         ClientState.getInstance().setSize(response.substring(21,23));
+        ClientState.getInstance().setWhitePoints(response.substring(7,10));
+        ClientState.getInstance().setBlackPoints(response.substring(11,14));
 
         FlowPane root = new FlowPane();
         root.setAlignment(Pos.TOP_RIGHT);
@@ -132,7 +133,7 @@ public class Main extends Application {
                                 if(responseInner.contains("CHANGE") || responseInner.contains("CORRECT")) {
                                     ((MainBoard) mylist.get(0)).redraw(responseInner);
                                     ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
-                                    if(responseInner.startsWith("CHANGE"))
+                                    if(responseInner.contains("CHANGE"))
                                         ((MainBoard) mylist.get(0)).changePlayerEffectOn();
                                     else
                                         ((MainBoard) mylist.get(0)).changePlayerEffectOff();

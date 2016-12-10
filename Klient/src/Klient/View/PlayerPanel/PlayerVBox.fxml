@@ -31,12 +31,12 @@
             </Label>
             <Pane onMouseEntered="#setOpacityOnEnteredBlack" onMouseExited="#setNormalOpacity" opacity="0.0" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" StackPane.alignment="CENTER">
                <children>
-                  <Label alignment="CENTER" layoutX="167.0" layoutY="97.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="70.0" text="Label" textAlignment="CENTER" textFill="#fffafa">
+                  <Label alignment="CENTER" layoutX="130.0" layoutY="95.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="70.0" prefWidth="140.0" text="10" textAlignment="CENTER" textFill="#fffafa">
                      <font>
                         <Font name="System Bold" size="50.0" />
                      </font>
                   </Label>
-                  <Label layoutX="148.0" layoutY="195.0" text="Punkty" textFill="SNOW">
+                  <Label layoutX="147.0" layoutY="195.0" text="Punkty" textFill="SNOW">
                      <font>
                         <Font size="30.0" />
                      </font>
@@ -77,12 +77,12 @@
             </Label>
             <Pane onMouseEntered="#setOpacityOnEnteredWhite" onMouseExited="#setNormalOpacity" opacity="0.0" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: white;">
                <children>
-                  <Label alignment="CENTER" layoutX="166.0" layoutY="104.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="70.0" text="Label" textAlignment="CENTER" textFill="#252222">
+                  <Label alignment="CENTER" layoutX="128.0" layoutY="94.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="70.0" prefWidth="140.0" text="10" textAlignment="CENTER" textFill="#252222">
                      <font>
                         <Font name="System Bold" size="50.0" />
                      </font>
                   </Label>
-                  <Label layoutX="146.0" layoutY="196.0" text="Punkty" textFill="#252222">
+                  <Label layoutX="147.0" layoutY="199.0" text="Punkty" textFill="#252222">
                      <font>
                         <Font size="30.0" />
                      </font>
