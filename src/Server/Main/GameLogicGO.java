@@ -26,6 +26,7 @@ public class GameLogicGO {
 	private  stoneColor[][][] boardHistory;
 	private stoneColor[][][] boardDup;
 	protected BoardSize boardSize;
+	boolean firstMove=true;
 	public GameLogicGO(){
 	}
 
@@ -129,7 +130,24 @@ public class GameLogicGO {
 	}
 
 	public synchronized BoardPoint[] nextMove(BoardPoint move,stoneColor turn) throws WrongMoveException{
-		//DrawBoard();
+		if(firstMove){
+			if(turn==stoneColor.WHITE) {
+				firstMove = false;
+			}else{
+				BoardPoint center=null;
+				if(board.length==13){
+					center=new BoardPoint('G',7);
+				}else if(board.length==19){
+					center=new BoardPoint('K',10);
+				}else{
+					center=new BoardPoint('E',5);
+				}
+				if(center.equals(move))
+					throw new WrongMoveException();
+				else
+					firstMove=false;
+			}
+		}
 		int pointX=move.getIntegerVertical()-1;
 		int pointY=board.length-move.getHorizontal();
 		//We cannot place new stone if there is already one in this field or field is outside the board
