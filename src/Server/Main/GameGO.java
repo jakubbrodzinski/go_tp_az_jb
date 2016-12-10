@@ -46,7 +46,7 @@ public class GameGO extends GameLogicGO {
 		this.currentPlayer = currentPlayer;
 	}
 
-	private void changeTurn(String statement) {
+	private synchronized void changeTurn(String statement) {
 		currentPlayer = currentPlayer.getOpponent();
 		currentPlayer.otherPlayerMoved(statement);
 	}
@@ -160,7 +160,7 @@ public class GameGO extends GameLogicGO {
 				while (!statusQUIT) {
 					String command = input.readLine();
 					//Test
-					if(command==null)
+					if (command == null)
 						continue;
 					System.out.println(this.color + "command: " + command);
 					String[] command_splited = command.split("-");
@@ -191,52 +191,54 @@ public class GameGO extends GameLogicGO {
 					} else if (command_splited[0].equals("PASS")) {
 						output.println("PASS");
 						changeTurn("PASSPROPOSED");
-					}else if(command_splited[0].equals("PASSPROPOSED")){
+					} else if (command_splited[0].equals("PASSPROPOSED")) {
 						output.println(command_splited[0]);
 						continue;
-					}else if(command_splited[0].equals("PASSACCEPTED")){
-						BoardPoint[][] territories=countTerritories();
-						StringBuilder Builder=new StringBuilder("BLACK");
-						for(int i=0;i<territories[0].length;i++){
-							Builder.append("-"+territories[0][i].toString());
+					} else if (command_splited[0].equals("PASSACCEPTED")) {
+						BoardPoint[][] territories = countTerritories();
+						StringBuilder Builder = new StringBuilder("BLACK");
+						for (int i = 0; i < territories[0].length; i++) {
+							Builder.append("-" + territories[0][i].toString());
 						}
 						Builder.append("-WHITE");
-						for(int i=0;i<territories[1].length;i++){
-							Builder.append("-"+territories[1][i].toString());
+						for (int i = 0; i < territories[1].length; i++) {
+							Builder.append("-" + territories[1][i].toString());
 						}
-						String BuilderString=Builder.toString();
+						String BuilderString = Builder.toString();
 						output.println(BuilderString);
 						changeTurn(BuilderString);
-					}else if(command_splited[0].equals("PASSCANCELED")){
+					} else if (command_splited[0].equals("PASSCANCELED")) {
+						if(command.length()>13)
+							changeTurn(command.substring(0,13)+'\n'+command.substring(14));
+						else
+							System.out.println("Problem z PASSCANCLEDED");
+					} else if (command_splited[0].equals("QUIT")) {
 						changeTurn(command_splited[0]);
-					}else if (command_splited[0].equals("QUIT")) {
-						changeTurn(command_splited[0]);
-						statusQUIT=true;
+						statusQUIT = true;
 					} else if (command_splited[0].equals("CHANGESITES")) {
 						changeColors = true;
 						changeTurn(command_splited[0]);
 					} else if (command_splited[0].equals("AGREE")) {
 						changeSites();
-						if(color==stoneColor.WHITE){
+						if (color == stoneColor.WHITE) {
 							output.println("FRESHSTART");
 							changeTurn("FRESHSTART");
-						}else{
+						} else {
 							output.println("FRESHSTART");
 							changeTurn("FRESHSTART-W");
 						}
-						changeColors=false;
+						changeColors = false;
 					} else if (command_splited[0].equals("DISAGREE")) {
-						changeColors=false;
+						changeColors = false;
 						changeTurn(command_splited[0]);
 					} else {
 						System.out.println("Unknown command(change turn works)!");
 						changeTurn(command_splited[0]);
 					}
 
-					if(pass){
-						pass=false;
+					if (pass) {
+						pass = false;
 					}
-
 				}
 			} catch (IOException e) {
 				e.printStackTrace();

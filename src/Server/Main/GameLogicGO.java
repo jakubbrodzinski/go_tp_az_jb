@@ -22,10 +22,10 @@ BOT!
  * Returns BoardPoints that has changed.
  */
 public class GameLogicGO {
-	protected  stoneColor[][] board;
-	protected  stoneColor[][][] boardHistory;
+	private  stoneColor[][] board;
+	private  stoneColor[][][] boardHistory;
 	private stoneColor[][][] boardDup;
-	protected BoardSize boardSize;
+	private BoardSize boardSize;
 	public GameLogicGO(){
 	}
 
