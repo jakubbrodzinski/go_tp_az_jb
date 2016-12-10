@@ -5,4 +5,14 @@ package Server.Enums;
  */
 public enum stoneColor {
 	WHITE,BLACK,UNDEFINED;
+
+	public stoneColor opposite(){
+		if(this==WHITE){
+			return BLACK;
+		}else if(this==BLACK){
+			return WHITE;
+		}else{
+			return UNDEFINED;
+		}
+	}
 }

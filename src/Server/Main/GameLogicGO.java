@@ -22,10 +22,10 @@ BOT!
  * Returns BoardPoints that has changed.
  */
 public class GameLogicGO {
-	private  stoneColor[][] board;
+	protected   stoneColor[][] board;
 	private  stoneColor[][][] boardHistory;
 	private stoneColor[][][] boardDup;
-	private BoardSize boardSize;
+	protected BoardSize boardSize;
 	public GameLogicGO(){
 	}
 
@@ -62,13 +62,13 @@ public class GameLogicGO {
 			for(int j=0;j<board.length;j++){
 				if(black<2){
 					if(board[i][j]==stoneColor.BLACK){
-						blackTerritory.add(new BoardPoint(i,j));
+						blackTerritory.add(new BoardPoint(i,boardSize.getSize()-1-j));
 						black++;
 					}
 				}
 				if(white<2){
 					if(board[i][j]==stoneColor.WHITE){
-						whiteTerritory.add(new BoardPoint(i,j));
+						whiteTerritory.add(new BoardPoint(i,boardSize.getSize()-1-j));
 						white++;
 					}
 				}
@@ -130,8 +130,8 @@ public class GameLogicGO {
 
 	public synchronized BoardPoint[] nextMove(BoardPoint move,stoneColor turn) throws WrongMoveException{
 		//DrawBoard();
-		int pointX=move.getIntegerHorizontal()-1;
-		int pointY=board.length-move.getVertical();
+		int pointX=move.getIntegerVertical()-1;
+		int pointY=board.length-move.getHorizontal();
 		//We cannot place new stone if there is already one in this field or field is outside the board
 		if(pointX<0 || pointX >=board.length || pointY<0 || pointX >=board.length){
 			System.out.println("OutOfBounds move!["+(pointX+1)+"]["+(pointY+1)+"]");

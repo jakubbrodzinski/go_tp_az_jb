@@ -4,82 +4,82 @@ package Server.Main;
  * Created by jakub on 12/3/16.
  */
 public class BoardPoint {
-	private char horizontal;
-	private int vertical;
-	public BoardPoint(char h,int v){
-		horizontal=Character.toUpperCase(h);
-		vertical=v;
+	private int horizontal;
+	private char vertical;
+	public BoardPoint(char v,int h){
+		vertical=Character.toUpperCase(v);
+		horizontal=h;
 	}
-	public BoardPoint(int h,int v){
-		vertical=v+1;
-		switch (h){
+	public BoardPoint(int v,int h){
+		horizontal=h+1;
+		switch (v){
 			case 0:
-				horizontal='A';
+				vertical='A';
 				break;
 			case 1:
-				horizontal='B';
+				vertical='B';
 				break;
 			case 2:
-				horizontal='C';
+				vertical='C';
 				break;
 			case 3:
-				horizontal='D';
+				vertical='D';
 				break;
 			case 4:
-				horizontal='E';
+				vertical='E';
 				break;
 			case 5:
-				horizontal='F';
+				vertical='F';
 				break;
 			case 6:
-				horizontal='G';
+				vertical='G';
 				break;
 			case 7:
-				horizontal='H';
+				vertical='H';
 				break;
 			case 8:
-				horizontal='J';
+				vertical='J';
 				break;
 			case 9:
-				horizontal='K';
+				vertical='K';
 				break;
 			case 10:
-				horizontal='L';
+				vertical='L';
 				break;
 			case 11:
-				horizontal='M';
+				vertical='M';
 				break;
 			case 12:
-				horizontal='N';
+				vertical='N';
 				break;
 			case 13:
-				horizontal='O';
+				vertical='O';
 				break;
 			case 14:
-				horizontal='P';
+				vertical='P';
 				break;
 			case 15:
-				horizontal='Q';
+				vertical='Q';
 				break;
 			case 16:
-				horizontal='R';
+				vertical='R';
 				break;
 			case 17:
-				horizontal='S';
+				vertical='S';
 				break;
 			case 18:
-				horizontal='T';
+				vertical='T';
 				break;
 			default:
 				System.out.println("Something went wrong!");
-				horizontal='X';
+				vertical='X';
 		}
 	}
-	public char getHorizontal(){
+	public int getHorizontal(){
 		return horizontal;
 	}
-	public int getIntegerHorizontal(){
-		switch (horizontal){
+	public int getIntegerVertical(){
+		switch (vertical){
 			case 'A':
 				return 1;
 			case 'B':
@@ -122,11 +122,11 @@ public class BoardPoint {
 					return -1;
 		}
 	}
-	public int getVertical(){
+	public char getVertical(){
 		return vertical;
 	}
 	public String toString(){
-		return horizontal+"-"+new Integer(vertical).toString();
+		return vertical+"-"+new Integer(horizontal).toString();
 	}
 
 	@Override

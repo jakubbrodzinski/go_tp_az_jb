@@ -1,5 +1,6 @@
 package Server.Main;
 
+import Server.BotGO.Bot;
 import Server.BotGO.PlayerAbstract;
 import Server.Enums.BoardSize;
 import Server.Enums.stoneColor;
@@ -9,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by jakub on 12/2/16.
@@ -67,11 +67,11 @@ public class GameGO extends GameLogicGO {
 	}
 
 	class BotGO extends PlayerAbstract{
-		private stoneColor[][] boardBOT;
+		private Bot ourBot;
 		public BotGO(stoneColor color){
 			System.out.println("Bot has been created succesfully!");
 			this.color=color;
-			boardBOT=new stoneColor[boardSize.getSize()][boardSize.getSize()];
+			ourBot=new Bot(boardSize,this.color);
 		}
 
 		public void run() {}
@@ -83,15 +83,24 @@ public class GameGO extends GameLogicGO {
 			BoardPoint[] changes=null;
 			System.out.println("otherPlayerMovedBOT:"+command);
 			if(!command.startsWith("QUIT")) {
-				do {
-					p1 = ThreadLocalRandom.current().nextInt(0, boardSize.getSize());
-					p2 = ThreadLocalRandom.current().nextInt(0, boardSize.getSize());
-					try {
-						changes = nextMove(new BoardPoint(p1, p2), color);
-						status = true;
-					} catch (WrongMoveException e) {
+				if(command.startsWith("CHANGE")){
+					int i=1;
+					String[] commands=command.split("-");
+					try{
+						i=Integer.parseInt(commands[2]);
+						BoardPoint opponentMove=new BoardPoint(commands[1].charAt(0),i);
+						ourBot.insertChanges(opponentMove);
+					}catch(NumberFormatException e){
+						System.out.println("issue with parsing in bot");
 					}
-				} while (!status);
+				}
+				try{
+					BoardPoint temp=ourBot.nextBotMove();
+					System.out.println("our bot move:"+temp);
+					changes=nextMove(temp,this.color);
+				}catch(WrongMoveException e){
+					System.out.println("Wrong move from BOT!");
+				}
 				StringBuilder Builder = new StringBuilder("");
 				for (int i = 0; i < changes.length; i++) {
 					Builder.append("-" + changes[i].toString());
