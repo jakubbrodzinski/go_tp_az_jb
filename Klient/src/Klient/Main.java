@@ -110,6 +110,7 @@ public class Main extends Application {
                             System.exit(1);
                             break;
                         }
+
                         Platform.runLater(new Runnable() {
                             @Override
                             public void run() {
@@ -120,6 +121,7 @@ public class Main extends Application {
                                         ((MainBoard) mylist.get(0)).changePlayerEffectOn();
                                     else
                                         ((MainBoard) mylist.get(0)).changePlayerEffectOff();
+                                    //System.out.println(((MainBoard) mylist.get(0)).getStonesGroup(1, 1));
                                 }
                                 else if(responseInner.startsWith("WRONG")) {
                                     //Do nothing
@@ -131,6 +133,8 @@ public class Main extends Application {
                                 else if(responseInner.equals("PASS")) {
                                     //ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
                                     ((MainBoard) mylist.get(0)).changePlayerEffectOff();
+                                    //((MainBoard) mylist.get(0)).removeStonesGroup(((MainBoard) mylist.get(0)).getStonesGroup(1, 1));
+                                    ((MainBoard) mylist.get(0)).findTerritory();
                                 }
                                 /*else if(responseInner.startsWith("PASSPROPOSED")){
                                     ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
