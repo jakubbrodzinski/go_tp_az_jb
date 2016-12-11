@@ -5,37 +5,65 @@ import Klient.StoneController;
 import Klient.StoneLocation;
 import Klient.StoneLocationParser;
 import javafx.animation.FadeTransition;
-import javafx.scene.effect.InnerShadow;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
 import javafx.util.Duration;
-
-import java.io.PrintWriter;
 import java.util.ArrayList;
 
 /**
  * Created by arek on 12/4/16.
+ * The core class of the Application. It is the model of the Go board with the functionality needed for Application to work as the Japanese-style Go game.
  */
 public class MainBoard extends Pane implements GameBoardInterface {
+    /**
+     * Board width
+     */
     private int width;
+    /**
+     * Board height
+     */
     private int height;
+    /**
+     * Main array storing the stones that are present on the board. In the beginning all stones are set with opacity 0 and Color.AZURE, which means they belong to no one
+     */
     private Stone[][] stones;
+    /**
+     * Array storing backup of the game state. Created and used when the game is paused.
+     */
     private Stone[][] backup;
+    /**
+     * Array storing the white player territories. Used when game is paused to create a signal, that is sent to the server
+     */
     private ArrayList<Stone> whiteTerritory = new ArrayList<>();
+    /**
+     * Array storing the black player territories. Used when game is paused to create a signal, that is sent to the server
+     */
     private ArrayList<Stone> blackTerritory = new ArrayList<>();
+    /**
+     * Array storing the black player dead stones. Used when game is paused to create a signal, that is sent to the server
+     */
     private ArrayList<Stone> deadStonesBlack = new ArrayList<>();
+    /**
+     * Array storing the white player dead stones. Used when game is paused to create a signal, that is sent to the server
+     */
     private ArrayList<Stone> deadStonesWhite = new ArrayList<>();
+
     public MainBoard(int width, int height) {
         this.width = width;
         this.height = height;
         this.stones = new Stone[width][height];
+        //Distance between stones is 35 pixels
         this.setPrefSize(35*(width-1), 35*(height-1));
         this.setStyle("-fx-background-color: #b7b496");
         drawGrid();
         drawBoard();
     }
+
+    /**
+     * Method that draws the grid - lines showing where the stones can be put
+     */
     private void drawGrid() {
         Line gridLine;
         for(int i = 0; i < width; i++) {
@@ -47,6 +75,10 @@ public class MainBoard extends Pane implements GameBoardInterface {
             this.getChildren().add(gridLine);
         }
     }
+
+    /**
+     * Method that fills up te stones array. Stones are put every 35 pixels. Thanks to it they are directly on the crossing of lines
+     */
     private void drawBoard() {
         Stone tempStone;
         for(int i = 0; i < width; i++) {
@@ -58,6 +90,11 @@ public class MainBoard extends Pane implements GameBoardInterface {
             }
         }
     }
+
+    /**
+     * Method that redraws the board when the "CHANGE" or "CORRECT" signal is passed to the client
+     * @param command Signal from the server
+     */
     public void redraw(String command) {
         String[] commands = command.split("-");
         ClientState.getInstance().setBlackPoints(commands[2]);
@@ -83,7 +120,10 @@ public class MainBoard extends Pane implements GameBoardInterface {
             }
         }
     }
-    //przy zrzucie przy poddawaniu sie
+
+    /**
+     * Method that backups the board when the game is paused
+     */
     public void backupBoard() {
         backup =  new Stone[width][height];
         for(int i = 0; i < width; i++) {
@@ -94,6 +134,10 @@ public class MainBoard extends Pane implements GameBoardInterface {
             }
         }
     }
+
+    /**
+     * Method that restores the board when the game is rolled back to previous state after DENY signal
+     */
     public void restoreBoard() {
         for(int i = 0; i < width; i++) {
             for(int j = 0; j < height; j++) {
@@ -103,7 +147,16 @@ public class MainBoard extends Pane implements GameBoardInterface {
         }
     }
 
+    /**
+     * Method that redraws the board to show the suggested territories and dead stones
+     * @param command Signal from the server
+     */
     public void redrawTerritories(String command) {
+        restoreBoard();
+        blackTerritory.clear();
+        whiteTerritory.clear();
+        deadStonesBlack.clear();
+        deadStonesWhite.clear();
         String[] splitcommands = command.split("-");
         for(int i = 0; i < splitcommands.length; i++) {
             if(splitcommands[i].equals("BLACK")) {
@@ -175,11 +228,13 @@ public class MainBoard extends Pane implements GameBoardInterface {
         }
         answer += "BLACKP-";
         for(Stone stone : deadStonesBlack) {
+            System.out.println("W parsowaniu dead stones black" + deadStonesBlack);
             StoneLocation location = StoneLocationParser.parseStoneLocation((int) stone.getCenterX(), (int) stone.getCenterY());
             answer = answer + location.getX() +  Integer.toString(location.getY()) + "-";
         }
         answer += "WHITEP-";
         for(Stone stone : deadStonesWhite) {
+            System.out.println("W parsowaniu dead stones white" + deadStonesWhite);
             StoneLocation location = StoneLocationParser.parseStoneLocation((int) stone.getCenterX(), (int) stone.getCenterY());
             answer = answer + location.getX() +  Integer.toString(location.getY()) + "-";
         }
@@ -188,7 +243,13 @@ public class MainBoard extends Pane implements GameBoardInterface {
         return answer;
 
     }
-    //Grupowanie kamieni
+
+    /**
+     * Method that gets the group of stones, to which the chosen stone belongs to
+     * @param x X location of the stone
+     * @param y Y location of the stone
+     * @return ArrayList with stone group, that the chosen stone belongs to
+     */
     public ArrayList<Stone> getStonesGroup(int x, int y) {
         ArrayList<Stone> result = new ArrayList<>();
         ArrayList<Stone> alreadyTraversed = new ArrayList<>();
@@ -199,6 +260,7 @@ public class MainBoard extends Pane implements GameBoardInterface {
             result.add(stones[x][y]);
             lookForGroup(x, y, result, alreadyTraversed);
         }
+        System.out.println("REZULTAT: " + result);
         return result;
     }
     public void colorGroup(ArrayList<Stone> group, Paint color) {
@@ -207,7 +269,14 @@ public class MainBoard extends Pane implements GameBoardInterface {
             stone.setFill(color);
         }
     }
-    //szukanie grupek
+
+    /**
+     * Recurrence used to search for group of stones. Used in getStonesGroup method
+     * @param x X location of the stone
+     * @param y Y location of the stone
+     * @param result result of the search
+     * @param alreadyTraversed ArrayList with already traversed stone, that prevents the same stone to be counted to the group 2 times
+     */
     private void lookForGroup(int x, int y, ArrayList<Stone> result, ArrayList<Stone> alreadyTraversed) {
         if(stones[x][y].getFill().equals(result.get(0).getFill())) {
             if (!alreadyTraversed.contains(stones[x][y])) {
@@ -231,6 +300,10 @@ public class MainBoard extends Pane implements GameBoardInterface {
         }
 
     }
+
+    /**
+     * Method that changes the visual effect of the board to show that it is user's turn
+     */
     public void changePlayerEffectOn() {
         FadeTransition ft = new FadeTransition(Duration.millis(500), this);
         ft.setFromValue(0.5);
@@ -238,6 +311,10 @@ public class MainBoard extends Pane implements GameBoardInterface {
         ft.setCycleCount(1);
         ft.play();
     }
+
+    /**
+     * Method that changes the visual effect of the board to show that is is not user's turn
+     */
     public void changePlayerEffectOff() {
         FadeTransition ft = new FadeTransition(Duration.millis(500), this);
         ft.setFromValue(1);

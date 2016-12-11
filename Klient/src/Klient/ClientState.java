@@ -1,14 +1,13 @@
 package Klient;
 
-import javafx.scene.paint.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
-import java.awt.*;
 
 
 /**
  * Created by arek on 12/7/16.
+ * Singleton class storing all client-wide used variables. It stores the client's current state, size , current player, number of points and pause state
  */
 public class ClientState {
 
@@ -58,6 +57,11 @@ public class ClientState {
             return Color.BLACK;
         }
     }
+
+    /**
+     * Method that returns the color of the next player
+     * @return String with the next player
+     */
     public String changePlayers() {
         if(currentTurnColor.equals("WHITE")) {
             return "BLACK";
@@ -66,6 +70,11 @@ public class ClientState {
             return "WHITE";
         }
     }
+
+    /**
+     * Method that sets the size of the Board
+     * @param command
+     */
     public void setSize(String command) {
         if(command.startsWith("9")) {
             size = 9;

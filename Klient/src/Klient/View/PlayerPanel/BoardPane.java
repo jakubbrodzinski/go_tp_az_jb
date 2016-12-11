@@ -15,6 +15,7 @@ import java.io.PrintWriter;
 
 /**
  * Created by arek on 12/3/16.
+ * Class that creates the main board and acts as the middleman between main scene and board
  */
 public class BoardPane extends GridPane {
 
@@ -24,6 +25,10 @@ public class BoardPane extends GridPane {
         this.setStyle("-fx-background-color: #EFECCA");
         prepareBoardPane();
     }
+
+    /**
+     * Method that initializes BoardPane GUI
+     */
     private void prepareBoardPane() {
         //TODO Refactor MainBoard to a factory method
         MainBoard board = new MainBoard(ClientState.getInstance().getSize(), ClientState.getInstance().getSize());

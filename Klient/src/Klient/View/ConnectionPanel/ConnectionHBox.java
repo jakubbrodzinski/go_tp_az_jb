@@ -5,16 +5,18 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
-import java.io.PrintWriter;
 
 /**
  * Created by arek on 12/3/16.
+ * Main GUI component of Connection Box (the windows with usage of which you connect to the game)
  */
 public class ConnectionHBox extends GridPane {
 
+    /**
+     * RadioBox with option buttons
+     */
     private RadioBox radioBox = new RadioBox();
 
     public ConnectionHBox() {
@@ -24,6 +26,10 @@ public class ConnectionHBox extends GridPane {
         this.setVgap(10);
         prepareConnectionHBox();
     }
+
+    /**
+     * Method that creates the GUI of the ConnectionHBox
+     */
     private void prepareConnectionHBox() {
 
         Button confirmationButton = new Button("Zatwierdź");
@@ -40,6 +46,11 @@ public class ConnectionHBox extends GridPane {
         this.getChildren().add(confirmationButton);
 
     }
+
+    /**
+     * Accessor method that returns panel with option buttons
+     * @return RadioBox
+     */
     public RadioBox getRadioBox() {
         return this.radioBox;
     }

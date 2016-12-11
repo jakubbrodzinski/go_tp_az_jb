@@ -10,9 +10,12 @@ import java.io.PrintWriter;
 
 /**
  * Created by arek on 12/7/16.
+ * Main controller class for Connection Box that handles MouseEvents performed on RadioBox buttons.
  */
 public class ConnectionPanelController implements EventHandler<MouseEvent> {
-
+    /**
+     * PrintWriter that sends signals to server with connection options: New Game/Join Game/Create game with bot
+     */
     private PrintWriter out = ClientPrintWriter.getInstance().getPrintWriter();
 
     @Override

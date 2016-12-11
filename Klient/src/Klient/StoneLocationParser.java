@@ -1,14 +1,20 @@
 package Klient;
 
-import Klient.View.Stone;
-
-import java.util.ArrayList;
 
 /**
  * Created by arek on 12/7/16.
+ * Class that enables conversion of the stone's location between integer array-like system and classical Go board numbering system
+ * It works both ways
  */
 public class StoneLocationParser {
+    /**
+     * A method that conducts conversion array-like numbering system-> Go board numbering system
+     * @param x Stone's X position on board
+     * @param y Stone's Y position on board
+     * @return StoneLocation that contains converted stone's location
+     */
     public static StoneLocation parseStoneLocation(int x, int y) {
+        //Location where the output will be held
         StoneLocation location;
         String helperX;
         int helperY;
@@ -77,7 +83,7 @@ public class StoneLocationParser {
         }
         switch(y/35) {
             case 0:
-                helperY = ClientState.getInstance().getSize() - 0;
+                helperY = ClientState.getInstance().getSize();
                 break;
             case 1:
                 helperY = ClientState.getInstance().getSize() - 1;
@@ -140,7 +146,15 @@ public class StoneLocationParser {
         location = new StoneLocation(helperX, helperY);
         return location;
     }
+
+    /**
+     * A method that conducts conversion Go board numbering -> array-like numbering system system
+     * @param x Stone's X position on board
+     * @param y Stone's Y position on board
+     * @return StoneLocation that contains converted stone's location
+     */
     public static StoneLocation parsetoStoneLocation(String x, String y) {
+        //Location where the output will be held
         StoneLocation location;
         int helperX;
         int helperY;

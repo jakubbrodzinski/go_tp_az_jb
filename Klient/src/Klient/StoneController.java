@@ -10,10 +10,17 @@ import java.io.PrintWriter;
 
 /**
  * Created by arek on 12/7/16.
+ * Core application controller class. It operates on stones and uses them in a different way depending on the current client state.
  */
 public class StoneController implements EventHandler<MouseEvent> {
 
+    /**
+     * PrintWriter that sends signals to the server
+     */
     private PrintWriter out = ClientPrintWriter.getInstance().getPrintWriter();
+    /**
+     * Variable storing clientState = interexchangeable with simple ClientState.getInstance()
+     */
     private ClientState clientState = ClientState.getInstance();
 
 
@@ -34,11 +41,20 @@ public class StoneController implements EventHandler<MouseEvent> {
                 if (ClientState.getInstance().getCurrentTurnColor().equals(ClientState.getInstance().getPlayerColor())) {
                     if (ClientState.getInstance().getPlayerColor().equals("WHITE")) {
                         if (((Stone) object).getFill().equals(Color.BLACK)) {
-                            ((MainBoard) ((Stone) object).getParent()).getDeadStonesBlack().add((Stone) object);
+
+                            for(Stone stone : ((MainBoard) ((Stone) object).getParent()).getStonesGroup((int) ((Stone) object).getCenterX() / 35, (int) ((Stone) object).getCenterY() / 35)) {
+                                ((MainBoard) ((Stone) object).getParent()).getDeadStonesBlack().add(stone);
+
+                            }
+
                             ((MainBoard) ((Stone) object).getParent()).colorGroup(((MainBoard) ((Stone) object).getParent()).getStonesGroup((int) ((Stone) object).getCenterX() / 35, (int) ((Stone) object).getCenterY() / 35), Color.DARKRED);
+
                         } else if (((Stone) object).getFill().equals(Color.DARKRED)) {
-                            ((MainBoard) ((Stone) object).getParent()).getDeadStonesBlack().remove((Stone) object);
+                            for(Stone stone : ((MainBoard) ((Stone) object).getParent()).getStonesGroup((int) ((Stone) object).getCenterX() / 35, (int) ((Stone) object).getCenterY() / 35)) {
+                                ((MainBoard) ((Stone) object).getParent()).getDeadStonesBlack().remove(stone);
+                            }
                             ((MainBoard) ((Stone) object).getParent()).colorGroup(((MainBoard) ((Stone) object).getParent()).getStonesGroup((int) ((Stone) object).getCenterX() / 35, (int) ((Stone) object).getCenterY() / 35), Color.BLACK);
+
                         } else if (((Stone) object).getFill().equals(Color.AZURE)) {
                             ((MainBoard) ((Stone) object).getParent()).getWhiteTerritory().add((Stone) object);
                             ((Stone) object).setFill(Color.WHITESMOKE);
@@ -50,10 +66,14 @@ public class StoneController implements EventHandler<MouseEvent> {
                         }
                     } else if (ClientState.getInstance().getPlayerColor().equals("BLACK")) {
                         if (((Stone) object).getFill().equals(Color.WHITE)) {
-                            ((MainBoard) ((Stone) object).getParent()).getDeadStonesWhite().add((Stone) object);
+                            for(Stone stone : ((MainBoard) ((Stone) object).getParent()).getStonesGroup((int) ((Stone) object).getCenterX() / 35, (int) ((Stone) object).getCenterY() / 35)) {
+                                ((MainBoard) ((Stone) object).getParent()).getDeadStonesWhite().add(stone);
+                            }
                             ((MainBoard) ((Stone) object).getParent()).colorGroup(((MainBoard) ((Stone) object).getParent()).getStonesGroup((int) ((Stone) object).getCenterX() / 35, (int) ((Stone) object).getCenterY() / 35), Color.RED);
                         } else if (((Stone) object).getFill().equals(Color.RED)) {
-                            ((MainBoard) ((Stone) object).getParent()).getDeadStonesWhite().remove((Stone) object);
+                            for(Stone stone : ((MainBoard) ((Stone) object).getParent()).getStonesGroup((int) ((Stone) object).getCenterX() / 35, (int) ((Stone) object).getCenterY() / 35)) {
+                                ((MainBoard) ((Stone) object).getParent()).getDeadStonesWhite().remove(stone);
+                            }
                             ((MainBoard) ((Stone) object).getParent()).colorGroup(((MainBoard) ((Stone) object).getParent()).getStonesGroup((int) ((Stone) object).getCenterX() / 35, (int) ((Stone) object).getCenterY() / 35), Color.WHITE);
                         } else if (((Stone) object).getFill().equals(Color.AZURE)) {
                             ((MainBoard) ((Stone) object).getParent()).getBlackTerritory().add((Stone) object);

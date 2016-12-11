@@ -9,15 +9,18 @@ import java.io.IOException;
 
 /**
  * Created by arek on 12/3/16.
+ * Class that creates the most right oriented panel with game informations and navigation buttons
  */
 public class PlayerVBox extends VBox {
     public PlayerVBox() {
         preparePlayerVBox();
     }
+
+    /**
+     * Method initializing the PlayerVBox GUI - loading the GUI from FXML
+     */
     private void preparePlayerVBox() {
-        //FXMLLoader loader = new FXMLLoader(getClass().getResource("PlayerVBox.fxml"));
         FXMLLoader loader = new FXMLLoader(getClass().getResource("PlayerVBox.fxml"));
-        //System.out.println(getClass().getResource("PlayerVBox.fxml"));
         try {
             this.getChildren().setAll((Node)loader.load());
         }

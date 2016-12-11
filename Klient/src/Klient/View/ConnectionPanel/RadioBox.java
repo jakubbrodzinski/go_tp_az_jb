@@ -14,11 +14,21 @@ import javafx.scene.text.Font;
 
 /**
  * Created by arek on 12/3/16.
+ * Class that stores/animates choice buttons and creates RadioBox GUI
  */
 public class RadioBox extends GridPane {
 
+    /**
+     * TextField getting/storing Join room number input
+     */
     private TextField tableInput = new TextField();
+    /**
+     * TextField getting/storing New game board size
+     */
     private TextField sizeInput = new TextField();
+    /**
+     * ToggleGroup that stores all choice buttons
+     */
     private final ToggleGroup group = new ToggleGroup();
 
     public RadioBox() {
@@ -30,11 +40,17 @@ public class RadioBox extends GridPane {
         this.getColumnConstraints().add(new ColumnConstraints(250));
         prepareRadioBox();
     }
+
+    /**
+     * Method that initializes RadioBox GUI and sets all EventHandlers
+     */
     private void prepareRadioBox() {
+        //Additional VBox that stores the Buttons
         VBox components = new VBox();
         components.setAlignment(Pos.CENTER_LEFT);
         components.setSpacing(20);
 
+        //Button for new game
         RadioButton newTableButton = new RadioButton("Nowa gra");
         newTableButton.setUserData("NewGame");
         newTableButton.setSelected(true);
@@ -42,6 +58,7 @@ public class RadioBox extends GridPane {
         newTableButton.setFont(new Font(20));
         newTableButton.setToggleGroup(group);
 
+        //Button for joining game
         RadioButton joinTableButton = new RadioButton("Dołącz do gry");
         joinTableButton.setUserData("JoinGame");
         joinTableButton.setFont(new Font(20));
@@ -50,9 +67,12 @@ public class RadioBox extends GridPane {
         components.getChildren().add(newTableButton);
 
         components.getChildren().add(joinTableButton);
+
+
         GridPane.setConstraints(components, 0, 0);
         this.getChildren().add(components);
 
+        //Stylizing the prompts and TextFields
         tableInput.setPromptText("Podaj numer stołu, do którego chcesz dołączyć");
         tableInput.setVisible(false);
 
@@ -74,11 +94,13 @@ public class RadioBox extends GridPane {
         this.getChildren().add(tableInput);
         this.getChildren().add(sizeInput);
 
-
+        //Animating the Radiobox
         ImageView image = new ImageView();
         GridPane.setConstraints(image, 1, 0);
+        //Initial image is New Game, because new game button is the default toggle
         image.setImage(new Image(getClass().getResourceAsStream("NewGame.png")));
         this.getChildren().add(image);
+        //Listener for changing the toggle - it changes the image near the toggled button
         group.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
             @Override
             public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
@@ -100,12 +122,27 @@ public class RadioBox extends GridPane {
             }
         });
     }
+
+    /**
+     * Accessor for content of Join Table Textfield
+     * @return String with table number
+     */
     public String getTableInputContent() {
         return tableInput.getText();
     }
+
+    /**
+     * Accesor for content of New Game Textfield
+     * @return String with size of new game board
+     */
     public String getSizeInputContent() {
         return sizeInput.getText();
     }
+
+    /**
+     * Accessor for getting descriptions of toggled button
+     * @return String with button description
+     */
     public String getToggledButton() {
         return (String) group.getSelectedToggle().getUserData();
     }

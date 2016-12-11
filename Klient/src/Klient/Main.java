@@ -25,12 +25,27 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Optional;
 
+/**
+ * Main application class
+ */
 public class Main extends Application {
 
+    /**
+     * BufferedReader instance for reading the input from the server
+     */
     private BufferedReader in;
+    /**
+     * PrintWriter instance for printing the output from the server
+     */
     private PrintWriter out;
+    /**
+     * Socket that enables the connection between the client and the server
+     */
     private Socket socket;
-    private ArrayList<Node> mylist;
+    /**
+     * ArrayList storing the main board of the game
+     */
+    private ArrayList<Node> boardList;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -75,7 +90,7 @@ public class Main extends Application {
         primaryStage.setOnCloseRequest(new PrimaryStageClosingController());
         otherStage.hide();
 
-        mylist = getAllBoards(root);
+        boardList = getAllBoards(root);
 
         play();
 
@@ -89,17 +104,26 @@ public class Main extends Application {
             System.out.println("Cannot close socket");
         }
     }
+
+    /**
+     * Method that connects to the server
+     * @throws IOException
+     */
     private void connectToServer() throws IOException {
         socket = new Socket("localhost", 8901);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         ClientPrintWriter.getInstance().setInstance(socket.getOutputStream(), true);
-        //TODO Refactor code -> Decouple the code by removing "out" passing
         out = ClientPrintWriter.getInstance().getPrintWriter();
     }
+
+    /**
+     * Method that starts the proper game state
+     * @throws IOException
+     */
     private void play() throws IOException {
 
         if(!ClientState.getInstance().getPlayerColor().equals(ClientState.getInstance().getCurrentTurnColor()))
-            ((MainBoard) mylist.get(0)).changePlayerEffectOff();
+            ((MainBoard) boardList.get(0)).changePlayerEffectOff();
         new Thread(new Runnable() {
 
             @Override
@@ -119,12 +143,12 @@ public class Main extends Application {
                             @Override
                             public void run() {
                                 if(responseInner.contains("CHANGE") || responseInner.contains("CORRECT")) {
-                                    ((MainBoard) mylist.get(0)).redraw(responseInner);
+                                    ((MainBoard) boardList.get(0)).redraw(responseInner);
                                     ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
                                     if(responseInner.contains("CHANGE"))
-                                        ((MainBoard) mylist.get(0)).changePlayerEffectOn();
+                                        ((MainBoard) boardList.get(0)).changePlayerEffectOn();
                                     else
-                                        ((MainBoard) mylist.get(0)).changePlayerEffectOff();
+                                        ((MainBoard) boardList.get(0)).changePlayerEffectOff();
                                 }
                                 else if(responseInner.contains("WRONG")) {
                                     //Do nothing
@@ -136,22 +160,20 @@ public class Main extends Application {
                                 else if(responseInner.equals("PASS")) {
                                     if(ClientState.getInstance().getPlayerColor().equals(ClientState.getInstance().getCurrentTurnColor())) {
                                         ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
-                                        ((MainBoard) mylist.get(0)).changePlayerEffectOff();
-                                        //((MainBoard) mylist.get(0)).findTerritory();
+                                        ((MainBoard) boardList.get(0)).changePlayerEffectOff();
                                     }
                                     else {
                                         ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
-                                        ((MainBoard) mylist.get(0)).changePlayerEffectOn();
-                                        //((MainBoard) mylist.get(0)).findTerritory();
+                                        ((MainBoard) boardList.get(0)).changePlayerEffectOn();
                                     }
                                 }
                                 else if(responseInner.startsWith("BLACK")) {
-                                    ((MainBoard) mylist.get(0)).backupBoard();
+                                    ((MainBoard) boardList.get(0)).backupBoard();
                                     ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
                                     ClientState.getInstance().setIsPaused("PAUSED");
-                                    ((MainBoard) mylist.get(0)).redrawTerritories(responseInner);
+                                    ((MainBoard) boardList.get(0)).redrawTerritories(responseInner);
                                     if(ClientState.getInstance().getCurrentTurnColor().equals(ClientState.getInstance().getPlayerColor())) {
-                                        ((MainBoard) mylist.get(0)).changePlayerEffectOn();
+                                        ((MainBoard) boardList.get(0)).changePlayerEffectOn();
                                         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                                         alert.initModality(Modality.NONE);
                                         alert.setTitle("GRA ZATRZYMANA - propozycja serwera");
@@ -161,16 +183,15 @@ public class Main extends Application {
                                                              "Terytorium czarnego - jasnny czarny\n" +
                                                              "Martwy punkt biały - czerwony\n" +
                                                              "Martwy punkt czarny - ciemnoczerwony");
-
                                         ButtonType buttonAccept = new ButtonType("Zaproponuj");
                                         ButtonType buttonDeny = new ButtonType("Odrzuć");
                                         alert.getButtonTypes().setAll(buttonAccept, buttonDeny);
 
                                         Optional<ButtonType> result = alert.showAndWait();
                                         if(result.get() == buttonAccept) {
-                                            out.println(((MainBoard) mylist.get(0)).parseTerritories());
+                                            out.println(((MainBoard) boardList.get(0)).parseTerritories());
                                             ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
-                                            ((MainBoard) mylist.get(0)).changePlayerEffectOff();
+                                            ((MainBoard) boardList.get(0)).changePlayerEffectOff();
                                         }
                                         else if(result.get() == buttonDeny) {
                                             out.println("DENY");
@@ -178,13 +199,13 @@ public class Main extends Application {
 
                                     }
                                     else {
-                                        ((MainBoard) mylist.get(0)).changePlayerEffectOff();
+                                        ((MainBoard) boardList.get(0)).changePlayerEffectOff();
                                     }
                                 }
                                 else if(responseInner.startsWith("PROPOSITION")) {
                                     ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
-                                    ((MainBoard) mylist.get(0)).changePlayerEffectOn();
-                                    ((MainBoard) mylist.get(0)).redrawTerritories(responseInner);
+                                    ((MainBoard) boardList.get(0)).changePlayerEffectOn();
+                                    ((MainBoard) boardList.get(0)).redrawTerritories(responseInner);
                                     if(ClientState.getInstance().getCurrentTurnColor().equals(ClientState.getInstance().getPlayerColor())) {
                                         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                                         alert.initModality(Modality.NONE);
@@ -195,16 +216,15 @@ public class Main extends Application {
                                                 "Terytorium czarnego - jasnny czarny\n" +
                                                 "Martwy punkt biały - czerwony\n" +
                                                 "Martwy punkt czarny - ciemnoczerwony");
-
                                         ButtonType buttonAccept = new ButtonType("Zaproponuj");
                                         ButtonType buttonDeny = new ButtonType("Odrzuć");
                                         alert.getButtonTypes().setAll(buttonAccept, buttonDeny);
 
                                         Optional<ButtonType> result = alert.showAndWait();
                                         if(result.get() == buttonAccept) {
-                                            out.println(((MainBoard) mylist.get(0)).parseTerritories());
+                                            out.println(((MainBoard) boardList.get(0)).parseTerritories());
                                             ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
-                                            ((MainBoard) mylist.get(0)).changePlayerEffectOff();
+                                            ((MainBoard) boardList.get(0)).changePlayerEffectOff();
                                         }
                                         else if(result.get() == buttonDeny) {
                                             out.println("DENY");
@@ -214,10 +234,10 @@ public class Main extends Application {
                                 }
                                 else if(responseInner.startsWith("ENDPROPOSITION")) {
                                     ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
-                                    ((MainBoard) mylist.get(0)).changePlayerEffectOn();
-                                    ((MainBoard) mylist.get(0)).redrawTerritories(responseInner);
+                                    ((MainBoard) boardList.get(0)).changePlayerEffectOn();
+                                    ((MainBoard) boardList.get(0)).redrawTerritories(responseInner);
                                     if(ClientState.getInstance().getCurrentTurnColor().equals(ClientState.getInstance().getPlayerColor())) {
-                                        ((MainBoard) mylist.get(0)).changePlayerEffectOn();
+                                        ((MainBoard) boardList.get(0)).changePlayerEffectOn();
                                         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                                         alert.initModality(Modality.NONE);
                                         alert.setTitle("KONIEC GRY");
@@ -232,7 +252,7 @@ public class Main extends Application {
                                         if(result.get() == buttonAccept) {
                                             out.println(responseInner);
                                             ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
-                                            ((MainBoard) mylist.get(0)).changePlayerEffectOff();
+                                            ((MainBoard) boardList.get(0)).changePlayerEffectOff();
                                         }
                                         else if(result.get() == buttonDeny) {
                                             out.println("DENY");
@@ -240,20 +260,24 @@ public class Main extends Application {
                                     }
                                 }
                                 else if(responseInner.startsWith("DENY")) {
-                                    ((MainBoard) mylist.get(0)).restoreBoard();
+                                    ((MainBoard) boardList.get(0)).restoreBoard();
+                                    ((MainBoard) boardList.get(0)).getBlackTerritory().clear();
+                                    ((MainBoard) boardList.get(0)).getWhiteTerritory().clear();
+                                    ((MainBoard) boardList.get(0)).getDeadStonesBlack().clear();
+                                    ((MainBoard) boardList.get(0)).getDeadStonesWhite().clear();
                                     ClientState.getInstance().setIsPaused("NOTPAUSED");
                                     ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
                                     if(ClientState.getInstance().getCurrentTurnColor().equals(ClientState.getInstance().getPlayerColor()))
-                                        ((MainBoard) mylist.get(0)).changePlayerEffectOn();
+                                        ((MainBoard) boardList.get(0)).changePlayerEffectOn();
                                     else
-                                        ((MainBoard) mylist.get(0)).changePlayerEffectOff();
+                                        ((MainBoard) boardList.get(0)).changePlayerEffectOff();
                                 }
                                 else if(responseInner.startsWith("WIN")) {
                                     String[] result = responseInner.split("-");
                                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                                     alert.setTitle("KONIEC GRY");
                                     alert.setHeaderText("Wygrał!" + result[1]);
-                                    alert.setContentText("Punkty białego: " + result[2] + "\n" + "Punkty czarnego: " + result[3]);
+                                    alert.setContentText("Punkty białego: " + result[3] + "\n" + "Punkty czarnego: " + result[2]);
                                     alert.showAndWait();
                                     Platform.exit();
                                     System.exit(1);
@@ -284,12 +308,23 @@ public class Main extends Application {
         }).start();
 
     }
+
+    /**
+     * Method that finds all boards in the application
+     * @param root Pane from where the MainBoards will be accessed
+     * @return ArrayList with boards
+     */
     public static ArrayList<Node> getAllBoards(Parent root) {
         ArrayList<Node> nodes = new ArrayList<Node>();
         addAllBoards(root, nodes);
         return nodes;
     }
 
+    /**
+     * Method that uses recursion to find all the boards
+     * @param parent Pane from where the MainBoards will be accessed
+     * @param nodes ArrayList that holds the nodes that belong to the parent node
+     */
     private static void addAllBoards(Parent parent, ArrayList<Node> nodes) {
         for (Node node : parent.getChildrenUnmodifiable()) {
             if(node instanceof MainBoard)
