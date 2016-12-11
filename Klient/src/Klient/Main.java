@@ -166,6 +166,8 @@ public class Main extends Application {
                                         Optional<ButtonType> result = alert.showAndWait();
                                         if(result.get() == buttonAccept) {
                                             out.println(((MainBoard) mylist.get(0)).parseTerritories());
+                                            ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
+                                            ((MainBoard) mylist.get(0)).changePlayerEffectOff();
                                         }
                                         else if(result.get() == buttonDeny) {
                                             out.println("DENY");
@@ -175,8 +177,10 @@ public class Main extends Application {
                                     else {
                                         ((MainBoard) mylist.get(0)).changePlayerEffectOff();
                                     }
-
-
+                                }
+                                else if(responseInner.startsWith("PROPOSITION")) {
+                                    ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
+                                    ((MainBoard) mylist.get(0)).changePlayerEffectOn();
                                 }
                                 else if(responseInner.startsWith("CONCEDE")) {
                                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
