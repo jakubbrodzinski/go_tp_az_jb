@@ -101,7 +101,6 @@ public class MainBoard extends Pane implements GameBoardInterface {
                 stones[i][j].setOpacity(backup[i][j].getOpacity());
             }
         }
-       // System.out.println("Kamine 0,0 " + stones[0][0] + "Kolor to: " + backup[0][0]);
     }
 
     public void redrawTerritories(String command) {
@@ -111,8 +110,8 @@ public class MainBoard extends Pane implements GameBoardInterface {
                 i++;
                 while(!splitcommands[i].equals("WHITE")) {
                     StoneLocation location = StoneLocationParser.parsetoStoneLocation(splitcommands[i], splitcommands[i+1]);
-                    stones[location.getxInt()][location.getY()].setOpacity(1);
-                    stones[location.getxInt()][location.getY()].setFill(Color.GREEN);
+                    stones[location.getxInt()][location.getY()].setOpacity(0.6);
+                    stones[location.getxInt()][location.getY()].setFill(Color.GRAY);
                     blackTerritory.add(stones[location.getxInt()][location.getY()]);
                     i+=2;
                 }
@@ -121,8 +120,8 @@ public class MainBoard extends Pane implements GameBoardInterface {
                 i++;
                 while(!splitcommands[i].equals("BLACKP")) {
                     StoneLocation location = StoneLocationParser.parsetoStoneLocation(splitcommands[i], splitcommands[i+1]);
-                    stones[location.getxInt()][location.getY()].setOpacity(1);
-                    stones[location.getxInt()][location.getY()].setFill(Color.RED);
+                    stones[location.getxInt()][location.getY()].setOpacity(0.6);
+                    stones[location.getxInt()][location.getY()].setFill(Color.WHITESMOKE);
                     whiteTerritory.add(stones[location.getxInt()][location.getY()]);
                     i+=2;
                 }
@@ -132,7 +131,7 @@ public class MainBoard extends Pane implements GameBoardInterface {
                 while(!splitcommands[i].equals("WHITEP")) {
                     StoneLocation location = StoneLocationParser.parsetoStoneLocation(splitcommands[i], splitcommands[i+1]);
                     stones[location.getxInt()][location.getY()].setOpacity(1);
-                    stones[location.getxInt()][location.getY()].setFill(Color.ROYALBLUE);
+                    stones[location.getxInt()][location.getY()].setFill(Color.DARKRED);
                     deadStonesBlack.add(stones[location.getxInt()][location.getY()]);
                     i+=2;
                 }
@@ -142,7 +141,7 @@ public class MainBoard extends Pane implements GameBoardInterface {
                 while(i < splitcommands.length) {
                     StoneLocation location = StoneLocationParser.parsetoStoneLocation(splitcommands[i], splitcommands[i+1]);
                     stones[location.getxInt()][location.getY()].setOpacity(1);
-                    stones[location.getxInt()][location.getY()].setFill(Color.YELLOW);
+                    stones[location.getxInt()][location.getY()].setFill(Color.RED);
                     deadStonesWhite.add(stones[location.getxInt()][location.getY()]);
                     i+=2;
                 }
@@ -200,118 +199,13 @@ public class MainBoard extends Pane implements GameBoardInterface {
             result.add(stones[x][y]);
             lookForGroup(x, y, result, alreadyTraversed);
         }
-        System.out.println("result: "+result);
         return result;
     }
     public void colorGroup(ArrayList<Stone> group, Paint color) {
 
         for(Stone stone : group) {
-            System.out.println("BYLEM TU");
             stone.setFill(color);
         }
-    }
-    public void removeStonesGroup(ArrayList<Stone> toBeRemoved) {
-        for(Stone stone : toBeRemoved) {
-            stone.setOpacity(0);
-            stone.setFill(Color.AZURE);
-        }
-    }
-    //znajdowanie terytoriów i usuwanie tego co jst w środku terytorium
-    public void findTerritory() {
-        ArrayList<Stone> alreadyTraversed = new ArrayList<>();
-        ArrayList<ArrayList<Stone>> territory = new ArrayList<>();
-        for(int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                if (!(alreadyTraversed.contains(stones[i][j])) && (stones[i][j].getFill().equals(ClientState.getInstance().getPlayerColorPaint()))) {
-                    alreadyTraversed.addAll(getStonesGroup(i, j));
-                    territory.add(getStonesGroup(i, j));
-                }
-            }
-        }
-
-        System.out.println("Teyrotiurm to:" + territory);
-        removeInnerParts(territory);
-    }
-    //usuwanie tego co jest w srodku terytorium
-    private void removeInnerParts(ArrayList<ArrayList<Stone>> territory) {
-        for(ArrayList<Stone> group : territory) {
-            Stone[] helper = findBounds(group);
-            System.out.println(helper);
-            if(helper[0] != null && helper[1] != null) {
-                if(helper[0].getCenterX()/35 < helper[1].getCenterX()/35 && helper[0].getCenterY()/35 > helper[1].getCenterY()/35) {
-                    System.out.println("1");
-                    for(int i = 0; i < helper[1].getCenterX()/35; i++) {
-                        for(int j = 0; j < helper[0].getCenterY()/35; j++) {
-                            if(!group.contains(stones[i][j])) {
-                                stones[i][j].setOpacity(0);
-                                stones[i][j].setFill(Color.AZURE);
-                            }
-                            else
-                                break;
-                        }
-                    }
-
-                }
-               else if(helper[0].getCenterX()/35 < helper[1].getCenterX()/35 && helper[0].getCenterY()/35 < helper[1].getCenterY()/35) {
-                    System.out.println("2");
-                    for(int i = 0; i < helper[1].getCenterX()/35; i++) {
-                        for(int j = height-1; j > 0; j--) {
-                            if(!group.contains(stones[i][j])) {
-                                stones[i][j].setOpacity(0);
-                                stones[i][j].setFill(Color.AZURE);
-                            }
-                            else
-                                break;
-                        }
-                    }
-                }
-                else if(helper[0].getCenterX()/35 > helper[1].getCenterX()/35 && helper[0].getCenterY()/35 > helper[1].getCenterY()/35) {
-                    System.out.println("3");
-                    for(int i = width - 1; i > 0; i--) {
-                        for(int j = 0; j < helper[0].getCenterY()/35; j++) {
-                            if(!group.contains(stones[i][j])) {
-                                stones[i][j].setOpacity(0);
-                                stones[i][j].setFill(Color.AZURE);
-                            }
-                            else
-                                break;
-                        }
-                    }
-                }
-                else if(helper[0].getCenterX()/35 > helper[1].getCenterX()/35 && helper[0].getCenterY()/35 < helper[1].getCenterY()/35) {
-                    System.out.println("4");
-                    for(int i = width - 1; i > 0; i--) {
-                        if(group.contains(stones[i][height-1]))
-                            break;
-                        for(int j = height-1; j > 0; j--) {
-                            if(!group.contains(stones[i][j])) {
-                                stones[i][j].setOpacity(0);
-                                stones[i][j].setFill(Color.AZURE);
-                            }
-                            else
-                                break;
-                        }
-                    }
-                }
-
-            }
-        }
-
-    }
-    //znajdowanie końców grup
-    private Stone[] findBounds(ArrayList<Stone> group) {
-        Stone[] answer = new Stone[2];
-
-        for(Stone stone : group) {
-            if(stone.getCenterX()/35 == 0 || stone.getCenterX()/35 == width-1) {
-                answer[0] = stone;
-            }
-            if(stone.getCenterY()/35 == 0 || stone.getCenterY()/35 == height-1) {
-                answer[1] = stone;
-            }
-        }
-
-        return answer;
     }
     //szukanie grupek
     private void lookForGroup(int x, int y, ArrayList<Stone> result, ArrayList<Stone> alreadyTraversed) {
@@ -333,18 +227,6 @@ public class MainBoard extends Pane implements GameBoardInterface {
                 if(!(y - 1 < 0)) {
                     lookForGroup(x, y - 1, result, alreadyTraversed);
                 }
-               /* if(!(x + 1 >= width) && !(y + 1 >= height)) {
-                    lookForGroup(x + 1, y + 1, result, alreadyTraversed);
-                }
-                if(!(x + 1 >= width) && !(y - 1 < 0)) {
-                    lookForGroup(x + 1, y - 1, result, alreadyTraversed);
-                }
-                if(!(x - 1 < 0) && !(y + 1 >= height)) {
-                    lookForGroup(x - 1, y + 1, result, alreadyTraversed);
-                }
-                if(!(x - 1 < 0) && !(y - 1 < 0)) {
-                    lookForGroup(x - 1, y - 1, result, alreadyTraversed);
-                }*/
             }
         }
 

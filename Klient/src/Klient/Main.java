@@ -28,7 +28,6 @@ import java.util.Optional;
 public class Main extends Application {
 
     private BufferedReader in;
-    //TODO jeżeli się nie przpda bedzie mozna wyrzucic, bo w clientprintwriter singletonie jest
     private PrintWriter out;
     private Socket socket;
     private ArrayList<Node> mylist;
@@ -155,9 +154,13 @@ public class Main extends Application {
                                         ((MainBoard) mylist.get(0)).changePlayerEffectOn();
                                         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                                         alert.initModality(Modality.NONE);
-                                        alert.setTitle("GRA ZATRZYMANA");
+                                        alert.setTitle("GRA ZATRZYMANA - propozycja serwera");
                                         alert.setHeaderText("Wybierz pola, które chcesz wysłać");
-                                        alert.setContentText("LEGENDA");
+                                        alert.setContentText("LEGENDA:\n" +
+                                                             "Terytorium białego - jasny biały\n" +
+                                                             "Terytorium czarnego - jasnny czarny\n" +
+                                                             "Martwy punkt biały - czerwony\n" +
+                                                             "Martwy punkt czarny - ciemnoczerwony");
 
                                         ButtonType buttonAccept = new ButtonType("Zaproponuj");
                                         ButtonType buttonDeny = new ButtonType("Odrzuć");
@@ -181,6 +184,79 @@ public class Main extends Application {
                                 else if(responseInner.startsWith("PROPOSITION")) {
                                     ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
                                     ((MainBoard) mylist.get(0)).changePlayerEffectOn();
+                                    ((MainBoard) mylist.get(0)).redrawTerritories(responseInner);
+                                    if(ClientState.getInstance().getCurrentTurnColor().equals(ClientState.getInstance().getPlayerColor())) {
+                                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                                        alert.initModality(Modality.NONE);
+                                        alert.setTitle("GRA ZATRZYMANA - propozycja przeciwnika");
+                                        alert.setHeaderText("Wybierz pola, które chcesz wysłać");
+                                        alert.setContentText("LEGENDA:\n" +
+                                                "Terytorium białego - jasny biały\n" +
+                                                "Terytorium czarnego - jasnny czarny\n" +
+                                                "Martwy punkt biały - czerwony\n" +
+                                                "Martwy punkt czarny - ciemnoczerwony");
+
+                                        ButtonType buttonAccept = new ButtonType("Zaproponuj");
+                                        ButtonType buttonDeny = new ButtonType("Odrzuć");
+                                        alert.getButtonTypes().setAll(buttonAccept, buttonDeny);
+
+                                        Optional<ButtonType> result = alert.showAndWait();
+                                        if(result.get() == buttonAccept) {
+                                            out.println(((MainBoard) mylist.get(0)).parseTerritories());
+                                            ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
+                                            ((MainBoard) mylist.get(0)).changePlayerEffectOff();
+                                        }
+                                        else if(result.get() == buttonDeny) {
+                                            out.println("DENY");
+                                        }
+
+                                    }
+                                }
+                                else if(responseInner.startsWith("ENDPROPOSITION")) {
+                                    ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
+                                    ((MainBoard) mylist.get(0)).changePlayerEffectOn();
+                                    ((MainBoard) mylist.get(0)).redrawTerritories(responseInner);
+                                    if(ClientState.getInstance().getCurrentTurnColor().equals(ClientState.getInstance().getPlayerColor())) {
+                                        ((MainBoard) mylist.get(0)).changePlayerEffectOn();
+                                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                                        alert.initModality(Modality.NONE);
+                                        alert.setTitle("KONIEC GRY");
+                                        alert.setHeaderText("Czy akceptujesz taki stan gry?");
+                                        alert.setContentText("Po zaakceptowaniu tego stanu gra się zakończy");
+
+                                        ButtonType buttonAccept = new ButtonType("Akceptuj");
+                                        ButtonType buttonDeny = new ButtonType("Odrzuć");
+                                        alert.getButtonTypes().setAll(buttonAccept, buttonDeny);
+
+                                        Optional<ButtonType> result = alert.showAndWait();
+                                        if(result.get() == buttonAccept) {
+                                            out.println(responseInner);
+                                            ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
+                                            ((MainBoard) mylist.get(0)).changePlayerEffectOff();
+                                        }
+                                        else if(result.get() == buttonDeny) {
+                                            out.println("DENY");
+                                        }
+                                    }
+                                }
+                                else if(responseInner.startsWith("DENY")) {
+                                    ((MainBoard) mylist.get(0)).restoreBoard();
+                                    ClientState.getInstance().setIsPaused("NOTPAUSED");
+                                    ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
+                                    if(ClientState.getInstance().getCurrentTurnColor().equals(ClientState.getInstance().getPlayerColor()))
+                                        ((MainBoard) mylist.get(0)).changePlayerEffectOn();
+                                    else
+                                        ((MainBoard) mylist.get(0)).changePlayerEffectOff();
+                                }
+                                else if(responseInner.startsWith("WIN")) {
+                                    String[] result = responseInner.split("-");
+                                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                    alert.setTitle("KONIEC GRY");
+                                    alert.setHeaderText("Wygrał!" + result[1]);
+                                    alert.setContentText("Punkty białego: " + result[2] + "\n" + "Punkty czarnego: " + result[3]);
+                                    alert.showAndWait();
+                                    Platform.exit();
+                                    System.exit(1);
                                 }
                                 else if(responseInner.startsWith("CONCEDE")) {
                                     Alert alert = new Alert(Alert.AlertType.INFORMATION);

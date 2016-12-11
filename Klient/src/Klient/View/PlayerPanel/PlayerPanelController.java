@@ -34,8 +34,10 @@ public class PlayerPanelController {
     }
     @FXML
     private void invokePass(MouseEvent event) {
-        if(ClientState.getInstance().getCurrentTurnColor().equals(ClientState.getInstance().getPlayerColor())) {
-            ClientPrintWriter.getInstance().getPrintWriter().println("PASS");
+        if(ClientState.getInstance().getIsPaused().equals("NOTPAUSED")) {
+            if (ClientState.getInstance().getCurrentTurnColor().equals(ClientState.getInstance().getPlayerColor())) {
+                ClientPrintWriter.getInstance().getPrintWriter().println("PASS");
+            }
         }
     }
     @FXML
