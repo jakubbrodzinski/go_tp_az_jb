@@ -51,6 +51,10 @@ public class GameGO extends GameLogicGO {
 		currentPlayer.otherPlayerMoved(statement);
 	}
 
+	public String getScore(String command){
+		finalScore(command);
+		return BLACKscore+"-"+WHITEscore;
+	}
 	private void finalScore(String command){
 		//PROPOSITION-BLACK-N-2-M-2-N-1-M-1-WHITE-A-1-A-2-BLACKP-D-7-G-5-J-5-WHITEP-H-10-F-8-J-7
 		System.out.println("finalscore: "+command);
@@ -78,11 +82,15 @@ public class GameGO extends GameLogicGO {
 			black++;
 			i+=2;
 		}
-		BLACKscore=black-BLACKscore;
-		WHITEscore=white-WHITEscore;
+		double oldWhitePoints=WHITEscore;
+		WHITEscore=white-BLACKscore;
+		BLACKscore=black-oldWhitePoints;
 		//PROPOSITION-BLACK-N-2-M-2-N-1-M-1-WHITE-A-1-A-2-BLACKP-D-7-G-5-J-5-WHITEP-H-10-F-8-J-7
 	}
 
+	/**
+	 * Nested class (like Player.class) extends the same abstractClass as Player.
+	 */
 	class BotGO extends PlayerAbstract{
 		private Bot ourBot;
 		public BotGO(stoneColor color){
@@ -94,6 +102,10 @@ public class GameGO extends GameLogicGO {
 		public void run() {}
 
 
+		/**
+		 * @param command command that was sent to the server.
+		 *                Bot reacts to this command by making new move on board.
+		 */
 		public void otherPlayerMoved(String command) {
 			int p1,p2;
 			boolean status=false;
@@ -134,6 +146,10 @@ public class GameGO extends GameLogicGO {
 		}
 	}
 
+	/**
+	 * It's nested class that represents client in our gameGo
+	 * Beucase he is nested we can use GameGO's methods in this class which makes server a lot easier to implement
+	 */
 	class Player extends PlayerAbstract{
 		private Socket socket;
 		private BufferedReader input;
@@ -159,10 +175,18 @@ public class GameGO extends GameLogicGO {
 			this.output = playa.output;
 		}
 
+		/**
+		 * via this method server communicates with client before he is connected
+		 * @param message message we want to send to client.
+		 */
 		public void signalServer(String message){
 			output.println(message);
 		}
 
+		/**
+		 * @return command that defines preferences how client wants to connect
+		 * @throws WrongPlayerInitiation is thrown when we cannot read anything that client that wants to connect to us sent.
+		 */
 		public String setBoard() throws WrongPlayerInitiation {
 			try {
 				String line = input.readLine();
@@ -176,6 +200,11 @@ public class GameGO extends GameLogicGO {
 			output.println(command);
 		}
 
+		/**
+		 * In this method whole comunication between server and cleints is implemented.
+		 * Server has to react to diffrent commands and then send answer to the second player and
+		 * sometimes reaction to the first player.
+		 */
 		public void run() {
 			try {
 				System.out.println(color + " connected " + gameID);

@@ -156,14 +156,38 @@ public class GameLogicGO {
 		temp.remove(temp.size()-1);
 		return true;
 	}
-
+	private ArrayList<BoardPoint> whiteTerritory=null;
+	private ArrayList<BoardPoint> blackTerritory=null;
 	/**
 	 * Method search for all of one player's territory.
 	 * @param color It looks for color's (white or black) territory
 	 * @return Array of the BoardPoint that are color's territory
 	 */
-	@SuppressWarnings("Duplicates")
 	public BoardPoint[] countTerritories(stoneColor color){
+		if((blackTerritory==null && whiteTerritory==null) || (whiteTerritory==null && color==stoneColor.WHITE) || (blackTerritory==null && color==stoneColor.BLACK)) {
+			setCountTerritories(stoneColor.WHITE);
+			setCountTerritories(stoneColor.BLACK);
+			for (BoardPoint e : whiteTerritory) {
+				if (blackTerritory.contains(e)) {
+					blackTerritory.remove(e);
+					whiteTerritory.remove(e);
+				}
+			}
+		}
+		if(color==stoneColor.BLACK){
+			BoardPoint[] temp=blackTerritory.toArray(new BoardPoint[blackTerritory.size()]);
+			blackTerritory=null;
+			return temp;
+		}else if(color==stoneColor.WHITE){
+			BoardPoint[] temp=whiteTerritory.toArray(new BoardPoint[whiteTerritory.size()]);
+			whiteTerritory=null;
+			return temp;
+		}else{
+			return null;
+		}
+	}
+	@SuppressWarnings("Duplicates")
+	private void setCountTerritories(stoneColor color){
 		ArrayList<BoardPoint> Territory=new ArrayList<>();
 		chains=new ArrayList<>();
 		stoneColor[][] boardDupTeritories=new stoneColor[board.length][board.length];
@@ -245,7 +269,11 @@ public class GameLogicGO {
 		chains.clear();
 
 		countDeadStones(territoryTaken,color);
-		return Territory.toArray(new BoardPoint[Territory.size()]);
+		if(color==stoneColor.BLACK){
+			blackTerritory=Territory;
+		}else{
+			whiteTerritory=Territory;
+		}
 	}
 
 	private void countDeadStones(stoneColor[][] territoryTaken,stoneColor col){

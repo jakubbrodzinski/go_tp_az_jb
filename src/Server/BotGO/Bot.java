@@ -11,7 +11,9 @@ import java.util.ListIterator;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Created by jakub on 12/9/16.
+ * In this class whole logic and way how Bot makes new moves are implemented.
+ * It extends GameLogicGo and because of that we can actually test if move is ok or not, before sending it
+ * to the Server. Bot has copy of the board and because of it he can analyze what move would be better than others.
  */
 public class Bot extends GameLogicGO {
 	private stoneColor botColor;
@@ -22,6 +24,10 @@ public class Bot extends GameLogicGO {
 	public void setBotColor(stoneColor col){
 		botColor=col;
 	}
+	/**
+	 * Initialize board and sets 3 possible first moves.
+	 * @param e size of the Board
+	 */
 	public void setSize(BoardSize e){
 		super.setSize(e);
 		if(boardSize==BoardSize.SMALL){
@@ -43,6 +49,10 @@ public class Bot extends GameLogicGO {
 		this.botColor=col;
 	}
 
+	/**
+	 * With this method we keep updated our copy of the board.
+	 * @param point Point where second Player made move.
+	 */
 	public void insertChanges(BoardPoint point){
 		try{
 			nextMove(point,botColor.opposite());
@@ -161,6 +171,10 @@ public class Bot extends GameLogicGO {
 		return null;
 	}
 
+	/**
+	 * In this method decision is made where Bot should make his next move.
+	 * @return move made by bot
+	 */
 	public BoardPoint nextBotMove(){
 		if(historyOfMoves.size()==0) {
 			return getFirstMove();
