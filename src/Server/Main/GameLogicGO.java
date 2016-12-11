@@ -6,19 +6,29 @@ import Server.Enums.stoneColor;
 import java.util.ArrayList;
 /*
 TO DO LIST:
-6.Terytorium!!!!!
+http://www.math.edu.pl/lekcja-6
  */
 /**
  * Created by jakub on 12/3/16.
- * Class that implements whole logic of the GO Game. Tests if move is correct.
- * Returns BoardPoints that has changed.
+ * Class that implements whole logic of the GO Game using TemplateMethod pattern.
+ * Tests if move is correct.Returns BoardPoints that had changed.
+ * Center of the board cannot be BLACKplayer's first mvoe.
+ * Looks for territory for each color.
+ * Looks for
  */
 public class GameLogicGO {
 	protected stoneColor[][] board;
 	private  stoneColor[][][] boardHistory;
 	private stoneColor[][][] boardDup;
 	protected BoardSize boardSize;
-	boolean firstMove=true;
+	private boolean firstMove=true;
+	private ArrayList<ArrayList<stoneGO>> chains;
+	private ArrayList<BoardPoint>[] deadStones=new ArrayList[2];
+	//0-BLACK,1-WHITE
+
+	/**
+	 * Very simple class, used in counting territories.
+	 */
 	public GameLogicGO(){
 	}
 
@@ -30,13 +40,12 @@ public class GameLogicGO {
 			this.x=x;
 			this.y=y;
 		}
-
-		//testing
-		public String toString(){
-			return new Integer(x).toString()+"-"+new Integer(y).toString();
-		}
 	}
 
+	/**
+	 * Method set's up whole Board, has to be invoked.
+	 * @param i size of the Board
+	 */
 	public void setSize(BoardSize i){
 		boardSize=i;
 		board=new stoneColor[i.getSize()][i.getSize()];
@@ -52,7 +61,6 @@ public class GameLogicGO {
 	}
 
 	//mode: 0-gorna sciana,1- prawa sciana, 2-dolna sciana, 3-lewa sciana
-	private ArrayList<ArrayList<stoneGO>> chains;
 	private boolean lookForChains(int mode,ArrayList<stoneGO> temp,int index,int row,int column,stoneColor color,stoneColor[][] boardDup){
 		if(mode==0) {
 			if(row>=board.length){
@@ -149,6 +157,11 @@ public class GameLogicGO {
 		return true;
 	}
 
+	/**
+	 * Method search for all of one player's territory.
+	 * @param color It looks for color's (white or black) territory
+	 * @return Array of the BoardPoint that are color's territory
+	 */
 	@SuppressWarnings("Duplicates")
 	public BoardPoint[] countTerritories(stoneColor color){
 		ArrayList<BoardPoint> Territory=new ArrayList<>();
@@ -231,18 +244,53 @@ public class GameLogicGO {
 		}
 		chains.clear();
 
-
-		System.out.println(color+":");
-		int i=0;
-			for(BoardPoint x: Territory){
-				i++;
-				if(i%6==0)
-					System.out.println(x+" | ");
-				else
-					System.out.print(x+" | ");
-			}
-
+		countDeadStones(territoryTaken,color);
 		return Territory.toArray(new BoardPoint[Territory.size()]);
+	}
+
+	private void countDeadStones(stoneColor[][] territoryTaken,stoneColor col){
+		//0-BLACK,1-WHITE
+		int index=0;
+		if(col==stoneColor.BLACK) {
+			deadStones[0]=new ArrayList<>();
+			index = 0;
+		}else {
+			deadStones[1]=new ArrayList<>();
+			index = 1;
+		}
+
+		for(int i=0;i<territoryTaken.length;i++){
+			for(int j=0;j<territoryTaken[i].length;j++){
+				//gora
+				if(i-1<0 || territoryTaken[i-1][j]==stoneColor.UNDEFINED){
+					//prawo
+					if(j+1>=board.length || territoryTaken[i][j+1]==stoneColor.UNDEFINED){
+						//dol
+						if(i+1>=board.length || territoryTaken[i+1][j]==stoneColor.UNDEFINED){
+							//lewo
+							if(j-1<0 || territoryTaken[i][j-1]==stoneColor.UNDEFINED){
+								deadStones[index].add(new BoardPoint(j,board.length-1-i));
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * @param color color of the deadstones we want to be returned
+	 * @return Array of points that are DeadStones
+	 */
+	public BoardPoint[] getDeadStones(stoneColor color){
+		//0-BLACK,1-WHITE
+		if(color==stoneColor.WHITE){
+			return deadStones[1].toArray(new BoardPoint[deadStones[1].size()]);
+		}else if(color==stoneColor.BLACK){
+			return deadStones[0].toArray(new BoardPoint[deadStones[0].size()]);
+		}else{
+			return null;
+		}
 	}
 
 
@@ -294,6 +342,13 @@ public class GameLogicGO {
 		return true;
 	}
 
+
+	/**
+	 * @param move point where we want to move
+	 * @param turn which color's is this mvoe
+	 * @return if move is ok it returns array of the points that had changed compared to situation on board before move
+	 * @throws WrongMoveException if move is wrong
+	 */
 	public synchronized BoardPoint[] nextMove(BoardPoint move,stoneColor turn) throws WrongMoveException{
 		if(firstMove){
 			if(turn==stoneColor.WHITE) {
@@ -441,7 +496,9 @@ public class GameLogicGO {
 		return temporaryArray.toArray(new BoardPoint[temporaryArray.size()]);
 	}
 
-	//method only for test with junit
+	/**
+	 *  Method was created only for tests in JUnit
+	 */
 		public void DrawBoard(){
 			for(int i=0;i<board.length;i++){
 				for(int j=0;j<board[i].length;j++){

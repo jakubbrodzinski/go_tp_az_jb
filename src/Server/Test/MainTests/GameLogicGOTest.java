@@ -65,7 +65,7 @@ public class GameLogicGOTest {
 		GameToTest.nextMove(new BoardPoint('D',9),stoneColor.WHITE);
 
 		GameToTest.DrawBoard();
-		GameToTest.countTerritories(stoneColor.WHITE);
+		assertEquals(29,GameToTest.countTerritories(stoneColor.WHITE).length);
 	}
 
 	@Test(expected = WrongMoveException.class)

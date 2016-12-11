@@ -17,16 +17,13 @@ import java.net.Socket;
  * Class decides what server should do. Usually send particular move to check if its correct. If it is correct move
  * after passing info 'bout it to the client it sends which points in the board changed.
  */
-/*
-TO DO LIST:
-1.Zmiana stron!
- */
 public class GameGO extends GameLogicGO {
 	private PlayerAbstract currentPlayer;
 	private int gameID;
 	private double BLACKscore=0;
 	private double WHITEscore=6.5;
 
+	private boolean pass = false;
 	private boolean statusQUIT=false;
 
 	public GameGO() {
@@ -52,8 +49,6 @@ public class GameGO extends GameLogicGO {
 		currentPlayer = currentPlayer.getOpponent();
 		currentPlayer.otherPlayerMoved(statement);
 	}
-
-	private boolean pass = false;
 
 	class BotGO extends PlayerAbstract{
 		private Bot ourBot;
@@ -201,8 +196,10 @@ public class GameGO extends GameLogicGO {
 						changeTurn(command_splited[0]);
 						statusQUIT = true;
 					} else if (command_splited[0].equals("PASS")) {
+						System.out.println("PASS!");
 						if(pass){
 							BoardPoint[] territories = countTerritories(stoneColor.BLACK);
+
 							StringBuilder Builder = new StringBuilder("BLACK");
 							for (int i = 0; i < territories.length; i++) {
 								Builder.append("-" + territories[i].toString());
@@ -212,13 +209,26 @@ public class GameGO extends GameLogicGO {
 							for (int i = 0; i < territories.length; i++) {
 								Builder.append("-" + territories[i].toString());
 							}
+							Builder.append("-BLACKP");
+							territories=getDeadStones(stoneColor.BLACK);
+							for (int i = 0; i < territories.length; i++) {
+								Builder.append("-" + territories[i].toString());
+							}
+							territories = getDeadStones(stoneColor.WHITE);
+							Builder.append("-WHITEP");
+							for (int i = 0; i < territories.length; i++) {
+								Builder.append("-" + territories[i].toString());
+							}
 							String BuilderString = Builder.toString();
+							System.out.println(BuilderString);
 							output.println(BuilderString);
 							changeTurn(BuilderString);
+							pass=false;
+						}else {
+							pass = true;
+							output.println("PASS");
+							changeTurn("PASS");
 						}
-						pass=true;
-						output.println("PASS");
-						changeTurn("PASS");
 					}else if (command_splited[0].equals("QUIT")) {
 						changeTurn(command_splited[0]);
 						statusQUIT = true;
@@ -227,7 +237,7 @@ public class GameGO extends GameLogicGO {
 						changeTurn(command_splited[0]);
 					}
 
-					if (command_splited[0]!="PASS") {
+					if (!command_splited[0].equals("PASS")) {
 						pass = false;
 					}
 				}
