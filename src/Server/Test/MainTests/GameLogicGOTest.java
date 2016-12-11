@@ -31,7 +31,41 @@ public class GameLogicGOTest {
 	//Do zrobienia!
 	@Test
 	public void countTerritories() throws Exception {
+		GameToTest.nextMove(new BoardPoint('C',13),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('C',12),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('C',11),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('D',11),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('E',11),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('F',11),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('F',12),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('F',13),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('E',10),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('E',9),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('F',9),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('G',9),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('H',9),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('J',9),stoneColor.WHITE);
 
+		GameToTest.nextMove(new BoardPoint('A',2),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('B',2),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('C',2),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('C',1),stoneColor.WHITE);
+
+		GameToTest.nextMove(new BoardPoint('K',9),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('K',10),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('K',11),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('K',12),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('K',13),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('H',8),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('H',7),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('G',7),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('A',9),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('B',9),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('C',9),stoneColor.WHITE);
+		GameToTest.nextMove(new BoardPoint('D',9),stoneColor.WHITE);
+
+		GameToTest.DrawBoard();
+		GameToTest.countTerritories();
 	}
 
 	@Test(expected = WrongMoveException.class)

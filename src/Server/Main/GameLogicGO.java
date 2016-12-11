@@ -22,6 +22,11 @@ public class GameLogicGO {
 	public GameLogicGO(){
 	}
 
+	private class stoneGO{
+		private int x;
+		private int y;
+	}
+
 	public void setSize(BoardSize i){
 		boardSize=i;
 		board=new stoneColor[i.getSize()][i.getSize()];
@@ -36,57 +41,134 @@ public class GameLogicGO {
 		}
 	}
 
+	//mode: 0-gorna sciana,1- prawa sciana, 2-dolna sciana, 3-lewa sciana
 	private ArrayList<ArrayList<BoardPoint>> chains;
-	private boolean lookForChainsUp(int index,int row,int column,stoneColor color,stoneColor[][] boardDup){
-		if(board[row][column]!=color){
+	private boolean lookForChains(int mode,ArrayList<BoardPoint> temp,int index,int row,int column,stoneColor color,stoneColor[][] boardDup){
+		if(mode==0) {
+			if(row>=board.length){
+				return false;
+			}else if(row<0 || column>=boardDup.length || column<0){
+				if(temp.size()>1){
+					return true;
+				}else{
+					return false;
+				}
+			}
+		}else if(mode==1){
+			if(column<0){
+				return false;
+			}else if(row<0 || row>=board.length || column>=board.length){
+				if(temp.size()>1){
+					return true;
+				}else{
+					return false;
+				}
+			}
+		}else if(mode==2){
+			if(row<0){
+				return false;
+			}else if(row>=board.length || column>=board.length || column<0){
+				if(temp.size()>1){
+					return true;
+				}else{
+					return false;
+				}
+			}
+		}else if(mode==3){
+			if(column>=board.length){
+				return false;
+			}else if(row<0 || row>=board.length || column<0){
+				if(temp.size()>1){
+					return true;
+				}else{
+					return false;
+				}
+			}
+		}
+
+		if(boardDup[row][column]!=color){
 			return false;
-		}else if(row>=boardDup.length){
-			return false;
-		}else if(row<0 || column>boardDup.length || column<0){
-			chains.get(index).add(new BoardPoint(row,column)); //ZLE!!!!
-			return true;
 		}else if(board[row][column]==null){
 			return false;
 		}
-		boardDup[row][column]=stoneColor.UNDEFINED;
+		chains.get(index).add(new BoardPoint(column,boardDup.length-1-row));
+		temp.add(new BoardPoint(column,boardDup.length-1-row));
+		boardDup[row][column]=null;
 		boolean[] results=new boolean[4];
 		results[0]=results[1]=results[2]=results[3]=false;
+		int size=index;
 		//gora
-		results[0]=lookForChainsUp(index,row-1,column,color,boardDup);
+		results[0]=lookForChains(mode,temp,index,row-1,column,color,boardDup);
 		//prawo
 		if(results[0]) {
-			results[1] = lookForChainsUp(index++, row, column+1, color, boardDup);
+			chains.add(new ArrayList<>(temp));
+			size=chains.size()-1;
+			results[1] = lookForChains(mode,temp,size, row, column+1, color, boardDup);
 		}else{
-			results[1] = lookForChainsUp(index, row, column+1, color, boardDup);
-		}
-		//lewo
-		if(results[1]) {
-			results[2] = lookForChainsUp(index++, row , column-1, color, boardDup);
-		}else{
-			results[2] = lookForChainsUp(index, row , column-1, color, boardDup);
+			results[1] = lookForChains(mode,temp,size, row, column+1, color, boardDup);
 		}
 		//dol
-		if(results[2]) {
-			results[3] = lookForChainsUp(index, row +1, column, color, boardDup);
+		if(results[1]) {
+			chains.add(new ArrayList<>(temp));
+			size=chains.size()-1;
+			results[2] = lookForChains(mode,temp,size, row +1, column, color, boardDup);
 		}else{
-			results[3] = lookForChainsUp(index, row +1, column, color, boardDup);
+			results[2] = lookForChains(mode,temp,size, row +1, column, color, boardDup);
+		}
+		//lewo
+		if(results[2]) {
+			chains.add(new ArrayList<>(temp));
+			size=chains.size()-1;
+			results[3] = lookForChains(mode,temp,size, row , column-1, color, boardDup);
+		}else{
+			results[3] = lookForChains(mode,temp,size, row , column-1, color, boardDup);
 		}
 
-		if(!(results[0] || results[1] || results[2] || results[3]))
-			return false;
+
+		if(!(results[0] || results[1] || results[2] || results[3])){
+			ArrayList<BoardPoint> e=chains.get(index);
+			e.remove(e.size()-1);
+			temp.remove(temp.size()-1);
+			return false; // ?????
+		}
+		if(!results[3] && (results[0] || results[1] || results[2])){
+			chains.remove(size);
+		}
+		temp.remove(temp.size()-1);
 		return true;
 	}
 
 	public BoardPoint[][] countTerritories(){
 		chains=new ArrayList<>();
-		chains.add(new ArrayList<>());
 		stoneColor[][] teritories=new stoneColor[board.length][board.length];
 		for(int i=0;i<teritories.length;i++)
 			for(int j=0;j<teritories[i].length;j++)
 				teritories[i][j]=board[i][j];
-		lookForChainsUp(0,0,0,stoneColor.WHITE,teritories);
-		//
-		ArrayList<BoardPoint> blackTerritory=new ArrayList<>();
+		ArrayList<BoardPoint> temp=new ArrayList<>();
+		chains.add(new ArrayList<>());
+		for(int i=1;i<board.length-1;i++) {
+			lookForChains(0,temp, chains.size()-1, 0, i, stoneColor.WHITE, teritories);
+		}
+		chains.add(new ArrayList<>());
+		for(int i=1;i<board.length-1;i++) {
+			lookForChains(1,temp, chains.size()-1, i, board.length-1, stoneColor.WHITE, teritories);
+		}
+		chains.add(new ArrayList<>());
+		for(int i=1;i<board.length-1;i++) {
+			lookForChains(2,temp, chains.size()-1, board.length-1, i, stoneColor.WHITE, teritories);
+		}
+		chains.add(new ArrayList<>());
+		for(int i=1;i<board.length-1;i++) {
+			lookForChains(3,temp, chains.size()-1, i, board.length-1, stoneColor.WHITE, teritories);
+		}
+		for(ArrayList<BoardPoint> e : chains){
+			for(BoardPoint x: e){
+				System.out.print(x+" | ");
+			}
+			System.out.println();
+		}
+		return null;
+		/*ArrayList<BoardPoint> blackTerritory=new ArrayList<>();
 		ArrayList<BoardPoint> whiteTerritory=new ArrayList<>();
 		int black=0;
 		int white=0;
@@ -109,8 +191,10 @@ public class GameLogicGO {
 		BoardPoint[][] toReturn=new BoardPoint[2][];
 		toReturn[1]=whiteTerritory.toArray(new BoardPoint[whiteTerritory.size()]);
 		toReturn[0]=blackTerritory.toArray(new BoardPoint[blackTerritory.size()]);
-		return toReturn;
+		return toReturn;*/
 	}
+
+
 	//Nie powinna byc wywolywana bezposrednio!
 	private boolean lookFor(boolean AlreadyFound,stoneColor[][] boardDup,int row,int column,stoneColor color){
 		if(column<0 || row < 0 || column>=board.length || row>=board.length){
