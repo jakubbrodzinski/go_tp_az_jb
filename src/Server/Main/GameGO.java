@@ -25,6 +25,7 @@ public class GameGO extends GameLogicGO {
 
 	private boolean pass = false;
 	private boolean statusQUIT=false;
+	private boolean proposition=false;
 
 	public GameGO() {
 	}
@@ -50,6 +51,38 @@ public class GameGO extends GameLogicGO {
 		currentPlayer.otherPlayerMoved(statement);
 	}
 
+	private void finalScore(String command){
+		//PROPOSITION-BLACK-N-2-M-2-N-1-M-1-WHITE-A-1-A-2-BLACKP-D-7-G-5-J-5-WHITEP-H-10-F-8-J-7
+		System.out.println("finalscore: "+command);
+		// terytorium czarne+białe martwe - dotychczasowe punkty białego
+		int black=0;
+		int white=0;
+		String[] command_splited=command.split("-");
+		int i=2;
+		while(i<command_splited.length && !command_splited[i].equals("WHITE")){
+			black++;
+			i+=2;
+		}
+		i++;
+		while(i<command_splited.length && !command_splited[i].equals("BLACKP")){
+			white++;
+			i+=2;
+		}
+		i++;
+		while(i<command_splited.length && !command_splited[i].equals("WHITEP")){
+			white++;
+			i+=2;
+		}
+		i++;
+		while(i<command_splited.length){
+			black++;
+			i+=2;
+		}
+		BLACKscore=black-BLACKscore;
+		WHITEscore=white-WHITEscore;
+		//PROPOSITION-BLACK-N-2-M-2-N-1-M-1-WHITE-A-1-A-2-BLACKP-D-7-G-5-J-5-WHITEP-H-10-F-8-J-7
+	}
+
 	class BotGO extends PlayerAbstract{
 		private Bot ourBot;
 		public BotGO(stoneColor color){
@@ -65,7 +98,7 @@ public class GameGO extends GameLogicGO {
 			int p1,p2;
 			boolean status=false;
 			BoardPoint[] changes=null;
-			System.out.println("otherPlayerMovedBOT:"+command);
+			System.out.println("otherPlayerMoved:"+command);
 			if(!command.startsWith("QUIT")) {
 				if(command.startsWith("POINTS")){
 					String[] commands=command.split("-");
@@ -82,7 +115,6 @@ public class GameGO extends GameLogicGO {
 				}
 				try{
 					BoardPoint temp=ourBot.nextBotMove();
-					System.out.println("our bot move:"+temp);
 					changes=nextMove(temp,this.color);
 				}catch(WrongMoveException e){
 					System.out.println("Wrong move from BOT!");
@@ -97,7 +129,6 @@ public class GameGO extends GameLogicGO {
 					Builder.append("-" + changes[i].toString());
 				}
 				String BuilderString = Builder.toString();
-				System.out.println("CORRECT_bot_builder_string" + BuilderString);
 				changeTurn("POINTS-"+WHITEscore+"-"+BLACKscore+"-"+"CHANGE" + BuilderString);
 			}
 		}
@@ -146,7 +177,6 @@ public class GameGO extends GameLogicGO {
 		}
 
 		public void run() {
-			System.out.println(color);
 			try {
 				System.out.println(color + " connected " + gameID);
 				//if BLACK you make first move
@@ -187,7 +217,6 @@ public class GameGO extends GameLogicGO {
 							}
 							String BuilderString = Builder.toString();
 							output.println("POINTS-"+WHITEscore+"-"+BLACKscore+"-"+"CORRECT" + BuilderString);
-							System.out.println("CORRECT" + BuilderString);
 							changeTurn("POINTS-"+WHITEscore+"-"+BLACKscore+"-"+"CHANGE" + BuilderString);
 						} catch (WrongMoveException ex) {
 							output.println("WRONG");
@@ -196,7 +225,6 @@ public class GameGO extends GameLogicGO {
 						changeTurn(command_splited[0]);
 						statusQUIT = true;
 					} else if (command_splited[0].equals("PASS")) {
-						System.out.println("PASS!");
 						if(pass){
 							BoardPoint[] territories = countTerritories(stoneColor.BLACK);
 
@@ -220,7 +248,6 @@ public class GameGO extends GameLogicGO {
 								Builder.append("-" + territories[i].toString());
 							}
 							String BuilderString = Builder.toString();
-							System.out.println(BuilderString);
 							output.println(BuilderString);
 							changeTurn(BuilderString);
 							pass=false;
@@ -229,6 +256,31 @@ public class GameGO extends GameLogicGO {
 							output.println("PASS");
 							changeTurn("PASS");
 						}
+					}else if(command_splited[0].equals("PROPOSITION")){
+						if(proposition==true){
+							proposition=false;
+							changeTurn("END"+command);
+						}else {
+							proposition = true;
+							changeTurn(command);
+						}
+					}else if(command_splited[0].equals("DENY")){
+						output.println(command);
+						changeTurn(command);
+					}else if(command_splited[0].equals("ENDPROPOSITION")){
+						finalScore(command);
+						StringBuilder builder=new StringBuilder("WIN");
+						if(BLACKscore>WHITEscore){
+							builder.append("-BLACK-");
+						}else{
+							builder.append("-WHITE-");
+						}
+						builder.append(new Double(BLACKscore).toString());
+						builder.append("-"+new Double(WHITEscore).toString());
+						String builderString=builder.toString();
+						output.println(builderString);
+						changeTurn(builderString);
+						//odeslac WIN-KOLOR-CZARNYPOINTS-BIALEPOIINTS
 					}else if (command_splited[0].equals("QUIT")) {
 						changeTurn(command_splited[0]);
 						statusQUIT = true;
@@ -236,10 +288,16 @@ public class GameGO extends GameLogicGO {
 						System.out.println("Unknown command(change turn works)!");
 						changeTurn(command_splited[0]);
 					}
-
-					if (!command_splited[0].equals("PASS")) {
-						pass = false;
+					if(pass==true) {
+						if (!command_splited[0].equals("PASS")) {
+							pass = false;
+						}
 					}
+					if(proposition==true){
+						if(!command_splited[0].equals("PROPOSITION"))
+							proposition=false;
+					}
+
 				}
 			} catch (IOException e) {
 				e.printStackTrace();

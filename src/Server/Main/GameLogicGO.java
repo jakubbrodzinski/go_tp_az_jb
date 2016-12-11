@@ -260,16 +260,18 @@ public class GameLogicGO {
 		}
 
 		for(int i=0;i<territoryTaken.length;i++){
-			for(int j=0;j<territoryTaken[i].length;j++){
-				//gora
-				if(i-1<0 || territoryTaken[i-1][j]==stoneColor.UNDEFINED){
-					//prawo
-					if(j+1>=board.length || territoryTaken[i][j+1]==stoneColor.UNDEFINED){
-						//dol
-						if(i+1>=board.length || territoryTaken[i+1][j]==stoneColor.UNDEFINED){
-							//lewo
-							if(j-1<0 || territoryTaken[i][j-1]==stoneColor.UNDEFINED){
-								deadStones[index].add(new BoardPoint(j,board.length-1-i));
+			for(int j=0;j<territoryTaken[i].length;j++) {
+				if (territoryTaken[i][j] == col) {
+					//gora
+					if (i - 1 < 0 || territoryTaken[i - 1][j] == stoneColor.UNDEFINED) {
+						//prawo
+						if (j + 1 >= board.length || territoryTaken[i][j + 1] == stoneColor.UNDEFINED) {
+							//dol
+							if (i + 1 >= board.length || territoryTaken[i + 1][j] == stoneColor.UNDEFINED) {
+								//lewo
+								if (j - 1 < 0 || territoryTaken[i][j - 1] == stoneColor.UNDEFINED) {
+									deadStones[index].add(new BoardPoint(j, board.length - 1 - i));
+								}
 							}
 						}
 					}
