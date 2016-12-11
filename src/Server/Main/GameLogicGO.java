@@ -25,6 +25,16 @@ public class GameLogicGO {
 	private class stoneGO{
 		private int x;
 		private int y;
+
+		private stoneGO(int x,int y){
+			this.x=x;
+			this.y=y;
+		}
+
+		//testing
+		public String toString(){
+			return new Integer(x).toString()+"-"+new Integer(y).toString();
+		}
 	}
 
 	public void setSize(BoardSize i){
@@ -42,8 +52,8 @@ public class GameLogicGO {
 	}
 
 	//mode: 0-gorna sciana,1- prawa sciana, 2-dolna sciana, 3-lewa sciana
-	private ArrayList<ArrayList<BoardPoint>> chains;
-	private boolean lookForChains(int mode,ArrayList<BoardPoint> temp,int index,int row,int column,stoneColor color,stoneColor[][] boardDup){
+	private ArrayList<ArrayList<stoneGO>> chains;
+	private boolean lookForChains(int mode,ArrayList<stoneGO> temp,int index,int row,int column,stoneColor color,stoneColor[][] boardDup){
 		if(mode==0) {
 			if(row>=board.length){
 				return false;
@@ -91,8 +101,9 @@ public class GameLogicGO {
 		}else if(board[row][column]==null){
 			return false;
 		}
-		chains.get(index).add(new BoardPoint(column,boardDup.length-1-row));
-		temp.add(new BoardPoint(column,boardDup.length-1-row));
+		//new BoardPoint(column,boardDup.length-1-row)
+		chains.get(index).add(new stoneGO(row,column));
+		temp.add(new stoneGO(row,column));
 		boardDup[row][column]=null;
 		boolean[] results=new boolean[4];
 		results[0]=results[1]=results[2]=results[3]=false;
@@ -126,7 +137,7 @@ public class GameLogicGO {
 
 
 		if(!(results[0] || results[1] || results[2] || results[3])){
-			ArrayList<BoardPoint> e=chains.get(index);
+			ArrayList<stoneGO> e=chains.get(index);
 			e.remove(e.size()-1);
 			temp.remove(temp.size()-1);
 			return false; // ?????
@@ -138,60 +149,100 @@ public class GameLogicGO {
 		return true;
 	}
 
-	public BoardPoint[][] countTerritories(){
+	@SuppressWarnings("Duplicates")
+	public BoardPoint[] countTerritories(stoneColor color){
+		ArrayList<BoardPoint> Territory=new ArrayList<>();
 		chains=new ArrayList<>();
-		stoneColor[][] teritories=new stoneColor[board.length][board.length];
-		for(int i=0;i<teritories.length;i++)
-			for(int j=0;j<teritories[i].length;j++)
-				teritories[i][j]=board[i][j];
-		ArrayList<BoardPoint> temp=new ArrayList<>();
-		chains.add(new ArrayList<>());
-		for(int i=1;i<board.length-1;i++) {
-			lookForChains(0,temp, chains.size()-1, 0, i, stoneColor.WHITE, teritories);
-		}
-		chains.add(new ArrayList<>());
-		for(int i=1;i<board.length-1;i++) {
-			lookForChains(1,temp, chains.size()-1, i, board.length-1, stoneColor.WHITE, teritories);
-		}
-		chains.add(new ArrayList<>());
-		for(int i=1;i<board.length-1;i++) {
-			lookForChains(2,temp, chains.size()-1, board.length-1, i, stoneColor.WHITE, teritories);
-		}
-		chains.add(new ArrayList<>());
-		for(int i=1;i<board.length-1;i++) {
-			lookForChains(3,temp, chains.size()-1, i, board.length-1, stoneColor.WHITE, teritories);
-		}
-		for(ArrayList<BoardPoint> e : chains){
-			for(BoardPoint x: e){
-				System.out.print(x+" | ");
+		stoneColor[][] boardDupTeritories=new stoneColor[board.length][board.length];
+		stoneColor[][] territoryTaken=new stoneColor[board.length][board.length];
+		for(int i=0;i<boardDupTeritories.length;i++) {
+			for (int j = 0; j < boardDupTeritories[i].length; j++) {
+				boardDupTeritories[i][j] = board[i][j];
+				territoryTaken[i][j]=board[i][j];
 			}
-			System.out.println();
 		}
-		return null;
-		/*ArrayList<BoardPoint> blackTerritory=new ArrayList<>();
-		ArrayList<BoardPoint> whiteTerritory=new ArrayList<>();
-		int black=0;
-		int white=0;
-		for(int i=0;i<board.length;i++){
-			for(int j=0;j<board.length;j++){
-				if(black<2){
-					if(board[i][j]==stoneColor.BLACK){
-						blackTerritory.add(new BoardPoint(i,boardSize.getSize()-1-j));
-						black++;
-					}
-				}
-				if(white<2){
-					if(board[i][j]==stoneColor.WHITE){
-						whiteTerritory.add(new BoardPoint(i,boardSize.getSize()-1-j));
-						white++;
+		ArrayList<stoneGO> temp=new ArrayList<>();
+		chains.add(new ArrayList<>());
+
+		//gorna sciana
+		for(int i=1;i<board.length-1;i++) {
+			lookForChains(0,temp, chains.size()-1, 0, i, color, boardDupTeritories);
+		}
+		for(ArrayList<stoneGO> e:chains){
+			for(stoneGO stone : e){
+				for(int i=0;i<stone.x;i++){
+					if(territoryTaken[i][stone.y]!=color && territoryTaken[i][stone.y]!=null) {
+						territoryTaken[i][stone.y]= null;
+						Territory.add(new BoardPoint(stone.y, board.length - 1 - i));
 					}
 				}
 			}
 		}
-		BoardPoint[][] toReturn=new BoardPoint[2][];
-		toReturn[1]=whiteTerritory.toArray(new BoardPoint[whiteTerritory.size()]);
-		toReturn[0]=blackTerritory.toArray(new BoardPoint[blackTerritory.size()]);
-		return toReturn;*/
+		chains.clear();
+
+		//prawa sciana
+		chains.add(new ArrayList<>());
+		for(int i=1;i<board.length-1;i++) {
+			lookForChains(1,temp, chains.size()-1, i, board.length-1, color, boardDupTeritories);
+		}
+		for(ArrayList<stoneGO> e:chains){
+			for(stoneGO stone : e){
+				for(int i=board.length-1;i>stone.y;i--){
+					if(territoryTaken[stone.x][i]!=color && territoryTaken[stone.x][i]!=null) {
+						territoryTaken[stone.x][i] = null;
+						Territory.add(new BoardPoint(i, board.length - 1 - stone.x));
+					}
+				}
+			}
+		}
+		chains.clear();
+
+		//dolna sciana
+		chains.add(new ArrayList<>());
+		for(int i=1;i<board.length-1;i++) {
+			lookForChains(2,temp, chains.size()-1, board.length-1, i, color, boardDupTeritories);
+		}
+		for(ArrayList<stoneGO> e:chains){
+			for(stoneGO stone : e){
+				for(int i=board.length-1;i>stone.x;i--){
+					if(territoryTaken[i][stone.y]!=color && territoryTaken[i][stone.y]!=null) {
+						territoryTaken[i][stone.y] = null;
+						Territory.add(new BoardPoint(stone.y, board.length - 1 - i));
+					}
+				}
+			}
+		}
+		chains.clear();
+
+		//lewa sciana
+		chains.add(new ArrayList<>());
+		for(int i=1;i<board.length-1;i++) {
+			lookForChains(3,temp, chains.size()-1, i, board.length-1, color, boardDupTeritories);
+		}
+		for(ArrayList<stoneGO> e:chains){
+			for(stoneGO stone : e){
+				for(int i=0;i<stone.y;i++){
+					if(territoryTaken[stone.x][i]!=color && territoryTaken[stone.x][i]!=null) {
+						territoryTaken[stone.x][i] = null;
+						Territory.add(new BoardPoint(i, board.length - 1 - stone.x));
+					}
+				}
+			}
+		}
+		chains.clear();
+
+
+		System.out.println(color+":");
+		int i=0;
+			for(BoardPoint x: Territory){
+				i++;
+				if(i%6==0)
+					System.out.println(x+" | ");
+				else
+					System.out.print(x+" | ");
+			}
+
+		return Territory.toArray(new BoardPoint[Territory.size()]);
 	}
 
 

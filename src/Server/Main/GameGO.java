@@ -202,14 +202,15 @@ public class GameGO extends GameLogicGO {
 						statusQUIT = true;
 					} else if (command_splited[0].equals("PASS")) {
 						if(pass){
-							BoardPoint[][] territories = countTerritories();
+							BoardPoint[] territories = countTerritories(stoneColor.BLACK);
 							StringBuilder Builder = new StringBuilder("BLACK");
-							for (int i = 0; i < territories[0].length; i++) {
-								Builder.append("-" + territories[0][i].toString());
+							for (int i = 0; i < territories.length; i++) {
+								Builder.append("-" + territories[i].toString());
 							}
+							territories = countTerritories(stoneColor.WHITE);
 							Builder.append("-WHITE");
-							for (int i = 0; i < territories[1].length; i++) {
-								Builder.append("-" + territories[1][i].toString());
+							for (int i = 0; i < territories.length; i++) {
+								Builder.append("-" + territories[i].toString());
 							}
 							String BuilderString = Builder.toString();
 							output.println(BuilderString);
