@@ -31,17 +31,42 @@ public class StoneController implements EventHandler<MouseEvent> {
                 }
             }
             else {
-                if (((Stone) object).getFill().equals(ClientState.getInstance().getPlayerColorPaint())) {
-                    ((MainBoard) ((Stone) object).getParent()).colorGroup(((MainBoard) ((Stone) object).getParent()).getStonesGroup((int) ((Stone) object).getCenterX() / 35, (int) ((Stone) object).getCenterY() / 35), Color.ROYALBLUE);
-                } else if (((Stone) object).getFill().equals(Color.ROYALBLUE)) {
-                    ((MainBoard) ((Stone) object).getParent()).colorGroup(((MainBoard) ((Stone) object).getParent()).getStonesGroup((int) ((Stone) object).getCenterX() / 35, (int) ((Stone) object).getCenterY() / 35), ClientState.getInstance().getPlayerColorPaint());
-                } else if (((Stone) object).getFill().equals(Color.AZURE)) {
-                    ((Stone) object).setFill(Color.RED);
-                    ((Stone) object).setOpacity(1);
+                if (ClientState.getInstance().getCurrentTurnColor().equals(ClientState.getInstance().getPlayerColor())) {
+                    if (ClientState.getInstance().getPlayerColor().equals("WHITE")) {
+                        if (((Stone) object).getFill().equals(Color.BLACK)) {
+                            ((MainBoard) ((Stone) object).getParent()).getDeadStonesBlack().add((Stone) object);
+                            ((MainBoard) ((Stone) object).getParent()).colorGroup(((MainBoard) ((Stone) object).getParent()).getStonesGroup((int) ((Stone) object).getCenterX() / 35, (int) ((Stone) object).getCenterY() / 35), Color.ROYALBLUE);
+                        } else if (((Stone) object).getFill().equals(Color.ROYALBLUE)) {
+                            ((MainBoard) ((Stone) object).getParent()).getDeadStonesBlack().remove((Stone) object);
+                            ((MainBoard) ((Stone) object).getParent()).colorGroup(((MainBoard) ((Stone) object).getParent()).getStonesGroup((int) ((Stone) object).getCenterX() / 35, (int) ((Stone) object).getCenterY() / 35), Color.BLACK);
+                        } else if (((Stone) object).getFill().equals(Color.AZURE)) {
+                            ((MainBoard) ((Stone) object).getParent()).getWhiteTerritory().add((Stone) object);
+                            ((Stone) object).setFill(Color.RED);
+                            ((Stone) object).setOpacity(1);
 
-                } else if (((Stone) object).getFill().equals(Color.RED)) {
-                    ((Stone) object).setFill(Color.AZURE);
-                    ((Stone) object).setOpacity(0);
+                        } else if (((Stone) object).getFill().equals(Color.RED)) {
+                            ((MainBoard) ((Stone) object).getParent()).getWhiteTerritory().remove((Stone) object);
+                            ((Stone) object).setFill(Color.AZURE);
+                            ((Stone) object).setOpacity(0);
+                        }
+                    } else if (ClientState.getInstance().getPlayerColor().equals("BLACK")) {
+                        if (((Stone) object).getFill().equals(Color.WHITE)) {
+                            ((MainBoard) ((Stone) object).getParent()).getDeadStonesWhite().add((Stone) object);
+                            ((MainBoard) ((Stone) object).getParent()).colorGroup(((MainBoard) ((Stone) object).getParent()).getStonesGroup((int) ((Stone) object).getCenterX() / 35, (int) ((Stone) object).getCenterY() / 35), Color.YELLOW);
+                        } else if (((Stone) object).getFill().equals(Color.YELLOW)) {
+                            ((MainBoard) ((Stone) object).getParent()).getDeadStonesWhite().remove((Stone) object);
+                            ((MainBoard) ((Stone) object).getParent()).colorGroup(((MainBoard) ((Stone) object).getParent()).getStonesGroup((int) ((Stone) object).getCenterX() / 35, (int) ((Stone) object).getCenterY() / 35), Color.WHITE);
+                        } else if (((Stone) object).getFill().equals(Color.AZURE)) {
+                            ((MainBoard) ((Stone) object).getParent()).getBlackTerritory().add((Stone) object);
+                            ((Stone) object).setFill(Color.GREEN);
+                            ((Stone) object).setOpacity(1);
+
+                        } else if (((Stone) object).getFill().equals(Color.GREEN)) {
+                            ((MainBoard) ((Stone) object).getParent()).getBlackTerritory().remove((Stone) object);
+                            ((Stone) object).setFill(Color.AZURE);
+                            ((Stone) object).setOpacity(0);
+                        }
+                    }
                 }
             }
         }

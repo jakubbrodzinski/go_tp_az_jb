@@ -12,6 +12,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -22,6 +23,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class Main extends Application {
 
@@ -97,7 +99,6 @@ public class Main extends Application {
     }
     private void play() throws IOException {
 
-
         if(!ClientState.getInstance().getPlayerColor().equals(ClientState.getInstance().getCurrentTurnColor()))
             ((MainBoard) mylist.get(0)).changePlayerEffectOff();
         new Thread(new Runnable() {
@@ -105,6 +106,7 @@ public class Main extends Application {
             @Override
             public void run() {
                 try {
+
                     while(true) {
                         final String responseInner = in.readLine();
                         System.out.println(responseInner);
@@ -143,6 +145,38 @@ public class Main extends Application {
                                         ((MainBoard) mylist.get(0)).changePlayerEffectOn();
                                         //((MainBoard) mylist.get(0)).findTerritory();
                                     }
+                                }
+                                else if(responseInner.startsWith("BLACK")) {
+                                    ((MainBoard) mylist.get(0)).backupBoard();
+                                    ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
+                                    ClientState.getInstance().setIsPaused("PAUSED");
+                                    ((MainBoard) mylist.get(0)).redrawTerritories(responseInner);
+                                    if(ClientState.getInstance().getCurrentTurnColor().equals(ClientState.getInstance().getPlayerColor())) {
+                                        ((MainBoard) mylist.get(0)).changePlayerEffectOn();
+                                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                                        alert.initModality(Modality.NONE);
+                                        alert.setTitle("GRA ZATRZYMANA");
+                                        alert.setHeaderText("Wybierz pola, które chcesz wysłać");
+                                        alert.setContentText("LEGENDA");
+
+                                        ButtonType buttonAccept = new ButtonType("Zaproponuj");
+                                        ButtonType buttonDeny = new ButtonType("Odrzuć");
+                                        alert.getButtonTypes().setAll(buttonAccept, buttonDeny);
+
+                                        Optional<ButtonType> result = alert.showAndWait();
+                                        if(result.get() == buttonAccept) {
+                                            out.println(((MainBoard) mylist.get(0)).parseTerritories());
+                                        }
+                                        else if(result.get() == buttonDeny) {
+                                            out.println("DENY");
+                                        }
+
+                                    }
+                                    else {
+                                        ((MainBoard) mylist.get(0)).changePlayerEffectOff();
+                                    }
+
+
                                 }
                                 else if(responseInner.startsWith("CONCEDE")) {
                                     Alert alert = new Alert(Alert.AlertType.INFORMATION);

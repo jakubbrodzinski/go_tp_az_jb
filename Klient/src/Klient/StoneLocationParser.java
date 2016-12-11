@@ -1,5 +1,9 @@
 package Klient;
 
+import Klient.View.Stone;
+
+import java.util.ArrayList;
+
 /**
  * Created by arek on 12/7/16.
  */
@@ -270,4 +274,5 @@ public class StoneLocationParser {
 
         return location;
     }
+
 }

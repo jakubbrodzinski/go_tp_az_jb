@@ -42,6 +42,14 @@ public class ClientState {
             return Color.BLACK;
         }
     }
+    public Paint getOppositePlayerColorPaint() {
+        if(playerColor == "WHITE") {
+            return Color.BLACK;
+        }
+        else {
+            return Color.WHITE;
+        }
+    }
     public Paint getCurrentColorPlaying() {
         if(currentTurnColor == "WHITE") {
             return Color.WHITE;

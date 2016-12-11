@@ -22,6 +22,11 @@ public class MainBoard extends Pane implements GameBoardInterface {
     private int width;
     private int height;
     private Stone[][] stones;
+    private Stone[][] backup;
+    private ArrayList<Stone> whiteTerritory = new ArrayList<>();
+    private ArrayList<Stone> blackTerritory = new ArrayList<>();
+    private ArrayList<Stone> deadStonesBlack = new ArrayList<>();
+    private ArrayList<Stone> deadStonesWhite = new ArrayList<>();
     public MainBoard(int width, int height) {
         this.width = width;
         this.height = height;
@@ -79,11 +84,110 @@ public class MainBoard extends Pane implements GameBoardInterface {
         }
     }
     //przy zrzucie przy poddawaniu sie
-    public Stone[][] getBoard() {
-        return stones;
+    public void backupBoard() {
+        backup =  new Stone[width][height];
+        for(int i = 0; i < width; i++) {
+            for(int j = 0; j < height; j++) {
+                backup[i][j] = new Stone(35 * i, 35 * j);
+                backup[i][j].setFill(stones[i][j].getFill());
+                backup[i][j].setOpacity(stones[i][j].getOpacity());
+            }
+        }
     }
-    public void setBoard(Stone[][] newBoard) {
-        this.stones = newBoard;
+    public void restoreBoard() {
+        for(int i = 0; i < width; i++) {
+            for(int j = 0; j < height; j++) {
+                stones[i][j].setFill(backup[i][j].getFill());
+                stones[i][j].setOpacity(backup[i][j].getOpacity());
+            }
+        }
+       // System.out.println("Kamine 0,0 " + stones[0][0] + "Kolor to: " + backup[0][0]);
+    }
+
+    public void redrawTerritories(String command) {
+        String[] splitcommands = command.split("-");
+        for(int i = 0; i < splitcommands.length; i++) {
+            if(splitcommands[i].equals("BLACK")) {
+                i++;
+                while(!splitcommands[i].equals("WHITE")) {
+                    StoneLocation location = StoneLocationParser.parsetoStoneLocation(splitcommands[i], splitcommands[i+1]);
+                    stones[location.getxInt()][location.getY()].setOpacity(1);
+                    stones[location.getxInt()][location.getY()].setFill(Color.GREEN);
+                    blackTerritory.add(stones[location.getxInt()][location.getY()]);
+                    i+=2;
+                }
+            }
+            if(splitcommands[i].equals("WHITE")) {
+                i++;
+                while(!splitcommands[i].equals("BLACKP")) {
+                    StoneLocation location = StoneLocationParser.parsetoStoneLocation(splitcommands[i], splitcommands[i+1]);
+                    stones[location.getxInt()][location.getY()].setOpacity(1);
+                    stones[location.getxInt()][location.getY()].setFill(Color.RED);
+                    whiteTerritory.add(stones[location.getxInt()][location.getY()]);
+                    i+=2;
+                }
+            }
+            if(splitcommands[i].equals("BLACKP")) {
+                i++;
+                while(!splitcommands[i].equals("WHITEP")) {
+                    StoneLocation location = StoneLocationParser.parsetoStoneLocation(splitcommands[i], splitcommands[i+1]);
+                    stones[location.getxInt()][location.getY()].setOpacity(1);
+                    stones[location.getxInt()][location.getY()].setFill(Color.ROYALBLUE);
+                    deadStonesBlack.add(stones[location.getxInt()][location.getY()]);
+                    i+=2;
+                }
+            }
+            if(splitcommands[i].equals("WHITEP")) {
+                i++;
+                while(i < splitcommands.length) {
+                    StoneLocation location = StoneLocationParser.parsetoStoneLocation(splitcommands[i], splitcommands[i+1]);
+                    stones[location.getxInt()][location.getY()].setOpacity(1);
+                    stones[location.getxInt()][location.getY()].setFill(Color.YELLOW);
+                    deadStonesWhite.add(stones[location.getxInt()][location.getY()]);
+                    i+=2;
+                }
+            }
+        }
+    }
+    public ArrayList<Stone> getWhiteTerritory() {
+        return whiteTerritory;
+    }
+    public ArrayList<Stone> getBlackTerritory() {
+        return blackTerritory;
+    }
+    public ArrayList<Stone> getDeadStonesWhite() {
+        return deadStonesWhite;
+    }
+    public ArrayList<Stone> getDeadStonesBlack() {
+        return deadStonesBlack;
+    }
+    public String parseTerritories() {
+        String answer = "";
+        answer += "PROPOSITION-";
+        answer += "BLACK-";
+        for(Stone stone : blackTerritory) {
+            StoneLocation location = StoneLocationParser.parseStoneLocation((int) stone.getCenterX(), (int) stone.getCenterY());
+            answer = answer + location.getX() + Integer.toString(location.getY()) + "-";
+        }
+        answer += "WHITE-";
+        for(Stone stone : whiteTerritory) {
+            StoneLocation location = StoneLocationParser.parseStoneLocation((int) stone.getCenterX(), (int) stone.getCenterY());
+            answer = answer + location.getX() + Integer.toString(location.getY()) + "-";
+        }
+        answer += "BLACKP-";
+        for(Stone stone : deadStonesBlack) {
+            StoneLocation location = StoneLocationParser.parseStoneLocation((int) stone.getCenterX(), (int) stone.getCenterY());
+            answer = answer + location.getX() +  Integer.toString(location.getY()) + "-";
+        }
+        answer += "WHITEP-";
+        for(Stone stone : deadStonesWhite) {
+            StoneLocation location = StoneLocationParser.parseStoneLocation((int) stone.getCenterX(), (int) stone.getCenterY());
+            answer = answer + location.getX() +  Integer.toString(location.getY()) + "-";
+        }
+        answer = answer.substring(0, answer.length()-1);
+        System.out.println(answer);
+        return answer;
+
     }
     //Grupowanie kamieni
     public ArrayList<Stone> getStonesGroup(int x, int y) {
