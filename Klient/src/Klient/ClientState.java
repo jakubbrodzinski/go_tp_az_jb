@@ -18,6 +18,7 @@ public class ClientState {
     private static ClientState instance = new ClientState();
     private String whitePoints;
     private String blackPoints;
+    private String isPaused = "NOTPAUSED";
 
     private ClientState() {};
 
@@ -71,7 +72,12 @@ public class ClientState {
     public int getSize() {
         return size;
     }
-    //POINTS-punktybialych-punktyczarnych
+    public String getIsPaused() {
+        return isPaused;
+    }
+    public void setIsPaused(String command) {
+        isPaused = command;
+    }
     public void setWhitePoints(String points) {
         whitePoints = points;
     }

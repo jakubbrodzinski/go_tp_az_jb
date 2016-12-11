@@ -8,6 +8,7 @@ import javafx.animation.FadeTransition;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
 import javafx.util.Duration;
 
@@ -79,6 +80,13 @@ public class MainBoard extends Pane {
             }
         }
     }
+    //przy zrzucie przy poddawaniu sie
+    public Stone[][] getBoard() {
+        return stones;
+    }
+    public void setBoard(Stone[][] newBoard) {
+        this.stones = newBoard;
+    }
     //Grupowanie kamieni
     public ArrayList<Stone> getStonesGroup(int x, int y) {
         ArrayList<Stone> result = new ArrayList<>();
@@ -90,7 +98,15 @@ public class MainBoard extends Pane {
             result.add(stones[x][y]);
             lookForGroup(x, y, result, alreadyTraversed);
         }
+        System.out.println("result: "+result);
         return result;
+    }
+    public void colorGroup(ArrayList<Stone> group, Paint color) {
+
+        for(Stone stone : group) {
+            System.out.println("BYLEM TU");
+            stone.setFill(color);
+        }
     }
     public void removeStonesGroup(ArrayList<Stone> toBeRemoved) {
         for(Stone stone : toBeRemoved) {
@@ -215,7 +231,7 @@ public class MainBoard extends Pane {
                 if(!(y - 1 < 0)) {
                     lookForGroup(x, y - 1, result, alreadyTraversed);
                 }
-                if(!(x + 1 >= width) && !(y + 1 >= height)) {
+               /* if(!(x + 1 >= width) && !(y + 1 >= height)) {
                     lookForGroup(x + 1, y + 1, result, alreadyTraversed);
                 }
                 if(!(x + 1 >= width) && !(y - 1 < 0)) {
@@ -226,7 +242,7 @@ public class MainBoard extends Pane {
                 }
                 if(!(x - 1 < 0) && !(y - 1 < 0)) {
                     lookForGroup(x - 1, y - 1, result, alreadyTraversed);
-                }
+                }*/
             }
         }
 

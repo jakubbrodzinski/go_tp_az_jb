@@ -38,7 +38,6 @@ public class Main extends Application {
     private Socket socket;
     private ArrayList<Node> mylist;
 
-    //TODO gameid w nazwie klienta
     @Override
     public void start(Stage primaryStage) throws Exception{
 
@@ -66,25 +65,21 @@ public class Main extends Application {
 
         String response;
         response = in.readLine();
-        ClientState.getInstance().setPlayerColor(response.substring(15,20));
+        String[] initialCommand = response.split("-");
+        ClientState.getInstance().setPlayerColor(initialCommand[3]);
         ClientState.getInstance().setCurrentTurnColor("BLACK");
-        ClientState.getInstance().setSize(response.substring(21,23));
-        ClientState.getInstance().setWhitePoints(response.substring(7,10));
-        ClientState.getInstance().setBlackPoints(response.substring(11,14));
+        ClientState.getInstance().setSize(initialCommand[4]);
+        ClientState.getInstance().setWhitePoints(initialCommand[1]);
+        ClientState.getInstance().setBlackPoints(initialCommand[2]);
 
         FlowPane root = new FlowPane();
         root.setAlignment(Pos.TOP_RIGHT);
-        primaryStage.setTitle("GoGAME");
+        primaryStage.setTitle("GoGAME " + initialCommand[5]);
         primaryStage.show();
         primaryStage.setScene(new ClientScene(root, 1266, 768, out));
         primaryStage.setResizable(false);
         primaryStage.setOnCloseRequest(new PrimaryStageClosingController(out));
         otherStage.hide();
-
-
-
-
-
 
         mylist = getAllBoards(root);
 
@@ -156,35 +151,6 @@ public class Main extends Application {
                                         ((MainBoard) mylist.get(0)).changePlayerEffectOn();
                                         ((MainBoard) mylist.get(0)).findTerritory();
                                     }
-                                }
-                                else if(responseInner.equals("PASSPROPOSED")) {
-                                    ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
-                                    ((MainBoard) mylist.get(0)).changePlayerEffectOn();
-                                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                                    alert.setTitle("Propozycja pasowania");
-                                    alert.setHeaderText("Przeciwnik zaproponował pasowanie");
-                                    alert.setContentText("Wybierz, czy zgadzasz się na propozycję przeciwnika;");
-
-                                    ButtonType buttonTypeAccept = new ButtonType("Akceptuj");
-                                    ButtonType buttonTypeDeny = new ButtonType("Odrzuć");
-
-                                    alert.getButtonTypes().setAll(buttonTypeAccept, buttonTypeDeny);
-                                    Optional<ButtonType> result = alert.showAndWait();
-
-                                    if(result.get() == buttonTypeAccept) {
-                                        out.println("PASSACCEPTED");
-                                        ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
-                                        ((MainBoard) mylist.get(0)).changePlayerEffectOff();
-                                    }
-                                    else if (result.get() == buttonTypeDeny) {
-                                        ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
-                                        ((MainBoard) mylist.get(0)).changePlayerEffectOff();
-                                        out.println("PASSCANCELLED");
-                                    }
-                                }
-                                else if(responseInner.equals("PASSCANCELLED")) {
-                                    ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
-                                    ((MainBoard) mylist.get(0)).changePlayerEffectOn();
                                 }
                                 else if(responseInner.startsWith("CONCEDE")) {
                                     Alert alert = new Alert(Alert.AlertType.INFORMATION);

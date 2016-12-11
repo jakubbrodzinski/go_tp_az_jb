@@ -14,8 +14,10 @@ public class StoneLocation
         this.y = y;
     }
     public StoneLocation(int xInt, int y) {
+
         this.xInt = xInt;
         this.y = y;
+        //System.out.println("bylem tu " + xInt);
     }
     public String getX() {
         return x + "-";
