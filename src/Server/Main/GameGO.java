@@ -300,12 +300,12 @@ public class GameGO extends GameLogicGO {
 						finalScore(command);
 						StringBuilder builder=new StringBuilder("WIN");
 						if(BLACKscore>WHITEscore){
-							builder.append("-BLACK-");
+							builder.append("/BLACK/");
 						}else{
-							builder.append("-WHITE-");
+							builder.append("/WHITE/");
 						}
 						builder.append(new Double(BLACKscore).toString());
-						builder.append("-"+new Double(WHITEscore).toString());
+						builder.append("/"+new Double(WHITEscore).toString());
 						String builderString=builder.toString();
 						output.println(builderString);
 						changeTurn(builderString);
