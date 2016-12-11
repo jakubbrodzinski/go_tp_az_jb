@@ -18,16 +18,14 @@ import java.util.ArrayList;
 /**
  * Created by arek on 12/4/16.
  */
-public class MainBoard extends Pane {
+public class MainBoard extends Pane implements GameBoardInterface {
     private int width;
     private int height;
     private Stone[][] stones;
-    private PrintWriter out;
-    public MainBoard(int width, int height, PrintWriter out) {
+    public MainBoard(int width, int height) {
         this.width = width;
         this.height = height;
         this.stones = new Stone[width][height];
-        this.out = out;
         this.setPrefSize(35*(width-1), 35*(height-1));
         this.setStyle("-fx-background-color: #b7b496");
         drawGrid();
@@ -49,7 +47,7 @@ public class MainBoard extends Pane {
         for(int i = 0; i < width; i++) {
             for(int j = 0; j < height; j++) {
                 tempStone = new Stone(35* i, 35* j);
-                tempStone.setOnMouseClicked(new StoneController(out));
+                tempStone.setOnMouseClicked(new StoneController());
                 stones[i][j] = tempStone;
                 this.getChildren().add(tempStone);
             }

@@ -4,36 +4,29 @@ import Klient.View.ClientScene;
 import Klient.View.ConnectionBoxScene;
 import Klient.View.ConnectionPanel.ConnectionBoxClosingController;
 import Klient.View.MainBoard;
-import Klient.View.PlayerPanel.BoardPane;
 import Klient.View.PrimaryStageClosingController;
-import com.sun.deploy.util.SessionState;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.lang.reflect.Array;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Optional;
 
 public class Main extends Application {
 
     private BufferedReader in;
+    //TODO jeżeli się nie przpda bedzie mozna wyrzucic, bo w clientprintwriter singletonie jest
     private PrintWriter out;
     private Socket socket;
     private ArrayList<Node> mylist;
@@ -56,7 +49,7 @@ public class Main extends Application {
         GridPane initialRoot = new GridPane();
         initialRoot.setAlignment(Pos.CENTER);
         initialStage.setTitle("Połączenie z serwerem");
-        initialStage.setScene(new ConnectionBoxScene(initialRoot, 600, 350, out));
+        initialStage.setScene(new ConnectionBoxScene(initialRoot, 600, 350));
         initialStage.initOwner(primaryStage);
         initialStage.initModality(Modality.APPLICATION_MODAL);
         initialStage.setOnCloseRequest(new ConnectionBoxClosingController());
@@ -76,9 +69,9 @@ public class Main extends Application {
         root.setAlignment(Pos.TOP_RIGHT);
         primaryStage.setTitle("GoGAME " + initialCommand[5]);
         primaryStage.show();
-        primaryStage.setScene(new ClientScene(root, 1266, 768, out));
+        primaryStage.setScene(new ClientScene(root, 1266, 768));
         primaryStage.setResizable(false);
-        primaryStage.setOnCloseRequest(new PrimaryStageClosingController(out));
+        primaryStage.setOnCloseRequest(new PrimaryStageClosingController());
         otherStage.hide();
 
         mylist = getAllBoards(root);
@@ -95,14 +88,14 @@ public class Main extends Application {
             System.out.println("Cannot close socket");
         }
     }
-    public void connectToServer() throws IOException {
+    private void connectToServer() throws IOException {
         socket = new Socket("localhost", 8901);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         ClientPrintWriter.getInstance().setInstance(socket.getOutputStream(), true);
         //TODO Refactor code -> Decouple the code by removing "out" passing
         out = ClientPrintWriter.getInstance().getPrintWriter();
     }
-    public void play() throws IOException {
+    private void play() throws IOException {
 
 
         if(!ClientState.getInstance().getPlayerColor().equals(ClientState.getInstance().getCurrentTurnColor()))
@@ -116,7 +109,6 @@ public class Main extends Application {
                         final String responseInner = in.readLine();
                         System.out.println(responseInner);
                         if(responseInner.startsWith("QUIT")) {
-                            System.out.println("BYLEM TU");
                             Platform.exit();
                             System.exit(1);
                             break;
@@ -144,12 +136,12 @@ public class Main extends Application {
                                     if(ClientState.getInstance().getPlayerColor().equals(ClientState.getInstance().getCurrentTurnColor())) {
                                         ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
                                         ((MainBoard) mylist.get(0)).changePlayerEffectOff();
-                                        ((MainBoard) mylist.get(0)).findTerritory();
+                                        //((MainBoard) mylist.get(0)).findTerritory();
                                     }
                                     else {
                                         ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
                                         ((MainBoard) mylist.get(0)).changePlayerEffectOn();
-                                        ((MainBoard) mylist.get(0)).findTerritory();
+                                        //((MainBoard) mylist.get(0)).findTerritory();
                                     }
                                 }
                                 else if(responseInner.startsWith("CONCEDE")) {

@@ -11,7 +11,7 @@ public class ClientPrintWriter {
     private PrintWriter out;
     private static ClientPrintWriter instance = new ClientPrintWriter();
 
-    public ClientPrintWriter(){};
+    private ClientPrintWriter(){};
 
     public  void setInstance(OutputStream outputStream, boolean autoflush) {
         this.out = new PrintWriter(outputStream, autoflush);

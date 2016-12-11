@@ -1,10 +1,11 @@
 package Klient;
 
+import Klient.View.PrimaryStageClosingController;
+
 /**
  * Created by arek on 12/7/16.
  */
-public class StoneLocation
-{
+public class StoneLocation {
     private String x;
     private int xInt;
     private int y;

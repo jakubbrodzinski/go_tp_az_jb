@@ -1,5 +1,6 @@
 package Klient.View;
 
+import Klient.ClientPrintWriter;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.stage.WindowEvent;
@@ -11,11 +12,8 @@ import java.io.PrintWriter;
  */
 public class PrimaryStageClosingController implements EventHandler<WindowEvent> {
 
-    private PrintWriter out;
+    private PrintWriter out = ClientPrintWriter.getInstance().getPrintWriter();
 
-    public PrimaryStageClosingController(PrintWriter out) {
-        this.out = out;
-    }
     @Override
     public void handle(WindowEvent event) {
         //Platform.exit();

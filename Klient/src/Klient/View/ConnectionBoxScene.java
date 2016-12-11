@@ -13,21 +13,16 @@ import java.io.PrintWriter;
 public class ConnectionBoxScene extends Scene {
 
     private Pane initialRoot;
-    private PrintWriter out;
 
-    public ConnectionBoxScene(Parent root, double width, double height, PrintWriter out) {
+    public ConnectionBoxScene(Parent root, double width, double height) {
         super(root, width, height);
-        this.out = out;
         initialRoot = (Pane)root;
         prepareGUI();
     }
     private void prepareGUI() {
-        ConnectionHBox connectionHBox = new ConnectionHBox(out);
+        ConnectionHBox connectionHBox = new ConnectionHBox();
         connectionHBox.setPrefSize(600,400);
         initialRoot.setStyle("-fx-background-color: #EFECCA");
         initialRoot.getChildren().add(connectionHBox);
-    }
-    public PrintWriter getOutput() {
-        return out;
     }
 }

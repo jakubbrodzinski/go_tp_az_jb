@@ -15,19 +15,17 @@ import java.io.PrintWriter;
  */
 public class ClientScene extends Scene {
     private Pane root;
-    private PrintWriter out;
 
-    public ClientScene(Parent root, double width, double height, PrintWriter out) {
+    public ClientScene(Parent root, double width, double height) {
         super(root, width, height);
         this.root = (Pane)root;
-        this.out = out;
 
         prepareGUI();
     }
 
     private void prepareGUI() {
         PlayerVBox playerVBox = new PlayerVBox();
-        BoardPane testPane = new BoardPane(out);
+        BoardPane testPane = new BoardPane();
         root.setStyle("-fx-background-color: #EFECCA");
         root.getChildren().add(testPane);
         root.getChildren().add(playerVBox);

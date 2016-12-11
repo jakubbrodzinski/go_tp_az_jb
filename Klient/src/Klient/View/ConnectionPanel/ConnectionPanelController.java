@@ -1,5 +1,6 @@
 package Klient.View.ConnectionPanel;
 
+import Klient.ClientPrintWriter;
 import Klient.ClientState;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
@@ -11,10 +12,9 @@ import java.io.PrintWriter;
  * Created by arek on 12/7/16.
  */
 public class ConnectionPanelController implements EventHandler<MouseEvent> {
-    private PrintWriter out;
-    public ConnectionPanelController(PrintWriter out) {
-        this.out = out;
-    }
+
+    private PrintWriter out = ClientPrintWriter.getInstance().getPrintWriter();
+
     @Override
     public void handle(MouseEvent event) {
         Object object = event.getSource();

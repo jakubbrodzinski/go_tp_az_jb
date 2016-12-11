@@ -13,12 +13,10 @@ import java.io.PrintWriter;
  */
 public class StoneController implements EventHandler<MouseEvent> {
 
-    private PrintWriter out;
+    private PrintWriter out = ClientPrintWriter.getInstance().getPrintWriter();
     private ClientState clientState = ClientState.getInstance();
 
-    public StoneController(PrintWriter out) {
-        this.out = out;
-    }
+
     @Override
     public void handle(MouseEvent event) {
         Object object = event.getSource();
@@ -32,7 +30,7 @@ public class StoneController implements EventHandler<MouseEvent> {
                     }
                 }
             }
-        else {
+            else {
                 if (((Stone) object).getFill().equals(ClientState.getInstance().getPlayerColorPaint())) {
                     ((MainBoard) ((Stone) object).getParent()).colorGroup(((MainBoard) ((Stone) object).getParent()).getStonesGroup((int) ((Stone) object).getCenterX() / 35, (int) ((Stone) object).getCenterY() / 35), Color.ROYALBLUE);
                 } else if (((Stone) object).getFill().equals(Color.ROYALBLUE)) {

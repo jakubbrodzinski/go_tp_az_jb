@@ -34,7 +34,6 @@ public class PlayerPanelController {
     }
     @FXML
     private void invokePass(MouseEvent event) {
-        System.out.println("Tura : mojakolej " + ClientState.getInstance().getCurrentTurnColor() + ClientState.getInstance().getPlayerColor());
         if(ClientState.getInstance().getCurrentTurnColor().equals(ClientState.getInstance().getPlayerColor())) {
             ClientPrintWriter.getInstance().getPrintWriter().println("PASS");
         }
@@ -42,12 +41,13 @@ public class PlayerPanelController {
     @FXML
     private void invokeConcede(MouseEvent event){
         if(ClientState.getInstance().getCurrentTurnColor().equals(ClientState.getInstance().getPlayerColor())) {
-            ClientPrintWriter.getInstance().getPrintWriter().println("CONCEDE");
+
             ClientState.getInstance().setCurrentTurnColor(ClientState.getInstance().changePlayers());
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setHeaderText("KONIEC GRY");
             alert.setContentText("Poddałeś się!");
             alert.showAndWait();
+            ClientPrintWriter.getInstance().getPrintWriter().println("CONCEDE");
             Platform.exit();
             System.exit(1);
         }

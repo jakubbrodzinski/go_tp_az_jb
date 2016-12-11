@@ -17,19 +17,16 @@ import java.io.PrintWriter;
  * Created by arek on 12/3/16.
  */
 public class BoardPane extends GridPane {
-    private PrintWriter out;
 
-    public BoardPane(PrintWriter out) {
+    public BoardPane() {
         this.setPrefSize(866,768);
         this.setAlignment(Pos.CENTER);
-        this.out = out;
         this.setStyle("-fx-background-color: #EFECCA");
         prepareBoardPane();
     }
     private void prepareBoardPane() {
         //TODO Refactor MainBoard to a factory method
-        System.out.println("WIELKOSC: " + ClientState.getInstance().getSize());
-        MainBoard board = new MainBoard(ClientState.getInstance().getSize(), ClientState.getInstance().getSize(), out);
+        MainBoard board = new MainBoard(ClientState.getInstance().getSize(), ClientState.getInstance().getSize());
 
         this.getChildren().add(board);
     }

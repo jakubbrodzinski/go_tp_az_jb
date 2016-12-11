@@ -16,14 +16,12 @@ import java.io.PrintWriter;
 public class ConnectionHBox extends GridPane {
 
     private RadioBox radioBox = new RadioBox();
-    private PrintWriter out;
 
-    public ConnectionHBox(PrintWriter out) {
+    public ConnectionHBox() {
         this.setAlignment(Pos.TOP_CENTER);
         this.setStyle("-fx-background-color: #e1debc");
         this.setPadding(new Insets(50,10,80,10));
         this.setVgap(10);
-        this.out = out;
         prepareConnectionHBox();
     }
     private void prepareConnectionHBox() {
@@ -31,7 +29,7 @@ public class ConnectionHBox extends GridPane {
         Button confirmationButton = new Button("Zatwierdź");
         confirmationButton.setPrefSize(150,90);
         confirmationButton.setStyle("-fx-font-size: 20");
-        confirmationButton.setOnMouseClicked(new ConnectionPanelController(out));
+        confirmationButton.setOnMouseClicked(new ConnectionPanelController());
 
         GridPane.setConstraints(radioBox, 0, 0);
         this.getChildren().add(radioBox);
