@@ -130,6 +130,8 @@ public class GameGO extends GameLogicGO {
 					changes=nextMove(temp,this.color);
 				}catch(WrongMoveException e){
 					System.out.println("Wrong move from BOT!");
+					changeTurn("CONCEDE");
+					return;
 				}
 				if(this.color==stoneColor.BLACK){
 					BLACKscore+=(changes.length-1);
@@ -137,8 +139,8 @@ public class GameGO extends GameLogicGO {
 					WHITEscore+=(changes.length-1);
 				}
 				StringBuilder Builder = new StringBuilder("");
-				for (int i = 0; i < changes.length; i++) {
-					Builder.append("-" + changes[i].toString());
+				for (BoardPoint change : changes) {
+					Builder.append("-").append(change.toString());
 				}
 				String BuilderString = Builder.toString();
 				changeTurn("POINTS-"+WHITEscore+"-"+BLACKscore+"-"+"CHANGE" + BuilderString);
@@ -187,10 +189,9 @@ public class GameGO extends GameLogicGO {
 		 * @return command that defines preferences how client wants to connect
 		 * @throws WrongPlayerInitiation is thrown when we cannot read anything that client that wants to connect to us sent.
 		 */
-		public String setBoard() throws WrongPlayerInitiation {
+		private String setBoard() throws WrongPlayerInitiation {
 			try {
-				String line = input.readLine();
-				return line;
+				return input.readLine();
 			} catch (IOException e) {
 				throw new WrongPlayerInitiation();
 			}
@@ -241,8 +242,8 @@ public class GameGO extends GameLogicGO {
 							}else if(currentPlayer.getColor()==stoneColor.WHITE){
 								WHITEscore+=(changesArr.length-1);
 							}
-							for (int i = 0; i < changesArr.length; i++) {
-								Builder.append("-" + changesArr[i].toString());
+							for (BoardPoint aChangesArr : changesArr) {
+								Builder.append("-" + aChangesArr.toString());
 							}
 							String BuilderString = Builder.toString();
 							output.println("POINTS-"+WHITEscore+"-"+BLACKscore+"-"+"CORRECT" + BuilderString);
@@ -273,8 +274,8 @@ public class GameGO extends GameLogicGO {
 							}
 							territories = getDeadStones(stoneColor.WHITE);
 							Builder.append("-WHITEP");
-							for (int i = 0; i < territories.length; i++) {
-								Builder.append("-" + territories[i].toString());
+							for (BoardPoint territory : territories) {
+								Builder.append("-").append(territory.toString());
 							}
 							String BuilderString = Builder.toString();
 							output.println(BuilderString);
@@ -286,7 +287,7 @@ public class GameGO extends GameLogicGO {
 							changeTurn("PASS");
 						}
 					}else if(command_splited[0].equals("PROPOSITION")){
-						if(proposition==true){
+						if(proposition){
 							proposition=false;
 							changeTurn("END"+command);
 						}else {
@@ -304,8 +305,8 @@ public class GameGO extends GameLogicGO {
 						}else{
 							builder.append("/WHITE/");
 						}
-						builder.append(new Double(BLACKscore).toString());
-						builder.append("/"+new Double(WHITEscore).toString());
+						builder.append(Double.toString(BLACKscore));
+						builder.append("/"+ Double.toString(WHITEscore));
 						String builderString=builder.toString();
 						output.println(builderString);
 						changeTurn(builderString);
