@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Arrays;
 
 /**
  * Created by jakub on 12/2/16.
@@ -167,7 +168,7 @@ public class GameGO extends GameLogicGO {
 				input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				output = new PrintWriter(socket.getOutputStream(), true);
 			} catch (IOException e) {
-				System.out.println(e.getStackTrace());
+				System.out.println(Arrays.toString(e.getStackTrace()));
 			}
 		}
 
@@ -225,105 +226,114 @@ public class GameGO extends GameLogicGO {
 					System.out.println(this.color + "command: " + command);
 					String[] command_splited = command.split("-");
 					//switch case ??
-					if (command_splited[0].equals("MOVE")) {
-						int row = 0;
-						try {
-							row = Integer.parseInt(command_splited[2]);
-						} catch (NumberFormatException e) {
-							System.out.println("Something wrong with parsing to Integer");
-						}
-						BoardPoint moveToTest = new BoardPoint(command_splited[1].charAt(0), row);
-						try {
-							BoardPoint[] changesArr = nextMove(moveToTest, this.color);
-							StringBuilder Builder = new StringBuilder("");
-							//Points counting
-							if(currentPlayer.getColor()==stoneColor.BLACK){
-								BLACKscore+=(changesArr.length-1);
-							}else if(currentPlayer.getColor()==stoneColor.WHITE){
-								WHITEscore+=(changesArr.length-1);
+					switch (command_splited[0]) {
+						case "MOVE":
+							int row = 0;
+							try {
+								row = Integer.parseInt(command_splited[2]);
+							} catch (NumberFormatException e) {
+								System.out.println("Something wrong with parsing to Integer");
 							}
-							for (BoardPoint aChangesArr : changesArr) {
-								Builder.append("-" + aChangesArr.toString());
+							BoardPoint moveToTest = new BoardPoint(command_splited[1].charAt(0), row);
+							try {
+								BoardPoint[] changesArr = nextMove(moveToTest, this.color);
+								StringBuilder Builder = new StringBuilder("");
+								//Points counting
+								if (currentPlayer.getColor() == stoneColor.BLACK) {
+									BLACKscore += (changesArr.length - 1);
+								} else if (currentPlayer.getColor() == stoneColor.WHITE) {
+									WHITEscore += (changesArr.length - 1);
+								}
+								for (BoardPoint aChangesArr : changesArr) {
+									Builder.append("-" + aChangesArr.toString());
+								}
+								String BuilderString = Builder.toString();
+								output.println("POINTS-" + WHITEscore + "-" + BLACKscore + "-" + "CORRECT" + BuilderString);
+								changeTurn("POINTS-" + WHITEscore + "-" + BLACKscore + "-" + "CHANGE" + BuilderString);
+							} catch (WrongMoveException ex) {
+								output.println("WRONG");
 							}
-							String BuilderString = Builder.toString();
-							output.println("POINTS-"+WHITEscore+"-"+BLACKscore+"-"+"CORRECT" + BuilderString);
-							changeTurn("POINTS-"+WHITEscore+"-"+BLACKscore+"-"+"CHANGE" + BuilderString);
-						} catch (WrongMoveException ex) {
-							output.println("WRONG");
-						}
-					} else if (command_splited[0].equals("CONCEDE")) {
-						changeTurn(command_splited[0]);
-						statusQUIT = true;
-					} else if (command_splited[0].equals("PASS")) {
-						if(pass){
-							BoardPoint[] territories = countTerritories(stoneColor.BLACK);
+							break;
+						case "CONCEDE":
+							changeTurn(command_splited[0]);
+							statusQUIT = true;
+							break;
+						case "PASS":
+							if (pass) {
+								BoardPoint[] territories = countTerritories(stoneColor.BLACK);
 
-							StringBuilder Builder = new StringBuilder("BLACK");
-							for (int i = 0; i < territories.length; i++) {
-								Builder.append("-" + territories[i].toString());
+								StringBuilder Builder = new StringBuilder("BLACK");
+								for (BoardPoint territory3 : territories) {
+									Builder.append("-").append(territory3.toString());
+								}
+								territories = countTerritories(stoneColor.WHITE);
+								Builder.append("-WHITE");
+								for (BoardPoint territory2 : territories) {
+									Builder.append("-").append(territory2.toString());
+								}
+								Builder.append("-BLACKP");
+								territories = getDeadStones(stoneColor.BLACK);
+								for (BoardPoint territory1 : territories) {
+									Builder.append("-").append(territory1.toString());
+								}
+								territories = getDeadStones(stoneColor.WHITE);
+								Builder.append("-WHITEP");
+								for (BoardPoint territory : territories) {
+									Builder.append("-").append(territory.toString());
+								}
+								String BuilderString = Builder.toString();
+								output.println(BuilderString);
+								changeTurn(BuilderString);
+								pass = false;
+							} else {
+								pass = true;
+								output.println("PASS");
+								changeTurn("PASS");
 							}
-							territories = countTerritories(stoneColor.WHITE);
-							Builder.append("-WHITE");
-							for (int i = 0; i < territories.length; i++) {
-								Builder.append("-" + territories[i].toString());
+							break;
+						case "PROPOSITION":
+							if (proposition) {
+								proposition = false;
+								changeTurn("END" + command);
+							} else {
+								proposition = true;
+								changeTurn(command);
 							}
-							Builder.append("-BLACKP");
-							territories=getDeadStones(stoneColor.BLACK);
-							for (int i = 0; i < territories.length; i++) {
-								Builder.append("-" + territories[i].toString());
-							}
-							territories = getDeadStones(stoneColor.WHITE);
-							Builder.append("-WHITEP");
-							for (BoardPoint territory : territories) {
-								Builder.append("-").append(territory.toString());
-							}
-							String BuilderString = Builder.toString();
-							output.println(BuilderString);
-							changeTurn(BuilderString);
-							pass=false;
-						}else {
-							pass = true;
-							output.println("PASS");
-							changeTurn("PASS");
-						}
-					}else if(command_splited[0].equals("PROPOSITION")){
-						if(proposition){
-							proposition=false;
-							changeTurn("END"+command);
-						}else {
-							proposition = true;
+							break;
+						case "DENY":
+							output.println(command);
 							changeTurn(command);
-						}
-					}else if(command_splited[0].equals("DENY")){
-						output.println(command);
-						changeTurn(command);
-					}else if(command_splited[0].equals("ENDPROPOSITION")){
-						finalScore(command);
-						StringBuilder builder=new StringBuilder("WIN");
-						if(BLACKscore>WHITEscore){
-							builder.append("/BLACK/");
-						}else{
-							builder.append("/WHITE/");
-						}
-						builder.append(Double.toString(BLACKscore));
-						builder.append("/"+ Double.toString(WHITEscore));
-						String builderString=builder.toString();
-						output.println(builderString);
-						changeTurn(builderString);
-						//odeslac WIN-KOLOR-CZARNYPOINTS-BIALEPOIINTS
-					}else if (command_splited[0].equals("QUIT")) {
-						changeTurn(command_splited[0]);
-						statusQUIT = true;
-					} else {
-						System.out.println("Unknown command(change turn works)!");
-						changeTurn(command_splited[0]);
+							break;
+						case "ENDPROPOSITION":
+							finalScore(command);
+							StringBuilder builder = new StringBuilder("WIN");
+							if (BLACKscore > WHITEscore) {
+								builder.append("/BLACK/");
+							} else {
+								builder.append("/WHITE/");
+							}
+							builder.append(Double.toString(BLACKscore));
+							builder.append("/").append(Double.toString(WHITEscore));
+							String builderString = builder.toString();
+							output.println(builderString);
+							changeTurn(builderString);
+							//odeslac WIN-KOLOR-CZARNYPOINTS-BIALEPOIINTS
+							break;
+						case "QUIT":
+							changeTurn(command_splited[0]);
+							statusQUIT = true;
+							break;
+						default:
+							System.out.println("Unknown command(change turn works)!");
+							changeTurn(command_splited[0]);
+							break;
 					}
-					if(pass==true) {
+					if(pass) {
 						if (!command_splited[0].equals("PASS")) {
 							pass = false;
 						}
 					}
-					if(proposition==true){
+					if(proposition){
 						if(!command_splited[0].equals("PROPOSITION"))
 							proposition=false;
 					}
