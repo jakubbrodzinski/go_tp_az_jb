@@ -1,0 +1,22 @@
+@main(0) {
+
+    @if(flash.containsKey("error")) {
+
+        <div class="error">
+            <p>
+                <strong>Oops!</strong> @flash.get("error")
+            </p>
+        </div>
+
+    }
+
+    <div class="intro">
+        <p>
+            <strong>This is a Go game implementation with usage of Play framework!</strong>
+            <p>
+            To start, choose a username and sign in using the top right form.
+            </p>
+        </p>
+    </div>
+
+}

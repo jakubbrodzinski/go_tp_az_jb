@@ -1,0 +1,55 @@
+@(connected: Int)(content: Html)
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Gra Go</title>
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+        <script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
+    </head>
+    <body>
+           <div class="fill">
+               <div class="container">
+                   @if(connected != 0) {
+                       <div class="topbar">
+                           <p class="pull-right">
+                               You are in room number @connected
+                           </p>
+                           <a href="@routes.Application.index()" class="disconnect">Disconnect</a>
+                       </div>
+
+                   } else {
+                       <form action="@routes.Application.gameRoom()" class="form-container">
+                           <input id="new-game" type="radio" name="command" value="CREATE" onclick="animateInput('new-game')">New game<br>
+                           <input id="join-game" type="radio" name="command" value="JOIN" onclick="animateInput('join-game')">Join game<br>
+                           <input id="new-bot-game" type="radio" name="command" value="CREATE-BOT" onclick="animateInput('new-bot-game')">New bot game<br>
+
+                           <input id="roomSize" type="text" name="roomSize" placeholder="Choose 9x9, 13x13, 19x19">
+                           <input id="roomNumber" type="text" name="roomNumber" placeholder="Enter room numer">
+                           <button class="btn" type="submit">Sign in</button>
+                       </form>
+
+                        <script>
+                            function animateInput(radioButton) {
+                                var el = document.getElementById("roomSize");
+                                if(radioButton.localeCompare("new-game") == 0) {
+                                    $(el).show()
+                                }
+                                else if(radioButton.localeCompare("join-game") == 0) {
+                                    $(el).hide()
+                                }
+                                else {
+                                    $(el).show()
+                                }
+                            }
+                        </script>
+                   }
+               </div>
+           </div>
+        <div class="content">
+            @content
+        </div>
+    </body>
+</html>
