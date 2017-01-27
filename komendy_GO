@@ -1,0 +1,70 @@
+new HashMap<String,Games>
+SIZE={9,13,19}
+'->' - do serwera
+'<-' - odpowiedz serwera
+
+->
+JOIN-GAMEID
+or
+CREATE-SIZE
+or
+CREATE-SIZE-BOT
+<-(odpowiedz dla obu graczy)
+POINTS-WHITESCORE-BLACKSCKORE-YOURCOLOR-SIZE-GAMEID
+
+->
+MOVE-X-Y
+<-
+WRONG
+or
+POINTS-whiteSCORE-blackSCORE-CHANGE-changes
+or
+POINTS-whiteSCORE-blackSCORE-CORRECT-changes
+
+->
+CONCEDE
+<-
+CONCEDE
+
+->
+QUIT
+<-
+QUIT
+//rozmowa przy pass
+->
+PASS
+<-(odpowiedz dla obu graczy)
+PASS
+->(pass od drugiego gracza)
+PASS
+<-(odpowiedz dla obu graczy)
+BLACK-deadBoardPoints-WHITE-deadBoradPoints-BLACKP-BoardPointsTerritory-WHITEP-BoardPointsTeeritory
+
+Gracz nastpenie ma do wyboru:
+PROPOSITION,DENY,ENDPROPOSITION
+
+->
+DENY
+<-
+DENY
+
+->
+PROPOSITION-???
+<-
+PROPOSITION-???
+jezeli propozcyja wroci drugi raz:
+->
+PROPOSITION-???
+<-
+ENDPROPOSIITON-??
+
+
+->
+ENDPROPOSITION
+<-
+WIN/COLOR/BLACKscore/WHITEscore
+
+
+
+examples of given lines : MOVE-X-Y,PASS,CONCEDE,QUIT
+examples of sent lines : PASS,CONCEDE,QUIT,MOVE-X-Y,CHANGE-A-B-C-D-(...)

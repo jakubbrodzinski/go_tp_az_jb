@@ -15,12 +15,12 @@ public class AppSocket extends Controller {
 		//nazwa strony startowej?
 	}
 
-	public static WebSocket<String> GoToGame(){
+	public static WebSocket<String> GoToGame(final String command){
 		return new WebSocket<String>() {
 			@Override
 			public void onReady(WebSocket.In<String> in,WebSocket.Out<String> out) {
 				try{
-					GameManager.joinGame("abc",in,out);
+					GameManager.joinGame(command,in,out);
 				}catch(Exception e){
 					e.printStackTrace();
 				}

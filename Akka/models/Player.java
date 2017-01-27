@@ -26,7 +26,7 @@ public class Player extends UntypedActor {
 			@Override
 			public void invoke(String event) {
 				try {
-					getSelf().tell(new StringM(event), getSelf());
+					GM.tell(new StringM(event), getSelf());
 					//out.write(s);
 				}catch(Exception e){
 					Logger.error("invokeError");
