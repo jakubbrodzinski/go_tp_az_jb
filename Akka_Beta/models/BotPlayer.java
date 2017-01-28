@@ -14,8 +14,6 @@ import models.GameLogic.Enums.stoneColor;
 public class BotPlayer extends UntypedActor {
 	public final ActorRef GM;
 	private BotGO botGO;
-	private BoardSize size=BoardSize.MEDIUM;
-	private stoneColor color=stoneColor.WHITE;
 
 	public BotPlayer(BoardSize size,stoneColor color,ActorRef _GM){
 		botGO=new BotGO(size,color);
@@ -25,7 +23,6 @@ public class BotPlayer extends UntypedActor {
 
 	@Override
 	public void onReceive(Object message) throws Exception {
-		BoardPoint[] changes;
 		if(message instanceof Wrong){
 			GM.tell(new Concede(),getSelf());
 			return;
