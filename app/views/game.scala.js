@@ -6,10 +6,37 @@ var stones = [];
 //Object that holds game state
 var state = { myColor: "", currentColor: ""};
 
+//Object that holds canvas properties
+var canvasProps = { size: 0, cw: 0, ch: 0, padding: 20, offsetTop: 0, offsetLeft: 0};
+
 //Array of objects that holds backup of the boards state
 var backupStones = [];
 
+//Function that copies the current board into backup array of stones
+function doBackup() {
+    for(i = 0; i < stones.length; i++) {
+        backupStones.push({
+            colour: stones[i].colour,
+            x: stones[i].x,
+            y: stones[i].y,
+            radius: stones[i].radius,
+            opacity: stones[i].opacity
+        })
+    }
+}
 
+//Functions that recovers the board from the backup array
+function restoreBoard(context, size, height, width, padding) {
+    for(i = 0; i < backupStones.length; i++) {
+        stones[i].x = backupStones[i].x;
+        stones[i].y = backupStones[i].y;
+        stones[i].radius = backupStones[i].radius;
+        stones[i].colour = backupStones[i].colour;
+        stones[i].opacity = backupStones[i].opacity;
+    }
+    redraw(context, size, width, height, padding);
+
+}
 
 //Functions that draws a grid on the board
 function drawGrid(context, boardSize, boardHeight, boardWidth, padding) {
@@ -21,18 +48,14 @@ function drawGrid(context, boardSize, boardHeight, boardWidth, padding) {
         context.moveTo(0 + padding, 35 * i + padding);
         context.lineTo(boardWidth + padding, 35 * i + padding);
     }
+
     context.stroke();
+
 }
 //Function that draws stones on the board
 function drawStones(context, boardSize, padding) {
     for(i = 0; i < boardSize; i++) {
         for(j = 0; j < boardSize; j++) {
-            context.beginPath();
-            context.arc(35 * i + padding, 35 * j + padding, 15, 0, 2 * Math.PI, false);
-            context.fillStyle ="green";
-            context.globalAlpha = 0;
-            context.fill();
-            context.stroke();
             stones.push({
                 colour: 'green',
                 x: 35 * i + padding,
@@ -40,17 +63,15 @@ function drawStones(context, boardSize, padding) {
                 radius: 15,
                 opacity: 0
             });
-            context.globalAlpha = 1;
         }
     }
 }
 
-//Function that draws a single stone
+//Function that draws a single stone from user input
 function drawStone(context, x, y, colour, canMove) {
     for(i = 0; i < stones.length; i++) {
         if(canMove) {
             if (x >= stones[i].x - stones[i].radius && x <= stones[i].x + stones[i].radius && y >= stones[i].y - stones[i].radius && y <= stones[i].y + stones[i].radius) {
-                alert(stones[i].colour);
                 if(stones[i].colour.localeCompare("green") == 0) {
                     context.beginPath();
                     context.arc(stones[i].x, stones[i].y, stones[i].radius, 0, 2 * Math.PI, false);
@@ -58,7 +79,7 @@ function drawStone(context, x, y, colour, canMove) {
                     context.fill();
                     context.stroke();
                     stones[i].colour = colour;
-                    changeTurn(state.currentColor);
+                    context.beginPath();
                 }
                 else {
                     alert(stones[i].colour);
@@ -68,7 +89,18 @@ function drawStone(context, x, y, colour, canMove) {
     }
 }
 
+//Function that finds stone coordinates from inserted location
+function findStone(x, y) {
+    for (i = 0; i < stones.length; i++) {
+        if (x >= stones[i].x - stones[i].radius && x <= stones[i].x + stones[i].radius && y >= stones[i].y - stones[i].radius && y <= stones[i].y + stones[i].radius) {
+            var location = parseLocationToServerReadable(stones[i].x, stones[i].y, canvasProps.size, canvasProps.padding);
+            return location;
+        }
+    }
+}
+
 //Function that removes a single stone
+//One have to redraw after using this method to apply changes to the board
 function removeStone(x, y) {
     for(i = 0; i < stones.length; i++) {
         if((stones[i].x == x) && (stones[i].y == y)) {
@@ -79,10 +111,7 @@ function removeStone(x, y) {
 
 //Function that redraws the canvas
 function redraw(context, size, width, height, padding) {
-    context.save();
     context.clearRect(0, 0, width + 2 * padding, height + 2 * padding);
-    context.restore();
-
     drawGrid(context, size, height, width, padding);
 
     for(i = 0; i < stones.length; i++) {
@@ -92,65 +121,100 @@ function redraw(context, size, width, height, padding) {
             context.globalAlpha = 0;
         context.fillStyle = stones[i].colour;
         context.fill();
-        context.stroke();
+        if(i != stones.length - 1)
+            context.stroke();
         context.globalAlpha = 1;
+        context.beginPath();
     }
 }
 
 $(function() {
+
+
+    prepareCanvas(@size, 20);
     //Getting canvas properties
-    var size = @size;
-    var cw = (size-1) * 35;
-    var ch = (size-1) * 35;
-    var padding = 20;
 
-    //Preparing board layout
-    var canvas = document.getElementById("myCanvas");
-    $(canvas).attr({width: cw + 2 * padding, height: ch + 2 * padding});
-    var ctx = canvas.getContext("2d");
-
-    //Drawing grid
-    drawGrid(ctx, size, ch, cw, padding);
-
-    //Drawing stones
-    drawStones(ctx, size, padding);
-
-    //Getting canvas properties
-    var canvasOffsetTop = canvas.offsetTop;
-    var canvasOffsetLeft = canvas.offsetLeft;
-    setPoints(0, 0);
-
-
+    setPoints("0", 0);
 
     //Preparing websocket
     var ws = new WebSocket("@routes.Application.initializeConnection(roomNumber, size, command).webSocketURL(request)");
 
     //Adding function that handles WebSocket receiving messages
+    var firstMessage = 1;
     ws.onmessage = function(evt) {
         var data = evt.data;
-        alert(data);
+        if(firstMessage == 1) {
+            firstMessage = 0;
+            var response = data.split("-");
+            setPoints(response[1],response[2]);
+            state.myColor = response[3];
+            state.currentColor = "black";
+            canvasProps.size = response[4];
+        }
+        else if(data.startsWith("CORRECT")) {
+            var res = data.split("-");
+            setPoints(res[1],res[2]);
+            var location = parseLocationToClientReadable(res[4], res[5], canvasProps.size, canvasProps.padding);
+            drawStone(canvasProps.context, location.positionX, location.positionY, state.myColor, 1);
+            for(i = 6; i < res.length; i += 2) {
+                location = parseLocationToClientReadable(res[i], res[i+1], canvasProps.size, canvasProps.padding);
+                removeStone(location.positionX, location.positionY);
+            }
+            redraw(canvasProps.context, canvasProps.size, canvasProps.width, canvasProps.height, canvasProps.padding);
+            changeTurn();
+        }
+        else if(data.startsWith("CHANGE")) {
+            var res = data.split("-");
+            setPoints(res[1],res[2]);
+            var location = parseLocationToClientReadable(res[4], res[5], canvasProps.size, canvasProps.padding);
+            drawStone(canvasProps.context, location.positionX, location.positionY, state.currentColor, 1);
+            for(i = 6; i < res.length; i += 2) {
+                location = parseLocationToClientReadable(res[i], res[i+1], canvasProps.size, canvasProps.padding);
+                removeStone(location.positionX, location.positionY);
+            }
+            redraw(canvasProps.context, canvasProps.size, canvasProps.width, canvasProps.height, canvasProps.padding);
+            changeTurn();
+        }
+        else if(data.startsWith("PASS")) {
+            changeTurn();
+        }
+        else if(data.startsWith("CONCEDE")) {
+            alert("Przeciwnik się poddał! Wygrana!");
+        }
     };
 
-    canvas.addEventListener('click', function(event) {
-        var x = event.pageX - canvasOffsetLeft;
-        var y = event.pageY - canvasOffsetTop;
+    //Adding listener to canvas
+    document.getElementById("myCanvas").addEventListener('click', function(event) {
+        var x = event.pageX - canvasProps.offsetLeft;
+        var y = event.pageY - canvasProps.offsetTop;
         //dzialajace
         //drawStone(ctx, x, y, "white", state.myColor.localeCompare(state.currentColor) == 0);
-        /*drawStone(ctx, x, y, "white", 1);
-        if(x >= 300 && y >=  300) {
-            removeStone(20, 20);
-            removeStone(55, 55);
-            redraw(ctx, size, cw, ch, padding);
-        }*/
-        ws.send(x + " " + y);
+        drawStone(canvasProps.context, x, y, "white", 1);
+        if(isMyTurn()) {
+            var location = findStone(x, y);
+            ws.send("MOVE-"+ location.positionX + "-" + location.positionY);
+        }
+
     });
 
-
+    //Adding listener to the passing button
+    document.getElementById("pass-btn").onclick = function() {
+        ws.send("PASS");
+    };
+    //Adding listener to the conceding button
+    document.getElementById("concede-btn").onclick = function() {
+        ws.send("CONCEDE");
+    };
 });
 
+//Function that checks if it is current player turn
+function isMyTurn() {
+    return state.myColor.localeCompare(state.currentColor) == 0 ? 1 : 0;
+}
+
 //Function that changes game state - current color playing and board opacity
-function changeTurn(currentTurn) {
-    if(currentTurn.localeCompare("black") == 0) {
+function changeTurn() {
+    if(state.currentColor.localeCompare("black") == 0) {
         state.currentColor = "white";
     }
     else {
@@ -169,6 +233,34 @@ function changeTurn(currentTurn) {
 function setPoints(whitePoints, blackPoints) {
     document.getElementById("blackpoints-para").innerHTML = blackPoints;
     document.getElementById("whitepoints-para").innerHTML = whitePoints;
+}
+
+//Function that prepares the canvas
+function prepareCanvas(size, padding) {
+    //Getting canvas properties
+    canvasProps.size = size;
+    canvasProps.width = (size-1) * 35;
+    canvasProps.height = (size-1) * 35;
+    canvasProps.padding = padding;
+
+    //Preparing board layout
+    var canvas = document.getElementById("myCanvas");
+
+
+    $(canvas).attr({width: canvasProps.width + 2 * padding, height: canvasProps.height + 2 * padding});
+    canvasProps.context = canvas.getContext("2d");
+
+
+    //Drawing grid
+    drawGrid(canvasProps.context, size, canvasProps.height, canvasProps.width, padding);
+
+    //Drawing stones
+    drawStones(canvasProps.context, size, padding);
+
+    canvasProps.offsetTop = canvas.offsetTop;
+    canvasProps.offsetLeft = canvas.offsetLeft;
+
+    alert(canvasProps.size);
 }
 
 //Function that parses stone location to server readable form

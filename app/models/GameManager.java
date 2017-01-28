@@ -43,6 +43,7 @@ public class GameManager extends UntypedActor {
 	@Override
 	public void onReceive(Object message) throws Exception {
 		if(message instanceof StringM){
+            System.out.println(((StringM) message).getValue());
 			String str=((StringM) message).getValue();
 			notifyOpponent(message);
 
