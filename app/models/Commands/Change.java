@@ -17,12 +17,21 @@ public class Change {
 		bPoints=b;
 		wPoints=w;
 	}
-	public String toString(){
+	public String changeString(){
 		StringBuilder builder=new StringBuilder("");
 		for (BoardPoint point: changes) {
 			builder.append("-");
 			builder.append(point.toString());
 		}
-		return "POINTS-" + wPoints + "-" + bPoints + builder.toString();
+		return "POINTS-" + wPoints + "-" + bPoints + "-CHANGE" + builder.toString();
+	}
+
+	public String correctString(){
+		StringBuilder builder=new StringBuilder("");
+		for (BoardPoint point: changes) {
+			builder.append("-");
+			builder.append(point.toString());
+		}
+		return "POINTS-" + wPoints + "-" + bPoints + "-CORRECT" + builder.toString();
 	}
 }

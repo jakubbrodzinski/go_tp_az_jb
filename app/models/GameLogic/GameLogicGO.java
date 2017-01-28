@@ -32,6 +32,14 @@ public class GameLogicGO {
 	public GameLogicGO(){
 	}
 
+	public GameLogicGO(BoardSize i){
+		setSize(i);
+	}
+
+	public BoardSize getBoardSize() {
+		return boardSize;
+	}
+
 	private class stoneGO{
 		private int x;
 		private int y;

@@ -2,7 +2,8 @@ package models;
 
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
-import models.Commands.StringM;
+import models.Commands.*;
+import models.GameLogic.BoardPoint;
 import play.Logger;
 import play.libs.F.Callback;
 import play.libs.F.Callback0;
@@ -25,8 +26,43 @@ public class Player extends UntypedActor {
 		in.onMessage(new Callback<String>() {
 			@Override
 			public void invoke(String event) {
+				System.out.println("fromclient message: " + event);
+				Object message;
+				String[] command_splited=event.split("-");
+				switch (command_splited[0]){
+					case "MOVE":
+						int row = 0;
+						try {
+							row = Integer.parseInt(command_splited[2]);
+						} catch (NumberFormatException e) {
+							System.out.println("Something wrong with parsing to Integer");
+						}
+						message=new Move(new BoardPoint(command_splited[1].charAt(0),row));
+						break;
+					case "CONCEDE":
+						message=new Concede();
+						break;
+					case "PASS":
+						message=new Pass();
+						break;
+					case "PROPOSITION":
+						message=new Proposition(event);
+						break;
+					case "ENDPROPOSITION":
+						message=new EndProposition(event);
+						break;
+					case "DENY":
+						message=new Deny();
+						break;
+					case "QUIT":
+						message=new Quit();
+						break;
+					default:
+						System.out.println("Bledny komunikat od clineta!");
+						return;
+				}
 				try {
-					GM.tell(new StringM(event), getSelf());
+					GM.tell(message, getSelf());
 					//out.write(s);
 				}catch(Exception e){
 					Logger.error("invokeError");
@@ -38,7 +74,8 @@ public class Player extends UntypedActor {
 			@Override
 			public void invoke() {
 				try{
-					getSelf().tell(new StringM("quit"),getSelf());
+					GM.tell(new Quit(),getSelf());
+					getSelf().tell(new Quit(),getSelf());
 				}catch(Exception e){
 					Logger.error("invokeError");
 				}
@@ -47,15 +84,9 @@ public class Player extends UntypedActor {
 		});
 	}
 
-
 	@Override
 	public void onReceive(Object message) throws Exception {
-		if(message instanceof StringM){
-			out.write(((StringM) message).getValue());
-		}
-	}
-
-	public void addOpp(ActorRef op){
-
+		System.out.println("toclient message: " + message.toString());
+		out.write(message.toString());
 	}
 }

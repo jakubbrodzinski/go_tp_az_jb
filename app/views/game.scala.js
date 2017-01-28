@@ -4,7 +4,7 @@
 var stones = [];
 
 //Object that holds game state
-var state = { myColor: "", currentColor: ""};
+var state = { myColor: "", currentColor: "", paused: "no"};
 
 //Object that holds canvas properties
 var canvasProps = { size: 0, cw: 0, ch: 0, padding: 20, offsetTop: 0, offsetLeft: 0};
@@ -14,7 +14,8 @@ var backupStones = [];
 
 //Function that copies the current board into backup array of stones
 function doBackup() {
-    for(i = 0; i < stones.length; i++) {
+    backupStones = [];
+    for(var i = 0; i < stones.length; i++) {
         backupStones.push({
             colour: stones[i].colour,
             x: stones[i].x,
@@ -27,7 +28,7 @@ function doBackup() {
 
 //Functions that recovers the board from the backup array
 function restoreBoard(context, size, height, width, padding) {
-    for(i = 0; i < backupStones.length; i++) {
+    for(var i = 0; i < backupStones.length; i++) {
         stones[i].x = backupStones[i].x;
         stones[i].y = backupStones[i].y;
         stones[i].radius = backupStones[i].radius;
@@ -40,11 +41,11 @@ function restoreBoard(context, size, height, width, padding) {
 
 //Functions that draws a grid on the board
 function drawGrid(context, boardSize, boardHeight, boardWidth, padding) {
-    for(i = 0; i < boardSize; i++) {
+    for(var i = 0; i < boardSize; i++) {
         context.moveTo(35 * i + padding, 0 + padding);
         context.lineTo(35 * i + padding, boardHeight + padding);
     }
-    for(i = 0; i < boardSize; i++) {
+    for(var i = 0; i < boardSize; i++) {
         context.moveTo(0 + padding, 35 * i + padding);
         context.lineTo(boardWidth + padding, 35 * i + padding);
     }
@@ -54,8 +55,8 @@ function drawGrid(context, boardSize, boardHeight, boardWidth, padding) {
 }
 //Function that draws stones on the board
 function drawStones(context, boardSize, padding) {
-    for(i = 0; i < boardSize; i++) {
-        for(j = 0; j < boardSize; j++) {
+    for(var i = 0; i < boardSize; i++) {
+        for(var j = 0; j < boardSize; j++) {
             stones.push({
                 colour: 'green',
                 x: 35 * i + padding,
@@ -69,7 +70,7 @@ function drawStones(context, boardSize, padding) {
 
 //Function that draws a single stone from user input
 function drawStone(context, x, y, colour, canMove) {
-    for(i = 0; i < stones.length; i++) {
+    for(var i = 0; i < stones.length; i++) {
         if(canMove) {
             if (x >= stones[i].x - stones[i].radius && x <= stones[i].x + stones[i].radius && y >= stones[i].y - stones[i].radius && y <= stones[i].y + stones[i].radius) {
                 if(stones[i].colour.localeCompare("green") == 0) {
@@ -91,7 +92,7 @@ function drawStone(context, x, y, colour, canMove) {
 
 //Function that finds stone coordinates from inserted location
 function findStone(x, y) {
-    for (i = 0; i < stones.length; i++) {
+    for (var i = 0; i < stones.length; i++) {
         if (x >= stones[i].x - stones[i].radius && x <= stones[i].x + stones[i].radius && y >= stones[i].y - stones[i].radius && y <= stones[i].y + stones[i].radius) {
             var location = parseLocationToServerReadable(stones[i].x, stones[i].y, canvasProps.size, canvasProps.padding);
             return location;
@@ -99,10 +100,19 @@ function findStone(x, y) {
     }
 }
 
+//Function that return a stone with given coordinates in client readable form
+function returnStoneAtLocation(x, y) {
+    for (var i = 0; i < stones.length; i++) {
+        if (x >= stones[i].x - stones[i].radius && x <= stones[i].x + stones[i].radius && y >= stones[i].y - stones[i].radius && y <= stones[i].y + stones[i].radius) {
+            return stones[i];
+        }
+    }
+}
+
 //Function that removes a single stone
 //One have to redraw after using this method to apply changes to the board
 function removeStone(x, y) {
-    for(i = 0; i < stones.length; i++) {
+    for(var i = 0; i < stones.length; i++) {
         if((stones[i].x == x) && (stones[i].y == y)) {
             stones[i].colour = "green";
         }
@@ -114,7 +124,7 @@ function redraw(context, size, width, height, padding) {
     context.clearRect(0, 0, width + 2 * padding, height + 2 * padding);
     drawGrid(context, size, height, width, padding);
 
-    for(i = 0; i < stones.length; i++) {
+    for(var i = 0; i < stones.length; i++) {
         context.beginPath();
         context.arc(stones[i].x, stones[i].y, stones[i].radius, 0, 2 * Math.PI, false);
         if(stones[i].colour.localeCompare("green") == 0)
@@ -128,10 +138,119 @@ function redraw(context, size, width, height, padding) {
     }
 }
 
+//Array containing black dead stones
+var deadBlackStones = [];
+
+//Function that marks stone as black dead stone
+function markAsBlackDeadStone(x, y) {
+    for(var i = 0; i < stones.length; i++) {
+        if((stones[i].x == x) && (stones[i].y == y)) {
+            stones[i].colour = "blue";
+        }
+    }
+}
+
+//Function that marks stone as white dead stone
+function markAsWhiteDeadStone(x, y) {
+    for(var i = 0; i < stones.length; i++) {
+        if((stones[i].x == x) && (stones[i].y == y)) {
+            stones[i].colour = "yellow";
+        }
+    }
+}
+
+//Function that marks stone as black territory
+function markAsBlackTerritory(x, y) {
+    for(var i = 0; i < stones.length; i++) {
+        if((stones[i].x == x) && (stones[i].y == y)) {
+            stones[i].colour = "red";
+        }
+    }
+}
+
+//Function that marks stone as white territory
+function markAsWhiteTerritory(x, y) {
+    for(var i = 0; i < stones.length; i++) {
+        if((stones[i].x == x) && (stones[i].y == y)) {
+            stones[i].colour = "pink";
+        }
+    }
+}
+
+//Function that generates string response ready to be sent to the server
+//with black dead stones
+function getBlackDeadStones() {
+    var output = "";
+    for(var i = 0; i < stones.length; i++) {
+        if(stones[i].colour.localeCompare("blue") == 0) {
+            var location = parseLocationToServerReadable(stones[i].x, stones[i].y, canvasProps.size, canvasProps.padding);
+            output = output.concat(location.positionX);
+            output = output.concat("-");
+            output = output.concat(location.positionY);
+            output = output.concat("-");
+        }
+    }
+    output = output.substring(0, output.length - 1);
+    return output;
+}
+
+//Function that generates string response ready to be sent to the server
+//with white dead stones
+function getWhiteDeadStones() {
+    var output = "";
+    for(var i = 0; i < stones.length; i++) {
+        if(stones[i].colour.localeCompare("yellow") == 0) {
+            var location = parseLocationToServerReadable(stones[i].x, stones[i].y, canvasProps.size, canvasProps.padding);
+            output = output.concat(location.positionX);
+            output = output.concat("-");
+            output = output.concat(location.positionY);
+            output = output.concat("-");
+        }
+    }
+    output = output.substring(0, output.length - 1);
+    return output;
+}
+
+//Function that generates string response ready to be sent to the server
+//with black territory
+function getBlackTerritory() {
+    var output = "";
+    for(var i = 0; i < stones.length; i++) {
+        if(stones[i].colour.localeCompare("red") == 0) {
+            var location = parseLocationToServerReadable(stones[i].x, stones[i].y, canvasProps.size, canvasProps.padding);
+            output = output.concat(location.positionX);
+            output = output.concat("-");
+            output = output.concat(location.positionY);
+            output = output.concat("-");
+        }
+    }
+    output = output.substring(0, output.length - 1);
+    return output;
+}
+
+//Function that generates string response ready to be sent to the server
+//with white territory
+function getWhiteTerritory() {
+    var output = "";
+    for(var i = 0; i < stones.length; i++) {
+        if(stones[i].colour.localeCompare("pink") == 0) {
+            var location = parseLocationToServerReadable(stones[i].x, stones[i].y, canvasProps.size, canvasProps.padding);
+            output = output.concat(location.positionX);
+            output = output.concat("-");
+            output = output.concat(location.positionY);
+            output = output.concat("-");
+        }
+    }
+    output = output.substring(0, output.length - 1);
+    return output;
+}
+
+
+
 $(function() {
 
 
-    prepareCanvas(@size, 20);
+   // prepareCanvas(@size, 20);
     //Getting canvas properties
 
     setPoints("0", "0");
@@ -142,19 +261,25 @@ $(function() {
     //Adding function that handles WebSocket receiving messages
     var firstMessage = 1;
     ws.onmessage = function(evt) {
-        alert(evt.data);
         var data = evt.data;
         if(firstMessage == 1) {
-            firstMessage = 0;
-            var response = data.split("-");
-            setPoints(response[1],response[2]);
-            state.myColor = response[3];
-            state.currentColor = "BLACK";
-            canvasProps.size = response[4];
-            document.getElementById("room-number").innerHTML = "Jestes w pokoju: " + response[5];
-            if(state.myColor.localeCompare(state.currentColor) != 0) {
-                var canvas = document.getElementById("myCanvas");
-                $(canvas).animate({opacity: 0.5}, 700);
+            if(data.startsWith("GAMEID")) {
+                firstMessage = 1;
+                var response = data.split("-");
+                document.getElementById("room-number").innerHTML = "Jestes w pokoju: " + response[1];
+            }
+            else {
+                firstMessage = 0;
+                var response = data.split("-");
+                setPoints(response[1], response[2]);
+                state.myColor = response[3];
+                state.currentColor = "BLACK";
+                canvasProps.size = response[4];
+                if (state.myColor.localeCompare(state.currentColor) != 0) {
+                    var canvas = document.getElementById("myCanvas");
+                    $(canvas).animate({opacity: 0.5}, 700);
+                }
+                prepareCanvas(canvasProps.size, 20);
             }
         }
         else if(data.indexOf("CORRECT") != -1) {
@@ -162,7 +287,7 @@ $(function() {
             setPoints(res[1],res[2]);
             var location = parseLocationToClientReadable(res[4], res[5], canvasProps.size, canvasProps.padding);
             drawStone(canvasProps.context, location.positionX, location.positionY, state.myColor, 1);
-            for(i = 6; i < res.length; i += 2) {
+            for(var i = 6; i < res.length; i += 2) {
                 location = parseLocationToClientReadable(res[i], res[i+1], canvasProps.size, canvasProps.padding);
                 removeStone(location.positionX, location.positionY);
             }
@@ -174,12 +299,142 @@ $(function() {
             setPoints(res[1],res[2]);
             var location = parseLocationToClientReadable(res[4], res[5], canvasProps.size, canvasProps.padding);
             drawStone(canvasProps.context, location.positionX, location.positionY, state.currentColor, 1);
-            for(i = 6; i < res.length; i += 2) {
-                location = parseLocationToClientReadable(res[i], res[i+1], canvasProps.size, canvasProps.padding);
+            var k=6;
+            while(k < res.length) {
+                location = parseLocationToClientReadable(res[k], res[k+1], canvasProps.size, canvasProps.padding);
                 removeStone(location.positionX, location.positionY);
+                k++;
+                k++;
+                alert(k);
             }
+
             redraw(canvasProps.context, canvasProps.size, canvasProps.width, canvasProps.height, canvasProps.padding);
             changeTurn();
+        }
+        else if(data.indexOf("PROPOSITION") != -1) {
+            var res = data.split("-");
+            var i = 2;
+            while(!(res[i].localeCompare("WHITE") == 0)) {
+                var location = parseLocationToClientReadable(res[i], res[i+1], canvasProps.size, canvasProps.padding);
+                markAsBlackDeadStone(location.positionX, location.positionY);
+                i += 2;
+            }
+            while(!(res[i].localeCompare("BLACKP") == 0)) {
+                var location = parseLocationToClientReadable(res[i], res[i+1], canvasProps.size, canvasProps.padding);
+                markAsWhiteDeadStone(location.positionX, location.positionY);
+                i += 2;
+            }
+            while(!(res[i].localeCompare("WHITEP") == 0)) {
+                var location = parseLocationToClientReadable(res[i], res[i+1], canvasProps.size, canvasProps.padding);
+                markAsBlackTerritory(location.positionX, location.positionY);
+                i += 2;
+            }
+            while(!(i >= res.length)) {
+                var location = parseLocationToClientReadable(res[i], res[i+1], canvasProps.size, canvasProps.padding);
+                markAsWhiteTerritory(location.positionX, location.positionY);
+                i += 2;
+            }
+            redraw(canvasProps.context, canvasProps.size, canvasProps.width, canvasProps.height, canvasProps.padding);
+            $( function() {
+                $( "#dialog" ).dialog({
+                    modal: true,
+                    title: 'Propozycja martwych pol i terytoriow',
+                    zIndex: 3000,
+                    autoOpen: true,
+                    width: 'auto',
+                    resizable: false,
+                    open: function(event, ui) {
+                        $(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+                    },
+                    buttons: {
+                        Zaproponuj: function () {
+                            $(this).dialog("close");
+                        },
+                        Odrzuc: function () {
+                            $(this).dialog("close");
+                        }
+                    },
+                    close: function (event, ui) {
+                        $(this).remove();
+                    }
+                });
+            });
+            changeTurn();
+        }
+        else if(data.startsWith("BLACK")) {
+
+            state.paused = "yes";
+            doBackup();
+            var res = data.split("-");
+            for(var i = 0; i < res.length; i++) {
+                if(res[i].localeCompare("BLACK") == 0) {
+                    i++;
+                    while(!(res[i].localeCompare("WHITE") == 0)) {
+                        var location = parseLocationToClientReadable(res[i], res[i+1], canvasProps.size, canvasProps.padding);
+                        markAsBlackTerritory(location.positionX, location.positionY);
+                        i += 2;
+                    }
+                }
+                if(res[i].localeCompare("WHITE") == 0) {
+                    i++;
+                    while(!(res[i].localeCompare("BLACKP") == 0)) {
+                        var location = parseLocationToClientReadable(res[i], res[i+1], canvasProps.size, canvasProps.padding);
+                        markAsWhiteTerritory(location.positionX, location.positionY);
+                        i += 2;
+                    }
+                }
+                if(res[i].localeCompare("BLACKP") == 0) {
+                    i++;
+                    while(!(res[i].localeCompare("WHITEP") == 0)) {
+                        var location = parseLocationToClientReadable(res[i], res[i+1], canvasProps.size, canvasProps.padding);
+                        markAsBlackDeadStone(location.positionX, location.positionY);
+                        i += 2;
+                    }
+                }
+                if(res[i].localeCompare("WHITEP") == 0) {
+                    i++;
+                    while(i < res.length) {
+                        var location = parseLocationToClientReadable(res[i], res[i+1], canvasProps.size, canvasProps.padding);
+                        markAsWhiteDeadStone(location.positionX, location.positionY);
+                        i += 2;
+                    }
+                }
+            }
+            redraw(canvasProps.context, canvasProps.size, canvasProps.width, canvasProps.height, canvasProps.padding);
+            if(isMyTurn()) {
+                $(function () {
+                    $("#dialog").dialog({
+                        modal: true,
+                        title: 'Propozycja martwych pol i terytoriow',
+                        zIndex: 3000,
+                        autoOpen: true,
+                        width: 'auto',
+                        resizable: false,
+                        open: function (event, ui) {
+                            $(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+                        },
+                        buttons: {
+                            Zaproponuj: function () {
+                                alert("PROPOSITION-" + "BLACK-" + getBlackTerritory() + "-WHITE-" +
+                                    getWhiteTerritory() + "-BLACKP-" + getBlackDeadStones() + "-WHITEP-" + getWhiteDeadStones());
+                                ws.send("PROPOSITION-" + "BLACK-" + getBlackTerritory() + "-WHITE-" +
+                                getWhiteTerritory() + "-BLACKP-" + getBlackDeadStones() + "-WHITEP-" + getWhiteDeadStones());
+                                $(this).dialog("close");
+                            },
+                            Odrzuc: function () {
+                                ws.send("DENY");
+                                $(this).dialog("close");
+                            }
+                        }
+                    });
+                });
+            }
+        }
+        else if(data.startsWith("DENY")) {
+            alert("BYLEM");
+            state.paused = "no";
+            restoreBoard(canvasProps.context, canvasProps.size, canvasProps.height, canvasProps.width, canvasProps.padding);
+            redraw(canvasProps.context, canvasProps.size, canvasProps.width, canvasProps.height, canvasProps.padding);
         }
         else if(data.startsWith("PASS")) {
             changeTurn();
@@ -196,21 +451,29 @@ $(function() {
     document.getElementById("myCanvas").addEventListener('click', function(event) {
         var x = event.pageX - canvasProps.offsetLeft;
         var y = event.pageY - canvasProps.offsetTop;
-        //dzialajace
-        //drawStone(ctx, x, y, "white", state.myColor.localeCompare(state.currentColor) == 0);
-        drawStone(canvasProps.context, x, y, "white", 1);
         if(isMyTurn()) {
-            var location = findStone(x, y);
-            //ws.send("MOVE-"+ location.positionX + "-" + location.positionY);
-            ws.send("POINTS-0-2-WHITE-9-1");
-            drawStone(canvasProps.context, 20, 20, "black", 1);
-            drawStone(canvasProps.context, 55, 55, "black", 1);
+            if(state.paused.localeCompare("no") == 0) {
+                var location = findStone(x, y);
+                ws.send("MOVE-"+ location.positionX + "-" + location.positionY);
+            }
+            else {
+                if(returnStoneAtLocation(x, y).colour.localeCompare("black") == 0) {
+                    markAsBlackDeadStone(x, y);
+                    drawStone(canvasProps.context, x, y, "blue", 1);
+                }
+                else if(returnStoneAtLocation(x, y).colour.localeCompare("white") == 0) {
+                    markAsWhiteDeadStone(x, y);
+                    drawStone(canvasProps.context, x, y, "yellow", 1);
+                }
+            }
         }
     });
 
     //Adding listener to the passing button
     document.getElementById("pass-btn").onclick = function() {
-        ws.send("PASS");
+        if(isMyTurn()) {
+            ws.send("PASS");
+        }
     };
     //Adding listener to the conceding button
     document.getElementById("concede-btn").onclick = function() {

@@ -13,8 +13,6 @@ public class Application extends Controller {
     }
 
     public static Result gameRoom(int roomSize, int roomNumber, String command) {
-        System.out.println("game room nnmber/size/command: " + roomNumber + " " + roomSize + " " + command);
-
         if(command == null) {
             flash("error", "Nie wprowadzono danych");
             return redirect(routes.Application.index());
@@ -34,7 +32,7 @@ public class Application extends Controller {
                 return redirect(routes.Application.index());
             }
             else {
-                return ok(game.render(0, 9, command));
+                return ok(game.render(0, roomSize, command));
             }
         }
         else if(command.equals("CREATE-BOT")) {
@@ -43,7 +41,7 @@ public class Application extends Controller {
                 return redirect(routes.Application.index());
             }
             else {
-                return ok(game.render(0, 9, command));
+                return ok(game.render(0, roomSize, command));
             }
         }
         else {
@@ -65,9 +63,11 @@ public class Application extends Controller {
                         GameManager.joinGame("CREATE-"+Integer.toString(size)+"-BOT", in, out);
                     }
                     else if(type.equals("CREATE")){
+                        System.out.println(type+"-"+Integer.toString(size));
                         GameManager.joinGame(type+"-"+Integer.toString(size), in, out);
                     }
-                    else {
+                    else if(type.equals("JOIN")){
+                        System.out.println(type+"-"+Integer.toString(roomNumber));
                         GameManager.joinGame(type+"-"+Integer.toString(roomNumber), in, out);
                     }
                 }catch(Exception e){
