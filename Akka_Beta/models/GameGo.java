@@ -16,6 +16,11 @@ public class GameGo{
 
 	private ActorRef black_player=null;
 	private ActorRef white_player=null;
+
+	public BoardSize getBsize() {
+		return bsize;
+	}
+
 	private BoardSize bsize;
 	private stoneColor currentPlayer;
 
@@ -32,7 +37,7 @@ public class GameGo{
 	}
 
 	public boolean setBlackPlayer(ActorRef black_player){
-		if(black_player!=null){
+		if(black_player==null){
 			return false;
 		}
 		this.black_player=black_player;
@@ -40,7 +45,7 @@ public class GameGo{
 	}
 
 	public boolean setWhitePlayer(ActorRef white_player){
-		if(white_player!=null){
+		if(white_player==null){
 			return false;
 		}
 		this.white_player=white_player;

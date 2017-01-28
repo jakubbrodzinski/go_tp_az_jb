@@ -38,13 +38,20 @@ public class GameManager extends UntypedActor {
 			}
 			GameGo newGame=new GameGo(size);
 			newGame.setBlackPlayer(player);
-			games.put(Integer.toString(gameID++),newGame);
+			games.put(Integer.toString(gameID),newGame);
+			_out.write("GAMEID-"+Integer.toString(gameID++));
 		}else if(splitted[0].equals("JOIN")) {
 			if (games.containsKey(splitted[1])) {
-				GameGo join=games.get(splitted[1]);
-				if(!join.setWhitePlayer(player)){
+				GameGo gameGO=games.get(splitted[1]);
+				if(!gameGO.setWhitePlayer(player)){
 					throw new WrongPlayerInitiation("Full Room");
 				}
+				String bPlayer_M="POINTS-6.5-0-"+"BLACK-"+gameGO.getBsize();
+				String wPlayer_M="POINTS-6.5-0-"+"WHITE-"+gameGO.getBsize();
+				gameGO.getCurrentPlayer().tell(bPlayer_M,defaultGM);
+				gameGO.changeTurn();
+				gameGO.getCurrentPlayer().tell(wPlayer_M,defaultGM);
+				gameGO.changeTurn();
 			} else {
 				throw new WrongPlayerInitiation("Wrong GameID");
 			}
