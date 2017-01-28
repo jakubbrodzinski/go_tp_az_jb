@@ -1,4 +1,4 @@
-package Server.Main;
+package models.GameLogic;
 
 /**
  * Created by jakub on 12/3/16.

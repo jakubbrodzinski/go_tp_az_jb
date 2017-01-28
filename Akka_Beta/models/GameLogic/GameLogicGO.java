@@ -1,7 +1,7 @@
-package Server.Main;
+package models.GameLogic;
 
-import Server.Enums.BoardSize;
-import Server.Enums.stoneColor;
+import models.GameLogic.Enums.BoardSize;
+import models.GameLogic.Enums.stoneColor;
 
 import java.util.ArrayList;
 /*
@@ -30,6 +30,10 @@ public class GameLogicGO {
 	 * Very simple class, used in counting territories.
 	 */
 	public GameLogicGO(){
+	}
+
+	public GameLogicGO(BoardSize i){
+		setSize(i);
 	}
 
 	private class stoneGO{
