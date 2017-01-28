@@ -3,7 +3,7 @@ package models;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
-import models.Commands.StringM;
+import models.Commands.*;
 import models.GameLogic.Enums.BoardSize;
 import models.GameLogic.WrongPlayerInitiation;
 import play.libs.Akka;
@@ -53,23 +53,52 @@ public class GameManager extends UntypedActor {
 
 	@Override
 	public void onReceive(Object message) throws Exception {
-		notifyOpponent(message,getSender());
-
-		if(message instanceof StringM){
-			String str=((StringM) message).getValue();
-			notifyOpponent(message,getSender());
-
-		}
-
-	}
-
-	public static void notifyOpponent(Object msg,ActorRef op){
-		GameGo ourGame;
+		GameGo ourGame=null;
 		for(Map.Entry<String,GameGo> entry: games.entrySet()){
 			ourGame=entry.getValue();
-			if(ourGame.contains(op)){
-				ourGame.getOpponent().tell(msg,defaultGM);
+			if(ourGame.contains(getSender())){
+				break;
 			}
 		}
+		Object response=null;
+		//po prostu przekaz dalej: Quit,Concede,Deny
+		//zrob cos:Pass,Move,Proposition,EndProposition
+		//tylko do klienta:
+		if(message instanceof Move){
+			response=ourGame.MoveOnBoard((Move)message);
+			if(response instanceof Change){
+				Change change=(Change) response;
+				ourGame.getCurrentPlayer().tell(change.changeString(),defaultGM);
+				ourGame.changeTurn();
+				ourGame.getCurrentPlayer().tell(change.correctString(),defaultGM);
+				ourGame.changeTurn();
+			}else{
+				ourGame.getCurrentPlayer().tell(response,defaultGM);
+			}
+		}else if(message instanceof Pass){
+			response=ourGame.Pass();
+			notifyBothPlayers(response,ourGame);
+			ourGame.changePass();
+		}else if(message instanceof Proposition){
+			//!!!
+			response=ourGame.Proposition((Proposition) message);
+			ourGame.getCurrentPlayer().tell(response,defaultGM);
+			ourGame.changeProp();
+		}else if(message instanceof EndProposition){
+			response=ourGame.EndProposition((EndProposition) message);
+			notifyBothPlayers(response,ourGame);
+		}else if(message instanceof SimpleM){ //Quit,Concede,Deny
+			notifyBothPlayers(message,ourGame);
+			ourGame.changeTurn();
+		}else{
+			unhandled(message);
+		}
+	}
+
+	public static void notifyBothPlayers(Object msg,GameGo gameGo){
+		gameGo.getCurrentPlayer().tell(msg,defaultGM);
+		gameGo.changeTurn();
+		gameGo.getCurrentPlayer().tell(msg,defaultGM);
+		gameGo.changeTurn();
 	}
 }

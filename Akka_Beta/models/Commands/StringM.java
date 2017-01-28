@@ -8,7 +8,7 @@ public class StringM {
 	public StringM(String m){
 		_M=m;
 	}
-	public String getValue(){
+	public String toString(){
 		return _M;
 	}
 }

@@ -9,7 +9,12 @@ public class Proposition {
 	public Proposition(String prop){
 		this.prop=prop;
 	}
+
 	public String toString(){
+		return prop;
+	}
+
+	public String getProp() {
 		return prop;
 	}
 }
