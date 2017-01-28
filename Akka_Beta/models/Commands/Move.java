@@ -1,6 +1,6 @@
 package models.Commands;
 
-import models.GameLogic.BoardPoint;
+import models.GameLogic.Enums.BoardPoint;
 
 /**
  * Created by jakub on 1/27/17.

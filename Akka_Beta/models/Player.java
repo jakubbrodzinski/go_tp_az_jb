@@ -3,7 +3,7 @@ package models;
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import models.Commands.*;
-import models.GameLogic.BoardPoint;
+import models.GameLogic.Enums.BoardPoint;
 import play.Logger;
 import play.libs.F.Callback;
 import play.libs.F.Callback0;

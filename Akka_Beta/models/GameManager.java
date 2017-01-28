@@ -5,7 +5,9 @@ import akka.actor.Props;
 import akka.actor.UntypedActor;
 import models.Commands.*;
 import models.GameLogic.Enums.BoardSize;
-import models.GameLogic.WrongPlayerInitiation;
+import models.GameLogic.Enums.stoneColor;
+import models.GameLogic.Exceptions.WrongPlayerInitiation;
+import models.GameLogic.GameGo;
 import play.libs.Akka;
 import play.mvc.WebSocket;
 
@@ -29,25 +31,31 @@ public class GameManager extends UntypedActor {
 		ActorRef player=Akka.system().actorOf(Props.create(Player.class,_in,_out,defaultGM));
 		if(splitted[0].equals("CREATE")){
 			BoardSize size;
-			if(splitted[1].equals("9")){
-				size=BoardSize.SMALL;
-			}else if(splitted[1].equals("19")){
-				size=BoardSize.LARGE;
-			}else{
-				size=BoardSize.MEDIUM;
+			if (splitted[1].equals("9")) {
+				size = BoardSize.SMALL;
+			} else if (splitted[1].equals("19")) {
+				size = BoardSize.LARGE;
+			} else {
+				size = BoardSize.MEDIUM;
 			}
-			GameGo newGame=new GameGo(size);
+			GameGo newGame = new GameGo(size);
 			newGame.setBlackPlayer(player);
-			games.put(Integer.toString(gameID),newGame);
-			_out.write("GAMEID-"+Integer.toString(gameID++));
+			games.put(Integer.toString(gameID), newGame);
+			_out.write("GAMEID-" + Integer.toString(gameID++));
+			if(splitted.length>=3 && splitted[2].equals("BOT")){
+				ActorRef Bot=Akka.system().actorOf(Props.create(BotPlayer.class,size,stoneColor.WHITE,defaultGM));
+				newGame.setWhitePlayer(Bot);
+				String bPlayer_M="POINTS-6.5-0-"+"BLACK-"+size.getSize();
+				player.tell(bPlayer_M,defaultGM);
+			}
 		}else if(splitted[0].equals("JOIN")) {
 			if (games.containsKey(splitted[1])) {
 				GameGo gameGO=games.get(splitted[1]);
 				if(!gameGO.setWhitePlayer(player)){
 					throw new WrongPlayerInitiation("Full Room");
 				}
-				String bPlayer_M="POINTS-6.5-0-"+"BLACK-"+gameGO.getBsize();
-				String wPlayer_M="POINTS-6.5-0-"+"WHITE-"+gameGO.getBsize();
+				String bPlayer_M="POINTS-6.5-0-"+"BLACK-"+gameGO.getBsize().getSize();
+				String wPlayer_M="POINTS-6.5-0-"+"WHITE-"+gameGO.getBsize().getSize();
 				gameGO.getCurrentPlayer().tell(bPlayer_M,defaultGM);
 				gameGO.changeTurn();
 				gameGO.getCurrentPlayer().tell(wPlayer_M,defaultGM);
@@ -75,9 +83,9 @@ public class GameManager extends UntypedActor {
 			response=ourGame.MoveOnBoard((Move)message);
 			if(response instanceof Change){
 				Change change=(Change) response;
-				ourGame.getCurrentPlayer().tell(change.changeString(),defaultGM);
+				ourGame.getCurrentPlayer().tell(new ChangeMessage(change),defaultGM);
 				ourGame.changeTurn();
-				ourGame.getCurrentPlayer().tell(change.correctString(),defaultGM);
+				ourGame.getCurrentPlayer().tell(new CorrectMessage(change),defaultGM);
 				ourGame.changeTurn();
 			}else{
 				ourGame.getCurrentPlayer().tell(response,defaultGM);
