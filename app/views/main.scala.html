@@ -14,9 +14,6 @@
                <div class="container">
                    @if(connected != -1) {
                        <div class="topbar">
-                           <p class="pull-right">
-                               You are in room number @connected
-                           </p>
                            <a href="@routes.Application.index()" class="disconnect">Disconnect</a>
                        </div>
 
@@ -26,8 +23,8 @@
                            <input id="join-game" type="radio" name="command" value="JOIN" onclick="animateInput('join-game')">Join game<br>
                            <input id="new-bot-game" type="radio" name="command" value="CREATE-BOT" onclick="animateInput('new-bot-game')">New bot game<br>
 
-                           <input id="roomSize" type="text" name="roomSize" placeholder="Choose 9x9, 13x13, 19x19">
-                           <input id="roomNumber" type="text" name="roomNumber" placeholder="Enter room numer">
+                           <input id="roomSize" type="text" name="roomSize" value="-1" placeholder="Choose 9x9, 13x13, 19x19">
+                           <input id="roomNumber" type="text" name="roomNumber" value="-1" placeholder="Enter room numer">
                            <button class="btn" type="submit">Sign in</button>
                        </form>
 

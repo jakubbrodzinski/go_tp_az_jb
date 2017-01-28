@@ -134,7 +134,7 @@ $(function() {
     prepareCanvas(@size, 20);
     //Getting canvas properties
 
-    setPoints("0", 0);
+    setPoints("0", "0");
 
     //Preparing websocket
     var ws = new WebSocket("@routes.Application.initializeConnection(roomNumber, size, command).webSocketURL(request)");
@@ -142,16 +142,22 @@ $(function() {
     //Adding function that handles WebSocket receiving messages
     var firstMessage = 1;
     ws.onmessage = function(evt) {
+        alert(evt.data);
         var data = evt.data;
         if(firstMessage == 1) {
             firstMessage = 0;
             var response = data.split("-");
             setPoints(response[1],response[2]);
             state.myColor = response[3];
-            state.currentColor = "black";
+            state.currentColor = "BLACK";
             canvasProps.size = response[4];
+            document.getElementById("room-number").innerHTML = "Jestes w pokoju: " + response[5];
+            if(state.myColor.localeCompare(state.currentColor) != 0) {
+                var canvas = document.getElementById("myCanvas");
+                $(canvas).animate({opacity: 0.5}, 700);
+            }
         }
-        else if(data.startsWith("CORRECT")) {
+        else if(data.indexOf("CORRECT") != -1) {
             var res = data.split("-");
             setPoints(res[1],res[2]);
             var location = parseLocationToClientReadable(res[4], res[5], canvasProps.size, canvasProps.padding);
@@ -163,7 +169,7 @@ $(function() {
             redraw(canvasProps.context, canvasProps.size, canvasProps.width, canvasProps.height, canvasProps.padding);
             changeTurn();
         }
-        else if(data.startsWith("CHANGE")) {
+        else if(data.indexOf("CHANGE") != -1) {
             var res = data.split("-");
             setPoints(res[1],res[2]);
             var location = parseLocationToClientReadable(res[4], res[5], canvasProps.size, canvasProps.padding);
@@ -181,8 +187,11 @@ $(function() {
         else if(data.startsWith("CONCEDE")) {
             alert("Przeciwnik się poddał! Wygrana!");
         }
+        else if(data.startsWith("QUIT")) {
+            ws.close();
+            alert("Przeciwnik wyszedl!");
+        }
     };
-
     //Adding listener to canvas
     document.getElementById("myCanvas").addEventListener('click', function(event) {
         var x = event.pageX - canvasProps.offsetLeft;
@@ -192,9 +201,11 @@ $(function() {
         drawStone(canvasProps.context, x, y, "white", 1);
         if(isMyTurn()) {
             var location = findStone(x, y);
-            ws.send("MOVE-"+ location.positionX + "-" + location.positionY);
+            //ws.send("MOVE-"+ location.positionX + "-" + location.positionY);
+            ws.send("POINTS-0-2-WHITE-9-1");
+            drawStone(canvasProps.context, 20, 20, "black", 1);
+            drawStone(canvasProps.context, 55, 55, "black", 1);
         }
-
     });
 
     //Adding listener to the passing button
@@ -205,6 +216,11 @@ $(function() {
     document.getElementById("concede-btn").onclick = function() {
         ws.send("CONCEDE");
     };
+
+    $(window).on('beforeunload', function() {
+        ws.send("QUIT");
+    });
+
 });
 
 //Function that checks if it is current player turn
@@ -214,13 +230,14 @@ function isMyTurn() {
 
 //Function that changes game state - current color playing and board opacity
 function changeTurn() {
-    if(state.currentColor.localeCompare("black") == 0) {
-        state.currentColor = "white";
+    if(state.currentColor.localeCompare("BLACK") == 0) {
+        state.currentColor = "WHITE";
     }
     else {
-        state.currentColor = "black";
+        state.currentColor = "BLACK";
     }
     var canvas = document.getElementById("myCanvas");
+
     if(document.getElementById("myCanvas").style.opacity.localeCompare("0.5") == 0) {
         $(canvas).animate({opacity: 1}, 700);
     }
@@ -259,8 +276,6 @@ function prepareCanvas(size, padding) {
 
     canvasProps.offsetTop = canvas.offsetTop;
     canvasProps.offsetLeft = canvas.offsetLeft;
-
-    alert(canvasProps.size);
 }
 
 //Function that parses stone location to server readable form

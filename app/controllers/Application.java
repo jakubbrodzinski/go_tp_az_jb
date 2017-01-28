@@ -13,7 +13,43 @@ public class Application extends Controller {
     }
 
     public static Result gameRoom(int roomSize, int roomNumber, String command) {
-        return ok(game.render(roomNumber, roomSize, command));
+        System.out.println("game room nnmber/size/command: " + roomNumber + " " + roomSize + " " + command);
+
+        if(command == null) {
+            flash("error", "Nie wprowadzono danych");
+            return redirect(routes.Application.index());
+        }
+        else if(command.equals("JOIN")) {
+            if(roomNumber == -1) {
+                flash("error", "Nie wprowadzono danych");
+                return redirect(routes.Application.index());
+            }
+            else {
+                return ok(game.render(roomNumber, 9, command));
+            }
+        }
+        else if(command.equals("CREATE")) {
+            if(roomSize == -1 || (roomSize != 9 && roomSize != 13 && roomSize != 19)) {
+                flash("error", "Nie wprowadzono danych");
+                return redirect(routes.Application.index());
+            }
+            else {
+                return ok(game.render(0, 9, command));
+            }
+        }
+        else if(command.equals("CREATE-BOT")) {
+            if(roomSize == -1 || (roomSize != 9 && roomSize != 13 && roomSize != 19)) {
+                flash("error", "Nie wprowadzono danych");
+                return redirect(routes.Application.index());
+            }
+            else {
+                return ok(game.render(0, 9, command));
+            }
+        }
+        else {
+            flash("error", "Nie wprowadzono danych");
+            return redirect(routes.Application.index());
+        }
     }
 
     public static Result gameRoomJs(int roomNumber, int size, String command) {
