@@ -28,7 +28,7 @@ public class BotPlayer extends UntypedActor {
 			return;
 		}else if(message instanceof Quit || message instanceof Concede){
 			return;
-		}else if(message instanceof ChangeMessage){
+		}else if(message instanceof ChangeMessage || message instanceof  Pass ){
 			String[] commands=message.toString().split("-");
 			if(commands.length>3 && commands[3].equals("CHANGE")) {
 				int i = 1;
@@ -41,8 +41,10 @@ public class BotPlayer extends UntypedActor {
 					return;
 				}
 			}
+			BoardPoint temp=botGO.nextBotMove();
+			GM.tell(new Move(temp),getSelf());
+		}else{
+			unhandled(message);
 		}
-		BoardPoint temp=botGO.nextBotMove();
-		GM.tell(new Move(temp),getSelf());
 	}
 }

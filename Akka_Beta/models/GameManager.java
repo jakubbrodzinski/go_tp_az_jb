@@ -70,10 +70,14 @@ public class GameManager extends UntypedActor {
 	public void onReceive(Object message) throws Exception {
 		GameGo ourGame=null;
 		for(Map.Entry<String,GameGo> entry: games.entrySet()){
-			ourGame=entry.getValue();
+			GameGo temp=entry.getValue();
 			if(ourGame.contains(getSender())){
+				ourGame=temp;
 				break;
 			}
+		}
+		if(ourGame==null){
+			throw new Exception("No such game");
 		}
 		Object response=null;
 		//po prostu przekaz dalej: Quit,Concede,Deny
@@ -95,9 +99,11 @@ public class GameManager extends UntypedActor {
 			notifyBothPlayers(response,ourGame);
 			ourGame.changePass();
 		}else if(message instanceof Proposition){
-			//!!!
 			response=ourGame.Proposition((Proposition) message);
+			ourGame.changeTurn();
 			ourGame.getCurrentPlayer().tell(response,defaultGM);
+			ourGame.changeTurn();
+
 			ourGame.changeProp();
 		}else if(message instanceof EndProposition){
 			response=ourGame.EndProposition((EndProposition) message);
@@ -105,6 +111,11 @@ public class GameManager extends UntypedActor {
 		}else if(message instanceof SimpleM){ //Quit,Concede,Deny
 			notifyBothPlayers(message,ourGame);
 			ourGame.changeTurn();
+			if(message instanceof Deny){
+				return;
+			}else{
+				games.remove(ourGame);
+			}
 		}else{
 			unhandled(message);
 		}
