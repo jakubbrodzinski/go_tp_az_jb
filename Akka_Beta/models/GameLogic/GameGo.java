@@ -28,6 +28,7 @@ public class GameGo{
 
 	private boolean pass = false;
 	private boolean proposition=false;
+	private boolean endproposition=false;
 
 	public GameGo(BoardSize siz){
 		bsize=siz;
@@ -107,6 +108,10 @@ public class GameGo{
 	public Object EndProposition(EndProposition prop){
 		currentPlayer=currentPlayer.opposite();
 		pass=proposition=false;
+		if(!endproposition){
+			endproposition=true;
+			return prop;
+		}
 		this.finalScore(prop);
 		if(BLACKscore>WHITEscore){
 			return new Win(stoneColor.BLACK,BLACKscore,WHITEscore);
@@ -145,11 +150,12 @@ public class GameGo{
 		//PROPOSITION-BLACK-N-2-M-2-N-1-M-1-WHITE-A-1-A-2-BLACKP-D-7-G-5-J-5-WHITEP-H-10-F-8-J-7
 	}
 
-	public void changeProp(){
-		proposition=true;
+	public void changeProps(){
+		proposition=false;
+		endproposition=false;
 	}
-	public void changePass(){
-		pass=true;
+	public void changeEndProp(){
+
 	}
 	public void changeTurn() {
 		currentPlayer=currentPlayer.opposite();

@@ -71,7 +71,7 @@ public class GameManager extends UntypedActor {
 		GameGo ourGame=null;
 		for(Map.Entry<String,GameGo> entry: games.entrySet()){
 			GameGo temp=entry.getValue();
-			if(ourGame.contains(getSender())){
+			if(temp.contains(getSender())){
 				ourGame=temp;
 				break;
 			}
@@ -97,21 +97,24 @@ public class GameManager extends UntypedActor {
 		}else if(message instanceof Pass){
 			response=ourGame.Pass();
 			notifyBothPlayers(response,ourGame);
-			ourGame.changePass();
+			//ourGame.changePass();
 		}else if(message instanceof Proposition){
 			response=ourGame.Proposition((Proposition) message);
-			ourGame.changeTurn();
 			ourGame.getCurrentPlayer().tell(response,defaultGM);
-			ourGame.changeTurn();
 
-			ourGame.changeProp();
+			//ourGame.changeProp();
 		}else if(message instanceof EndProposition){
 			response=ourGame.EndProposition((EndProposition) message);
-			notifyBothPlayers(response,ourGame);
+			if( response instanceof EndProposition){
+				ourGame.getCurrentPlayer().tell(response,defaultGM);
+			}else {
+				notifyBothPlayers(response,ourGame);
+			}
 		}else if(message instanceof SimpleM){ //Quit,Concede,Deny
 			notifyBothPlayers(message,ourGame);
 			ourGame.changeTurn();
 			if(message instanceof Deny){
+				ourGame.changeProps();
 				return;
 			}else{
 				games.remove(ourGame);

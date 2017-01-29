@@ -15,6 +15,6 @@ public class Win {
 		this.wPoints=wPoints;
 	}
 	public String toString(){
-		return "ENDPROPOSITION/"+color+"/"+Double.toString(bPoints)+"/"+Double.toString(wPoints);
+		return "WIN/"+color+"/"+Double.toString(bPoints)+"/"+Double.toString(wPoints);
 	}
 }
