@@ -97,12 +97,10 @@ public class GameManager extends UntypedActor {
 		}else if(message instanceof Pass){
 			response=ourGame.Pass();
 			notifyBothPlayers(response,ourGame);
-			//ourGame.changePass();
 		}else if(message instanceof Proposition){
 			response=ourGame.Proposition((Proposition) message);
 			ourGame.getCurrentPlayer().tell(response,defaultGM);
 
-			//ourGame.changeProp();
 		}else if(message instanceof EndProposition){
 			response=ourGame.EndProposition((EndProposition) message);
 			if( response instanceof EndProposition){

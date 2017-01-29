@@ -60,7 +60,7 @@ public class GameGo{
 	}
 
 	public Object MoveOnBoard(Move move){
-		pass=proposition=false;
+		pass=false;
 		try{
 			BoardPoint[] changes=GameLogic.nextMove(move.getPoint(),currentPlayer);
 			if(currentPlayer==stoneColor.WHITE){
@@ -78,7 +78,6 @@ public class GameGo{
 
 	public Object Pass(){
 		currentPlayer=currentPlayer.opposite();
-		proposition=false;
 		if(!pass){
 			pass=true;
 			return new Pass();
@@ -107,7 +106,7 @@ public class GameGo{
 
 	public Object EndProposition(EndProposition prop){
 		currentPlayer=currentPlayer.opposite();
-		pass=proposition=false;
+		pass=false;
 		if(!endproposition){
 			endproposition=true;
 			return prop;
@@ -153,9 +152,6 @@ public class GameGo{
 	public void changeProps(){
 		proposition=false;
 		endproposition=false;
-	}
-	public void changeEndProp(){
-
 	}
 	public void changeTurn() {
 		currentPlayer=currentPlayer.opposite();
