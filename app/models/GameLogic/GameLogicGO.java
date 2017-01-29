@@ -1,7 +1,9 @@
 package models.GameLogic;
 
+import models.GameLogic.Enums.BoardPoint;
 import models.GameLogic.Enums.BoardSize;
 import models.GameLogic.Enums.stoneColor;
+import models.GameLogic.Exceptions.WrongMoveException;
 
 import java.util.ArrayList;
 /*

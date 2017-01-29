@@ -1,12 +1,11 @@
-package models;
+package models.GameLogic;
 
 import akka.actor.ActorRef;
 import models.Commands.*;
-import models.GameLogic.BoardPoint;
+import models.GameLogic.Enums.BoardPoint;
 import models.GameLogic.Enums.BoardSize;
 import models.GameLogic.Enums.stoneColor;
-import models.GameLogic.GameLogicGO;
-import models.GameLogic.WrongMoveException;
+import models.GameLogic.Exceptions.WrongMoveException;
 
 /**
  * Created by jakub on 1/28/17.
@@ -29,6 +28,7 @@ public class GameGo{
 
 	private boolean pass = false;
 	private boolean proposition=false;
+	private boolean endproposition=false;
 
 	public GameGo(BoardSize siz){
 		bsize=siz;
@@ -60,7 +60,7 @@ public class GameGo{
 	}
 
 	public Object MoveOnBoard(Move move){
-		pass=proposition=false;
+		pass=false;
 		try{
 			BoardPoint[] changes=GameLogic.nextMove(move.getPoint(),currentPlayer);
 			if(currentPlayer==stoneColor.WHITE){
@@ -78,7 +78,6 @@ public class GameGo{
 
 	public Object Pass(){
 		currentPlayer=currentPlayer.opposite();
-		proposition=false;
 		if(!pass){
 			pass=true;
 			return new Pass();
@@ -107,7 +106,11 @@ public class GameGo{
 
 	public Object EndProposition(EndProposition prop){
 		currentPlayer=currentPlayer.opposite();
-		pass=proposition=false;
+		pass=false;
+		if(!endproposition){
+			endproposition=true;
+			return prop;
+		}
 		this.finalScore(prop);
 		if(BLACKscore>WHITEscore){
 			return new Win(stoneColor.BLACK,BLACKscore,WHITEscore);
@@ -146,11 +149,9 @@ public class GameGo{
 		//PROPOSITION-BLACK-N-2-M-2-N-1-M-1-WHITE-A-1-A-2-BLACKP-D-7-G-5-J-5-WHITEP-H-10-F-8-J-7
 	}
 
-	public void changeProp(){
-		proposition=true;
-	}
-	public void changePass(){
-		pass=true;
+	public void changeProps(){
+		proposition=false;
+		endproposition=false;
 	}
 	public void changeTurn() {
 		currentPlayer=currentPlayer.opposite();

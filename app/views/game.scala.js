@@ -267,10 +267,10 @@ function getWhiteTerritory() {
 $(function() {
 
 
-   // prepareCanvas(@size, 20);
-    //Getting canvas properties
-
+    //Reseting the points
     setPoints("0", "0");
+
+    gameID = @roomNumber;
 
     //Preparing websocket
     var ws = new WebSocket("@routes.Application.initializeConnection(roomNumber, size, command).webSocketURL(request)");
@@ -284,6 +284,7 @@ $(function() {
                 firstMessage = 1;
                 var response = data.split("-");
                 document.getElementById("room-number").innerHTML = "Jestes w pokoju: " + response[1];
+                gameID = response[1];
             }
             else {
                 firstMessage = 0;
@@ -294,7 +295,7 @@ $(function() {
                 canvasProps.size = response[4];
                 if (state.myColor.localeCompare(state.currentColor) != 0) {
                     var canvas = document.getElementById("myCanvas");
-                    $(canvas).animate({opacity: 0.5}, 700);
+                    $(canvas).animate({opacity: 0.5}, 300);
                 }
                 prepareCanvas(canvasProps.size, 20);
             }
@@ -322,13 +323,13 @@ $(function() {
                 removeStone(location.positionX, location.positionY);
                 k++;
                 k++;
-                alert(k);
             }
 
             redraw(canvasProps.context, canvasProps.size, canvasProps.width, canvasProps.height, canvasProps.padding);
             changeTurn();
         }
-        else if(data.indexOf("PROPOSITION") != -1) {
+        else if(data.startsWith("PROPOSITION")) {
+            changeTurn();
             restoreBoard(canvasProps.context, canvasProps.size, canvasProps.height, canvasProps.width, canvasProps.padding);
             doBackup();
             var res = data.split("-");
@@ -367,11 +368,11 @@ $(function() {
                 }
             }
             redraw(canvasProps.context, canvasProps.size, canvasProps.width, canvasProps.height, canvasProps.padding);
-            if(isMyTurn()) {
                 $(function () {
                     $("#dialog").dialog({
                         modal: true,
-                        title: 'Propozycja martwych pol i terytoriow',
+                        title: 'Propozycja przeciwnika\n' +
+                        'Możesz zmieniać martwe pola i terytoria',
                         zIndex: 3000,
                         autoOpen: true,
                         width: 'auto',
@@ -381,22 +382,22 @@ $(function() {
                         },
                         buttons: {
                             Zaproponuj: function () {
-                                alert("PROPOSITION-" + "BLACK" + getBlackTerritory() + "-WHITE" +
+                                ws.send("ENDPROPOSITION-" + "BLACK" + getBlackTerritory() + "-WHITE" +
                                     getWhiteTerritory() + "-BLACKP" + getBlackDeadStones() + "-WHITEP" + getWhiteDeadStones());
-                                ws.send("PROPOSITION-" + "BLACK" + getBlackTerritory() + "-WHITE" +
-                                    getWhiteTerritory() + "-BLACKP" + getBlackDeadStones() + "-WHITEP" + getWhiteDeadStones());
+                                changeTurn();
                                 $(this).dialog("close");
                             },
-                            Odrzuc: function () {
+                            Odrzuć: function () {
                                 ws.send("DENY");
                                 $(this).dialog("close");
                             }
                         }
                     });
                 });
-            }
+
         }
         else if(data.startsWith("ENDPROPOSITION")) {
+            changeTurn();
             restoreBoard(canvasProps.context, canvasProps.size, canvasProps.height, canvasProps.width, canvasProps.padding);
             doBackup();
             var res = data.split("-");
@@ -435,34 +436,35 @@ $(function() {
                 }
             }
             redraw(canvasProps.context, canvasProps.size, canvasProps.width, canvasProps.height, canvasProps.padding);
-            if(isMyTurn()) {
-                $(function () {
-                    $("#dialog").dialog({
-                        modal: true,
-                        title: 'Propozycja martwych pol i terytoriow',
-                        zIndex: 3000,
-                        autoOpen: true,
-                        width: 'auto',
-                        resizable: false,
-                        open: function (event, ui) {
-                            $(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+
+
+            $(function () {
+                $("#dialog").dialog({
+                    modal: true,
+                    title: 'FINAŁOWA PROPOZYCJA\n',
+                    zIndex: 3000,
+                    autoOpen: true,
+                    width: 'auto',
+                    resizable: false,
+                    open: function (event, ui) {
+                        $(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+                    },
+                    buttons: {
+                        Akceptuj: function () {
+                            ws.send(evt.data);
+                            changeTurn();
+                            $(this).dialog("close");
                         },
-                        buttons: {
-                            Zaproponuj: function () {
-                                ws.send(evt.data);
-                                $(this).dialog("close");
-                            },
-                            Odrzuc: function () {
-                                ws.send("DENY");
-                                $(this).dialog("close");
-                            }
+                        Odrzuć: function () {
+                            ws.send("DENY");
+                            $(this).dialog("close");
                         }
-                    });
+                    }
                 });
-            }
+            });
         }
         else if(data.startsWith("BLACK")) {
-
+            changeTurn();
             state.paused = "yes";
             doBackup();
             var res = data.split("-");
@@ -505,7 +507,8 @@ $(function() {
                 $(function () {
                     $("#dialog").dialog({
                         modal: true,
-                        title: 'Propozycja martwych pol i terytoriow',
+                        title: 'Propozycja serwera\n' +
+                        'Możesz zmieniać martwe pola i terytoria',
                         zIndex: 3000,
                         autoOpen: true,
                         width: 'auto',
@@ -517,9 +520,10 @@ $(function() {
                             Zaproponuj: function () {
                                 ws.send("PROPOSITION-" + "BLACK" + getBlackTerritory() + "-WHITE" +
                                 getWhiteTerritory() + "-BLACKP" + getBlackDeadStones() + "-WHITEP" + getWhiteDeadStones());
+                                changeTurn();
                                 $(this).dialog("close");
                             },
-                            Odrzuc: function () {
+                            Odrzuć: function () {
                                 ws.send("DENY");
                                 $(this).dialog("close");
                             }
@@ -542,13 +546,16 @@ $(function() {
             changeTurn();
         }
         else if(data.startsWith("CONCEDE")) {
-            alert("Przeciwnik się poddał! Wygrana!");
+            if(didConcede.localeCompare("yes") == 0) {
+                alert("Poddałes się! Przegrana!");
+            }
+            else {
+                alert("Przeciwnik się poddał! Wygrana!");
+            }
         }
         else if(data.startsWith("QUIT")) {
             ws.close();
-            if(!(didQuit.localeCompare("yes") == 0)) {
-                alert("Przeciwnik wyszedl!");
-            }
+            alert("Gra przerwana! Stol zostal opuszczony przez jednego z graczy!");
         }
     };
     //Adding listener to canvas
@@ -594,12 +601,10 @@ $(function() {
                     }
                 }
                 else if(returnStoneAtLocationColour(x, y).localeCompare("red") == 0) {
-                    alert("hitread");
                     removeStone(x, y);
                     redraw(canvasProps.context, canvasProps.size, canvasProps.width, canvasProps.height, canvasProps.padding);
                 }
                 else if(returnStoneAtLocationColour(x, y).localeCompare("pink") == 0) {
-                    alert("hitpink");
                     removeStone(x, y);
                     redraw(canvasProps.context, canvasProps.size, canvasProps.width, canvasProps.height, canvasProps.padding);
                 }
@@ -613,14 +618,16 @@ $(function() {
             ws.send("PASS");
         }
     };
+    didConcede = "no";
     //Adding listener to the conceding button
     document.getElementById("concede-btn").onclick = function() {
+        alert(gameID);
+        didConcede = "yes";
         ws.send("CONCEDE");
     };
 
     $(window).on('beforeunload', function() {
         ws.send("QUIT");
-        didQuit = "yes";
     });
 
 });
@@ -640,12 +647,13 @@ function changeTurn() {
     }
     var canvas = document.getElementById("myCanvas");
 
-    if(document.getElementById("myCanvas").style.opacity.localeCompare("0.5") == 0) {
-        $(canvas).animate({opacity: 1}, 700);
+    if (document.getElementById("myCanvas").style.opacity.localeCompare("0.5") == 0) {
+        $(canvas).animate({opacity: 1}, 300);
     }
     else {
-        $(canvas).animate({opacity: 0.5}, 700);
+        $(canvas).animate({opacity: 0.5}, 300);
     }
+
 }
 
 //Function that sets white point and black points

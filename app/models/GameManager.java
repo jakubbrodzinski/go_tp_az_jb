@@ -5,7 +5,9 @@ import akka.actor.Props;
 import akka.actor.UntypedActor;
 import models.Commands.*;
 import models.GameLogic.Enums.BoardSize;
-import models.GameLogic.WrongPlayerInitiation;
+import models.GameLogic.Enums.stoneColor;
+import models.GameLogic.Exceptions.WrongPlayerInitiation;
+import models.GameLogic.GameGo;
 import play.libs.Akka;
 import play.mvc.WebSocket;
 
@@ -29,17 +31,23 @@ public class GameManager extends UntypedActor {
 		ActorRef player=Akka.system().actorOf(Props.create(Player.class,_in,_out,defaultGM));
 		if(splitted[0].equals("CREATE")){
 			BoardSize size;
-			if(splitted[1].equals("9")){
-				size=BoardSize.SMALL;
-			}else if(splitted[1].equals("19")){
-				size=BoardSize.LARGE;
-			}else{
-				size=BoardSize.MEDIUM;
+			if (splitted[1].equals("9")) {
+				size = BoardSize.SMALL;
+			} else if (splitted[1].equals("19")) {
+				size = BoardSize.LARGE;
+			} else {
+				size = BoardSize.MEDIUM;
 			}
-			GameGo newGame=new GameGo(size);
+			GameGo newGame = new GameGo(size);
 			newGame.setBlackPlayer(player);
-			games.put(Integer.toString(gameID),newGame);
-			_out.write("GAMEID-"+Integer.toString(gameID++));
+			games.put(Integer.toString(gameID), newGame);
+			_out.write("GAMEID-" + Integer.toString(gameID++));
+			if(splitted.length>=3 && splitted[2].equals("BOT")){
+				ActorRef Bot=Akka.system().actorOf(Props.create(BotPlayer.class,size,stoneColor.WHITE,defaultGM));
+				newGame.setWhitePlayer(Bot);
+				String bPlayer_M="POINTS-6.5-0-"+"BLACK-"+size.getSize();
+				player.tell(bPlayer_M,defaultGM);
+			}
 		}else if(splitted[0].equals("JOIN")) {
 			if (games.containsKey(splitted[1])) {
 				GameGo gameGO=games.get(splitted[1]);
@@ -62,10 +70,14 @@ public class GameManager extends UntypedActor {
 	public void onReceive(Object message) throws Exception {
 		GameGo ourGame=null;
 		for(Map.Entry<String,GameGo> entry: games.entrySet()){
-			ourGame=entry.getValue();
-			if(ourGame.contains(getSender())){
+			GameGo temp=entry.getValue();
+			if(temp.contains(getSender())){
+				ourGame=temp;
 				break;
 			}
+		}
+		if(ourGame==null){
+			throw new Exception("No such game");
 		}
 		Object response=null;
 		//po prostu przekaz dalej: Quit,Concede,Deny
@@ -75,9 +87,9 @@ public class GameManager extends UntypedActor {
 			response=ourGame.MoveOnBoard((Move)message);
 			if(response instanceof Change){
 				Change change=(Change) response;
-				ourGame.getCurrentPlayer().tell(change.changeString(),defaultGM);
+				ourGame.getCurrentPlayer().tell(new ChangeMessage(change),defaultGM);
 				ourGame.changeTurn();
-				ourGame.getCurrentPlayer().tell(change.correctString(),defaultGM);
+				ourGame.getCurrentPlayer().tell(new CorrectMessage(change),defaultGM);
 				ourGame.changeTurn();
 			}else{
 				ourGame.getCurrentPlayer().tell(response,defaultGM);
@@ -85,18 +97,26 @@ public class GameManager extends UntypedActor {
 		}else if(message instanceof Pass){
 			response=ourGame.Pass();
 			notifyBothPlayers(response,ourGame);
-			ourGame.changePass();
 		}else if(message instanceof Proposition){
-			//!!!
 			response=ourGame.Proposition((Proposition) message);
 			ourGame.getCurrentPlayer().tell(response,defaultGM);
-			ourGame.changeProp();
+
 		}else if(message instanceof EndProposition){
 			response=ourGame.EndProposition((EndProposition) message);
-			notifyBothPlayers(response,ourGame);
+			if( response instanceof EndProposition){
+				ourGame.getCurrentPlayer().tell(response,defaultGM);
+			}else {
+				notifyBothPlayers(response,ourGame);
+			}
 		}else if(message instanceof SimpleM){ //Quit,Concede,Deny
 			notifyBothPlayers(message,ourGame);
 			ourGame.changeTurn();
+			if(message instanceof Deny){
+				ourGame.changeProps();
+				return;
+			}else{
+				games.remove(ourGame);
+			}
 		}else{
 			unhandled(message);
 		}

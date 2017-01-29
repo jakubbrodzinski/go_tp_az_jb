@@ -1,4 +1,4 @@
-package models.GameLogic;
+package models.GameLogic.Exceptions;
 
 /**
  * Created by jakub on 12/2/16.

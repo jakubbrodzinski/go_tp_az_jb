@@ -3,7 +3,7 @@ package models;
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import models.Commands.*;
-import models.GameLogic.BoardPoint;
+import models.GameLogic.Enums.BoardPoint;
 import play.Logger;
 import play.libs.F.Callback;
 import play.libs.F.Callback0;
@@ -26,7 +26,6 @@ public class Player extends UntypedActor {
 		in.onMessage(new Callback<String>() {
 			@Override
 			public void invoke(String event) {
-				System.out.println("fromclient message: " + event);
 				Object message;
 				String[] command_splited=event.split("-");
 				switch (command_splited[0]){
@@ -86,7 +85,6 @@ public class Player extends UntypedActor {
 
 	@Override
 	public void onReceive(Object message) throws Exception {
-		System.out.println("toclient message: " + message.toString());
-		out.write(message.toString());
+			out.write(message.toString());
 	}
 }

@@ -1,4 +1,4 @@
-package models.GameLogic;
+package models.GameLogic.Enums;
 
 /**
  * Created by jakub on 12/3/16.
