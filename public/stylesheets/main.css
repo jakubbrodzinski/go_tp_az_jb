@@ -1,0 +1,25 @@
+body {
+    background-image: url("../images/b1.jpg");
+    background-size: cover;
+}
+.topbar {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+.form-container {
+    padding-top: 200px;
+    margin-left: auto;
+    margin-right: auto;
+    height: 100px;
+    width: 200px;
+}
+input[type=text] {
+    height: 27px;
+    font-size: 24px
+    background-color: white;
+    background-image: url('add-song.png');
+    background-position: 10px;
+    background-repeat: no-repeat;
+    padding-left: 40px;
+}

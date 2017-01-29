@@ -287,6 +287,7 @@ $(function() {
                 gameID = response[1];
             }
             else {
+                document.getElementById("room-number").innerHTML = "Jestes w pokoju: " + gameID;
                 firstMessage = 0;
                 var response = data.split("-");
                 setPoints(response[1], response[2]);
@@ -568,7 +569,6 @@ $(function() {
                 ws.send("MOVE-"+ location.positionX + "-" + location.positionY);
             }
             else {
-                alert(returnStoneAtLocationColour(x, y));
                 if(returnStoneAtLocationColour(x, y).localeCompare("BLACK") == 0) {
                     markAsBlackDeadStone(x, y);
                     drawArbitraryStone(canvasProps.context, x, y, "blue");
@@ -621,7 +621,6 @@ $(function() {
     didConcede = "no";
     //Adding listener to the conceding button
     document.getElementById("concede-btn").onclick = function() {
-        alert(gameID);
         didConcede = "yes";
         ws.send("CONCEDE");
     };
