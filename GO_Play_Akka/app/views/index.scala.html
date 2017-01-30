@@ -1,0 +1,55 @@
+@main(-1) {
+
+    @if(flash.containsKey("error")) {
+
+        <div class="error">
+            <h2>
+                <strong>Oops!</strong> @flash.get("error")
+            </h2>
+        </div>
+
+    }
+
+    <div class="intro">
+            <h1>Gra w  GO!</h1>
+            <p>
+            Zeby zacząć wybierz rozmiar stołu lub dołącz do pokoju!
+            </p>
+    </div>
+    <style>
+        h1 {
+            display: inline;
+            position: relative;
+            color: rgba(251, 255, 252, 0.77); /* This will give us a blue at 50% opacity */
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            text-shadow: 0px 0px 15px rgba(0, 0, 0, 0.15);
+            font-size: 50px;
+            line-height: 80px;
+        }
+        h2 {
+            display: inline;
+            position: fixed;
+            right: 10px;
+            top: 0;
+            color: rgba(251, 255, 252, 0.77); /* This will give us a blue at 50% opacity */
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            text-shadow: 0px 0px 15px rgba(0, 0, 0, 0.15);
+            font-size: 20px;
+            line-height: 80px;
+        }
+        p {
+            padding-top: 30px;
+            position: absolute;
+            color: rgba(251, 255, 252, 0.77); /* This will give us a blue at 50% opacity */
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            text-shadow: 0px 0px 15px rgba(0, 0, 0, 0.15);
+            font-size: 30px;
+        }
+        .intro {
+            display: flex;
+            justify-content:center;
+            align-items:center;
+        }
+    </style>
+
+}

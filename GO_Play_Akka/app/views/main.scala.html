@@ -1,0 +1,66 @@
+@(connected: Int)(content: Html)
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Gra Go</title>
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.ico")">
+        <script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
+    </head>
+    <body>
+           <div class="fill">
+               <div class="container">
+                   @if(connected != -1) {
+                       <div class="topbar">
+                           <a href="@routes.Application.index()" class="disconnect">Disconnect</a>
+                       </div>
+
+                   } else {
+                       <form action="@routes.Application.gameRoom()" class="form-container" id="form-contaier">
+                           <input class="new-game" id="new-game" type="radio" name="command" value="CREATE" onclick="animateInput('new-game')">Nowa gra<br>
+                           <input id="join-game" type="radio" name="command" value="JOIN" onclick="animateInput('join-game')">Dołącz do gry<br>
+                           <input id="new-bot-game" type="radio" name="command" value="CREATE-BOT" onclick="animateInput('new-bot-game')">Nowa gra z botem<br>
+
+                           <input id="roomSize" type="text" name="roomSize"  placeholder="Wybierz rozmiar 9/13/19">
+                           <input id="roomNumber" type="text" name="roomNumber"  placeholder="Wprowadź numer pokoju" style="display:none;">
+                           <button class="btn" type="submit" id="sub-btn" onclick="checkInput()"><span>Zatwierdź</span></button>
+                       </form>
+
+                        <script>
+                            function animateInput(radioButton) {
+                                var el = document.getElementById("roomSize");
+                                var el2 = document.getElementById("roomNumber");
+                                if(radioButton.localeCompare("new-game") == 0) {
+                                    $(el).show();
+                                    $(el2).hide();
+                                }
+                                else if(radioButton.localeCompare("join-game") == 0) {
+                                    $(el).hide();
+                                    $(el2).show();
+                                }
+                                else {
+                                    $(el).show();
+                                    $(el2).hide();
+                                }
+                            }
+                            function checkInput() {
+                                var el = document.getElementById("roomSize");
+                                var el2 = document.getElementById("roomNumber");
+                                if($(el).val().localeCompare("") == 0) {
+                                    $(el).val("-1");
+                                }
+                                if($(el2).val().localeCompare("") == 0) {
+                                    $(el2).val("-1");
+                                }
+                            }
+                        </script>
+                   }
+               </div>
+           </div>
+        <div class="content">
+            @content
+        </div>
+    </body>
+</html>
