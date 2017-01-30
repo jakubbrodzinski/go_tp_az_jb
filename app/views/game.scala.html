@@ -16,10 +16,10 @@
         </div>
         <div class="button-panel">
             <div class="pass-btn" id="pass-btn">
-                <button type="button">Pasuj</button>
+                <button type="button"><span>Pasuj</span></button>
             </div>
             <div class="concede-btn" id="concede-btn">
-                <button type="button">Poddaj się</button>
+                <button type="button"><span>Poddaj się</span></button>
             </div>
         </div>
         <div class="white-points">
@@ -41,21 +41,117 @@
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <style>
+        .page-header {
+            color: azure;
+            font-size: 12px;
+            padding-left: 1400px;
+        }
         .side-bar {
+            background-color: rgba(255, 235, 205, 0.48);
             position: absolute;
             right:200px; top:150px; bottom: 150px;
             width: 178px;
-            background-color: ;
+            color: azure;
         }
+        .black-points {
+            padding-top: 30px;
+            padding-left: 50px;
+          }
         .white-points {
-            width: 100px;
-            height: 100px;
+            padding-left: 50px;
         }
         .popup {
             background-color: floralwhite;
             width: 200px;
             height: 300px;
         }
+        #myCanvas {
+            position: fixed;
+            left: 300px;
+            top: 10px;
+            background: linear-gradient(to right, rgba(161,109,32,1) 0%, rgba(71,48,13,0.75) 95%, rgba(71,48,13,0.74) 100%);
+        }
+        #whitepoints-para {
+            padding-left: 30px;
+        }
+        #blackpoints-para {
+            padding-left: 30px;
+        }
+        .pass-btn {
+            font-size: 100%;
+            display: inline-block;
+            border-radius: 4px;
+            border: none;
+            color: #FFFFFF;
+            text-align: center;
+            padding-top: 20px;
+            padding-botton: 10px;
+            padding-left: 60px;
+            transition: all 0.5s;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .pass-btn span {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            transition: 0.5s;
+        }
 
+        .pass-btn span:after {
+            content: '\1F590';
+            position: absolute;
+            opacity: 0;
+            top: 0;
+            right: -20px;
+            transition: 0.5s;
+        }
+
+        .pass-btn:hover span {
+            padding-right: 25px;
+        }
+
+        .pass-btn:hover span:after {
+            opacity: 1;
+            right: 0;
+        }
+        .concede-btn {
+            font-size: 100%;
+            display: inline-block;
+            border-radius: 4px;
+            border: none;
+            color: #FFFFFF;
+            text-align: center;
+            padding-top: 10px;
+            padding-botton: 20px;
+            padding-left: 50px;
+            transition: all 0.5s;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .concede-btn span {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            transition: 0.5s;
+        }
+
+        .concede-btn span:after {
+            content: '\2690';
+            position: absolute;
+            opacity: 0;
+            top: 0;
+            right: -20px;
+            transition: 0.5s;
+        }
+
+        .concede-btn:hover span {
+            padding-right: 25px;
+        }
+
+        .concede-btn:hover span:after {
+            opacity: 1;
+            right: 0;
+        }
     </style>
 }

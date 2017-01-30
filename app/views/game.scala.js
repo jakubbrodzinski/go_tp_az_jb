@@ -374,9 +374,9 @@ $(function() {
                         modal: true,
                         title: 'Propozycja przeciwnika\n' +
                         'Możesz zmieniać martwe pola i terytoria',
-                        zIndex: 3000,
+                        zIndex: 1000,
                         autoOpen: true,
-                        width: 'auto',
+                        width: 300,
                         resizable: false,
                         open: function (event, ui) {
                             $(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
@@ -443,9 +443,9 @@ $(function() {
                 $("#dialog").dialog({
                     modal: true,
                     title: 'FINAŁOWA PROPOZYCJA\n',
-                    zIndex: 3000,
+                    zIndex: 1000,
                     autoOpen: true,
-                    width: 'auto',
+                    width: 300,
                     resizable: false,
                     open: function (event, ui) {
                         $(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
@@ -510,9 +510,9 @@ $(function() {
                         modal: true,
                         title: 'Propozycja serwera\n' +
                         'Możesz zmieniać martwe pola i terytoria',
-                        zIndex: 3000,
+                        zIndex: 1000,
                         autoOpen: true,
-                        width: 'auto',
+                        width: 300,
                         resizable: false,
                         open: function (event, ui) {
                             $(".ui-dialog-titlebar-close", ui.dialog | ui).hide();

@@ -19,13 +19,13 @@
 
                    } else {
                        <form action="@routes.Application.gameRoom()" class="form-container" id="form-contaier">
-                           <input class="new-game" id="new-game" type="radio" name="command" value="CREATE" onclick="animateInput('new-game')">New game<br>
-                           <input id="join-game" type="radio" name="command" value="JOIN" onclick="animateInput('join-game')">Join game<br>
-                           <input id="new-bot-game" type="radio" name="command" value="CREATE-BOT" onclick="animateInput('new-bot-game')">New bot game<br>
+                           <input class="new-game" id="new-game" type="radio" name="command" value="CREATE" onclick="animateInput('new-game')">Nowa gra<br>
+                           <input id="join-game" type="radio" name="command" value="JOIN" onclick="animateInput('join-game')">Dołącz do gry<br>
+                           <input id="new-bot-game" type="radio" name="command" value="CREATE-BOT" onclick="animateInput('new-bot-game')">Nowa gra z botem<br>
 
-                           <input id="roomSize" type="text" name="roomSize"  placeholder="Choose 9x9, 13x13, 19x19">
-                           <input id="roomNumber" type="text" name="roomNumber"  placeholder="Enter room numer" style="display:none;">
-                           <button class="btn" type="submit" id="sub-btn" onclick="checkInput()">Sign in</button>
+                           <input id="roomSize" type="text" name="roomSize"  placeholder="Wybierz rozmiar 9/13/19">
+                           <input id="roomNumber" type="text" name="roomNumber"  placeholder="Wprowadź numer pokoju" style="display:none;">
+                           <button class="btn" type="submit" id="sub-btn" onclick="checkInput()"><span>Zatwierdź</span></button>
                        </form>
 
                         <script>
@@ -33,15 +33,15 @@
                                 var el = document.getElementById("roomSize");
                                 var el2 = document.getElementById("roomNumber");
                                 if(radioButton.localeCompare("new-game") == 0) {
-                                    $(el).show()
+                                    $(el).show();
                                     $(el2).hide();
                                 }
                                 else if(radioButton.localeCompare("join-game") == 0) {
-                                    $(el).hide()
+                                    $(el).hide();
                                     $(el2).show();
                                 }
                                 else {
-                                    $(el).show()
+                                    $(el).show();
                                     $(el2).hide();
                                 }
                             }

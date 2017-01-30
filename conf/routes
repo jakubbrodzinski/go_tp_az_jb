@@ -4,7 +4,7 @@
 
 # Home page
 GET     /                           controllers.Application.index
-GET     /room                      controllers.Application.gameRoom(roomSize: Int ?= -1, roomNumber: Int ?= -1, command: String ?= null)
+GET     /room                       controllers.Application.gameRoom(roomSize: Int ?= -1, roomNumber: Int ?= -1, command: String ?= null)
 GET     /room/game                  controllers.Application.initializeConnection(roomSize: Int ?= -1, roomNumber: Int ?= -1, command: String)
 GET     /assets/javascripts/game.js controllers.Application.gameRoomJs(roomNumber: Int ?= 1, size: Int ?= 9, command: String ?= null)
 # Map static resources from the /public folder to the /assets URL path
