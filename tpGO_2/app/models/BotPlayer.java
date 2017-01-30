@@ -8,6 +8,8 @@ import models.GameLogic.Enums.BoardPoint;
 import models.GameLogic.Enums.BoardSize;
 import models.GameLogic.Enums.stoneColor;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Created by jakub on 1/28/17.
  */
@@ -23,6 +25,7 @@ public class BotPlayer extends UntypedActor {
 
 	@Override
 	public void onReceive(Object message) throws Exception {
+		TimeUnit.SECONDS.sleep(1);
 		if(message instanceof Wrong){
 			GM.tell(new Concede(),getSelf());
 			return;

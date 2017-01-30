@@ -86,5 +86,9 @@ public class Player extends UntypedActor {
 	@Override
 	public void onReceive(Object message) throws Exception {
 			out.write(message.toString());
+			if(message instanceof Quit || message instanceof Concede){
+			out.close();
+			}
+
 	}
 }
